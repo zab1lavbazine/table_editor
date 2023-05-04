@@ -1,0 +1,24 @@
+CXXFLAGS=-Wall -pedantic -g
+LDFLAGS=-fsanitize=address
+
+all: main.out
+
+
+main.o: main.cpp  
+	g++ $(CXXFLAGS) -c main.cpp
+
+# cell.o : cell.cpp cell.h object.h
+# 	g++ $(CXXFLAGS) -c cell.cpp
+
+
+number.o : number.cpp number.h object.h
+	g++ $(CXXFLAGS) -c number.cpp
+
+text.o : text.cpp text.h object.h
+	g++ $(CXXFLAGS) -c text.cpp
+
+main.out: main.o  text.o  number.o 
+	g++ $(LDFLAGS) main.o text.o  number.o  -o main.out
+
+clean:
+	rm -f *.o *.out
