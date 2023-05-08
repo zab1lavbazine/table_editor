@@ -8,6 +8,8 @@ class Object {
   virtual ~Object() {}
   Object() = default;
 
+  Object(const Object& obj) = default;
+
   // ostream operator for printing
   friend std::ostream& operator<<(std::ostream& os, const Object& obj) {
     return obj.print(os);

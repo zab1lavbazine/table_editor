@@ -2,8 +2,8 @@
 #include <string>
 
 #pragma once
-#include "number.h"
-#include "text.h"
+#include "../include/number.h"
+#include "../include/text.h"
 
 class Cell {
  public:
@@ -15,15 +15,19 @@ class Cell {
     this->m_object = new T(object);
   }
   ~Cell();
-  template <typename T>
-  void setObject(const T& object) {
-    delete this->m_object;
-    this->m_object = new T(object);
+  void setObject(Object* object) {
+    delete m_object;
+    m_object = object;
   }
   Object* getObject() const;
   Cell& operator=(const Cell& cell);
   friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
   std::ostream& print(std::ostream& os) const;
+
+  Cell operator+(const Cell& cell);
+  Cell operator-(const Cell& cell);
+  Cell operator*(const Cell& cell);
+  Cell operator/(const Cell& cell);
 
  private:
   Object* m_object;

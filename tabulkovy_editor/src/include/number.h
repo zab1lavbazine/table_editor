@@ -3,23 +3,21 @@
 
 #pragma once
 
-#include "number.h"
-#include "object.h"
+#include "../include/object.h"
+#include "../include/text.h"
 
-class Text : public Object {
+class Number : public Object {
  public:
-  Text();
-  Text(const std::string& text);
-  ~Text();
-  std::string getText() const;
-  void setText(const std::string& text);
-  std::string get_text() const;
+  Number();
+  Number(const double& number);
+  ~Number();
+  double getNumber() const;
+  void setNumber(const double& number);
   std::ostream& print(std::ostream& os) const override;
   Object* clone() const override;
 
-  Text& operator+(const Text& text);
-
-  Text& operator+=(const Text& text);
+  Number& operator+=(const Number& number);
+  Number& operator+(const Number& number);
 
   // double dispatch for collision
   Object* collide(Object& obj, const std::string Action) override;
@@ -27,5 +25,5 @@ class Text : public Object {
   Object* collide(Number& obj, const std::string Action) override;
 
  private:
-  std::string m_text;
+  double m_number;
 };

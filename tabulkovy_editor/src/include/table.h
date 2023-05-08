@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "cell.h"
+#include "../include/cell.h"
 
 class Table {
  private:

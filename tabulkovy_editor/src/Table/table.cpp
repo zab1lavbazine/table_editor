@@ -1,4 +1,4 @@
-#include "table.h"
+#include "../include/table.h"
 
 #include <iostream>
 #include <string>
@@ -29,13 +29,18 @@ void Table::addCell(const Cell& cell) {
 }
 
 std::ostream& Table::print(std::ostream& os) const {
-  for (auto& row : this->m_table) {
-    for (auto& cell : row) {
-      if (cell.getObject() != nullptr)
-        os << cell << " | ";
-      else
-        os << " NULL "
-           << " | ";
+  bool check = 0;
+  for (size_t i = 0; i < m_rows; i++) {
+    os << "|";
+    for (size_t j = 0; j < m_columns; j++) {
+      if (i == 0 && check == 0) {
+        os << "--------";
+        check = 1;
+      }
+      os << this->m_table[i][j] << " ";
+    }
+    if (check == 1) {
+      i -= 1;
     }
     os << std::endl;
   }

@@ -1,4 +1,4 @@
-#include "number.h"
+#include "../include/number.h"
 
 #include <iostream>
 #include <string>
