@@ -18,6 +18,8 @@ class Object {
   virtual std::ostream& print(std::ostream& os) const = 0;
   virtual Object* clone() const = 0;  // clone object
 
+
+
   // double dispatch for collision
   virtual Object* collide(Object& obj, const std::string Action) = 0;
   virtual Object* collide(class Text& obj, const std::string Action) = 0;

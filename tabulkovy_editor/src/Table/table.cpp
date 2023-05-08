@@ -1,69 +1,72 @@
 #include "../include/table.h"
 
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
 
-Table::Table() {}
-
-Table::Table(const Table& table) : m_table(table.m_table) {}
-
-Table::~Table() {}
-
-Table& Table::operator=(const Table& table) {
-  if (this != &table) {
-    this->m_table = table.m_table;
-  }
-  return *this;
+Table::Table() {
+  this->m_rows = 0;
+  this->m_columns = 0;
 }
 
-std::ostream& operator<<(std::ostream& os, const Table& table) {
-  return table.print(os);
-}
-
-void Table::addCell(const Cell& cell) {
-  if (this->m_table.empty()) {
-    this->m_table.push_back(std::vector<Cell>());
-  }
-  this->m_table.back().push_back(cell);
-}
-
-std::ostream& Table::print(std::ostream& os) const {
-  bool check = 0;
-  for (size_t i = 0; i < m_rows; i++) {
-    os << "|";
-    for (size_t j = 0; j < m_columns; j++) {
-      if (i == 0 && check == 0) {
-        os << "--------";
-        check = 1;
-      }
-      os << this->m_table[i][j] << " ";
+Table::~Table() {
+  for (long int i = 0; i < this->m_rows; i++) {
+    for (long int j = 0; j < this->m_columns; j++) {
+      delete this->m_table[i][j];
     }
-    if (check == 1) {
-      i -= 1;
-    }
-    os << std::endl;
   }
+}
 
-  return os;
+Table::Table(const Table& table) {
+  this->m_rows = table.m_rows;
+  this->m_columns = table.m_columns;
+  this->m_table = table.m_table;
 }
 
 void Table::setSize(const int& rows, const int& columns) {
   this->m_rows = rows + 1;
   this->m_columns = columns + 1;
-  this->m_table.resize(m_rows, std::vector<Cell>(m_columns, Cell()));
+  this->m_table.resize(m_rows);
+  for (long int i = 0; i < m_rows; i++) {
+    this->m_table[i].resize(m_columns);
+  }
+}
+
+Table& Table::operator=(const Table& table) {
+  this->m_rows = table.m_rows;
+  this->m_columns = table.m_columns;
+  this->m_table = table.m_table;
+  return *this;
 }
 
 void Table::setValue(const int& row, const int& column, const Cell& cell) {
   if (row < 0 || column < 0) {
-    throw std::out_of_range("Row or column is out of range");
-  }
-  if (size_t(row) >= this->m_rows || size_t(column) >= this->m_columns) {
+    throw std::out_of_range("Out of range");
+  } else if (row >= this->m_rows || column >= this->m_columns) {
     setSize(row, column);
   }
-  this->m_table[row][column] = cell;
+  this->m_table[row][column] = new Cell(cell);
 }
 
-size_t Table::getRows() const { return this->m_rows; }
+long int Table::getRows() const { return this->m_rows; }
 
-size_t Table::getColumns() const { return this->m_columns; }
+long int Table::getColumns() const { return this->m_columns; }
+
+std::ostream& operator<<(std::ostream& os, const Table& table) {
+  return table.print(os);
+}
+
+std::ostream& Table::print(std::ostream& os) const {
+  for (long int i = 0; i < this->m_rows; i++) {
+    for (long int j = 0; j < this->m_columns; j++) {
+      if (this->m_table[i][j] != nullptr) {
+        os << std::setw(5) << *this->m_table[i][j];
+      } else {
+        os << std::setw(10) << "";
+      }
+    }
+    os << std::endl;
+  }
+  return os;
+}

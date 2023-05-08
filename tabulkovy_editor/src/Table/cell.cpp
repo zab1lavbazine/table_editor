@@ -51,3 +51,9 @@ std::ostream& operator<<(std::ostream& os, const Cell& cell) {
 }
 
 Object* Cell::getObject() const { return m_object; }
+
+Cell Cell::clone() const {
+  Cell new_cell;
+  new_cell.m_object = this->m_object->clone();
+  return new_cell;
+}

@@ -12,10 +12,15 @@
 #define SUB "SUB"
 
 int main(void) {
-  Cell cell1 = Cell(Text("ahoj"));
-  Cell cell2 = Cell(Number(5));
-  Cell cell3 = Cell(Number(10));
-  Cell cell4(cell3 + cell2 - cell2 * cell3 / cell2);
-  std::cout << cell4 << std::endl;
+  Table table;
+
+  table.setValue(10, 10, Cell(Number(10)));
+
+  std::cout << table << std::endl;
+  table.setValue(3, 5, Cell(Text("ahoj")));
+  std::cout << "table-----------------------------  " << std::endl;
+  std::cout << table << std::endl;
+  table.setValue(11, 11, Cell(Text("ahoj")));
+  std::cout << table << std::endl;
   return 0;
 }
