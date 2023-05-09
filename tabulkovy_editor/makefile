@@ -1,42 +1,41 @@
 
 
 
-PROGRAM=tabulkovy_editor
-
 CC=g++
 
-CXXFLAGS=-std=c++11 -pedantic -Wall -Wextra -g -Wno-long-long -O0 -ggdb
+CXXFLAGS=-std=c++11 -pedantic -Wall -Wextra -g -Wno-long-long -ggdb -fsanitize=address
 
-all: compile doc
+BIN_DIR = bin
+SRC_DIR = src
+INC_DIR = include
+OBJ_DIR = objs
 
-run: $(PROGRAM)
-	./$(PROGRAM) 
+#List of all source files
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+#List of all header files
+DEPS := $(wildcard $(INC_DIR)/*.h)
+#List of object files
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
+#Name of the executable
+PROGRAM = $(BIN_DIR)/tabulkovy_editor
 
-compile: $(PROGRAM)
 
-doc: src/main.cpp src/Table/cell.cpp src/include/cell.h src/DataTypes/number.cpp src/include/number.h src/include/object.h src/Table/table.cpp src/include/table.h src/DataTypes/text.cpp src/include/text.h
-	
+doc:
+	doxygen doc/Doxyfile
 
-$(PROGRAM) : src/objs/main.o  src/objs/number.o  src/objs/text.o src/objs/cell.o src/objs/table.o
+
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
 
-
-src/objs/main.o: src/main.cpp src/include/cell.h src/include/number.h src/include/object.h src/include/table.h src/include/text.h
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-src/objs/number.o: src/DataTypes/number.cpp src/include/number.h src/include/object.h
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-src/objs/text.o: src/DataTypes/text.cpp src/include/text.h src/include/object.h
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-src/objs/cell.o: src/Table/cell.cpp src/include/cell.h src/include/number.h src/include/object.h src/include/text.h
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-src/objs/table.o: src/Table/table.cpp src/include/table.h src/include/cell.h src/include/number.h src/include/object.h src/include/text.h
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-clean:
-	rm -f $(PROGRAM) objs/*.o 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEPS)
+	$(CC) $(CXXFLAGS) -I $(INC_DIR) -c $< -o $@
 
 
+run : $(PROGRAM)
+	./$(PROGRAM)
+
+
+clean: 
+	rm -f $(OBJ_DIR)/*.o $(PROGRAM)

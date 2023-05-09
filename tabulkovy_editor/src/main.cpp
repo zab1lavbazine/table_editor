@@ -1,10 +1,12 @@
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
-#include "include/number.h"
-#include "include/table.h"
-#include "include/text.h"
+#include "../include/number.h"
+#include "../include/table.h"
+#include "../include/text.h"
 
 #define SUM "SUM"
 #define DIV "DIV"
@@ -13,14 +15,22 @@
 
 int main(void) {
   Table table;
+  table.setSize(2, 10);
+  // table.setValue(1, 1, Number(1));
 
-  table.setValue(10, 10, Cell(Number(10)));
+  table.setValue(10, 10, Number(100));
+  table.setValue(9, 12, Number(144));
+  // input text
+  table.setValue(1, 1, Text("ahoj"));
+  table.setValue(1, 2, Text("svete"));
+  table.setValue(1, 3, Text("jak"));
+  std::cout << table << std::endl;
+  std::string line = "B1 + L9 + A1";
+  Cell* cell = table.HandleOperands(line);
+  table.setValue(1, 4, *cell);
+  std::cout << table << std::endl;
+  std::cout << table.getCell("D1")->toString() << std::endl;
+  delete cell;
 
-  std::cout << table << std::endl;
-  table.setValue(3, 5, Cell(Text("ahoj")));
-  std::cout << "table-----------------------------  " << std::endl;
-  std::cout << table << std::endl;
-  table.setValue(11, 11, Cell(Text("ahoj")));
-  std::cout << table << std::endl;
   return 0;
 }

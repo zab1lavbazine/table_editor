@@ -1,0 +1,64 @@
+\hypertarget{classText}{}\doxysection{Text Class Reference}
+\label{classText}\index{Text@{Text}}
+
+
+Inheritance diagram for Text\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=128pt]{classText__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Text\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=128pt]{classText__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classText_abcee5ddde86df1976b8b10f01efe8340}\label{classText_abcee5ddde86df1976b8b10f01efe8340}} 
+{\bfseries Text} (const std\+::string \&text)
+\item 
+\mbox{\Hypertarget{classText_ac2ce828bba1934276041ba6f8272e1f0}\label{classText_ac2ce828bba1934276041ba6f8272e1f0}} 
+std\+::string {\bfseries get\+Text} () const
+\item 
+\mbox{\Hypertarget{classText_a14b9f0937696af5fd95317eb8313bf92}\label{classText_a14b9f0937696af5fd95317eb8313bf92}} 
+void {\bfseries set\+Text} (const std\+::string \&text)
+\item 
+\mbox{\Hypertarget{classText_a0e13c55aa0d343ca74f3edb071db4e90}\label{classText_a0e13c55aa0d343ca74f3edb071db4e90}} 
+std\+::string {\bfseries get\+\_\+text} () const
+\item 
+\mbox{\Hypertarget{classText_ab88b853156a765b27e731da5008157af}\label{classText_ab88b853156a765b27e731da5008157af}} 
+std\+::ostream \& {\bfseries print} (std\+::ostream \&os) const override
+\item 
+\mbox{\Hypertarget{classText_a6db32f149450624fb9ce2a774b6eca0c}\label{classText_a6db32f149450624fb9ce2a774b6eca0c}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries clone} () const override
+\item 
+\mbox{\Hypertarget{classText_a5a2565b5f12660e91e24ebedd5493191}\label{classText_a5a2565b5f12660e91e24ebedd5493191}} 
+\mbox{\hyperlink{classText}{Text}} \& {\bfseries operator+} (const \mbox{\hyperlink{classText}{Text}} \&text)
+\item 
+\mbox{\Hypertarget{classText_a3de1acb896b97ee7dc10be8d30b89983}\label{classText_a3de1acb896b97ee7dc10be8d30b89983}} 
+\mbox{\hyperlink{classText}{Text}} \& {\bfseries operator+=} (const \mbox{\hyperlink{classText}{Text}} \&text)
+\item 
+\mbox{\Hypertarget{classText_a8b0d0c33fd92f29ce26e84797b9cb302}\label{classText_a8b0d0c33fd92f29ce26e84797b9cb302}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (\mbox{\hyperlink{classObject}{Object}} \&obj, const std\+::string Action) override
+\item 
+\mbox{\Hypertarget{classText_a4e7f6dfef2a5584260b9a67809a88e27}\label{classText_a4e7f6dfef2a5584260b9a67809a88e27}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (\mbox{\hyperlink{classText}{Text}} \&obj, const std\+::string Action) override
+\item 
+\mbox{\Hypertarget{classText_a8aaf878da48ce690b3f069938289290b}\label{classText_a8aaf878da48ce690b3f069938289290b}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (\mbox{\hyperlink{classNumber}{Number}} \&obj, const std\+::string Action) override
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/text.\+h\item 
+src/text.\+cpp\end{DoxyCompactItemize}
