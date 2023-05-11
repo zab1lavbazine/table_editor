@@ -66,6 +66,7 @@ void Table::setValue(const int& row, const int& column, const Cell& cell) {
   this->m_table[row - 1][column - 1] = new Cell(cell);
 }
 
+
 long int Table::getRows() const { return this->m_rows; }
 
 long int Table::getColumns() const { return this->m_columns; }

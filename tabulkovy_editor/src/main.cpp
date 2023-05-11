@@ -32,5 +32,12 @@ int main(void) {
   std::cout << table.getCell("D1")->toString() << std::endl;
   delete cell;
 
+  line = "A2 + F5 + B1";
+  Cell* cell1 = table.HandleOperands(line);
+
+  table.setValue(2, 1, *cell1);
+  delete cell1;
+  std::cout << table << std::endl;
+
   return 0;
 }

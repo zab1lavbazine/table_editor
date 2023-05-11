@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "cnot",
-  1: "cnot"
+  0: "cmnot",
+  1: "cmnot"
 };
 
 var indexSectionNames =
