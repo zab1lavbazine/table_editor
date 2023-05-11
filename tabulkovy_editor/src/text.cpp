@@ -82,3 +82,4 @@ Text& Text::operator+(const Text& text) {
   this->m_text += text.m_text;
   return *this;
 }
+

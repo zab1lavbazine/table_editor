@@ -3,6 +3,7 @@
 
 #pragma once
 
+
 #include "../include/number.h"
 #include "../include/object.h"
 
@@ -18,6 +19,8 @@ class Text : public Object {
   Object* clone() const override;
 
   Text& operator+(const Text& text);
+
+
 
   Text& operator+=(const Text& text);
 

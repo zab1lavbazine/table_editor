@@ -25,18 +25,14 @@ int main(void) {
   table.setValue(1, 2, Text("svete"));
   table.setValue(1, 3, Text("jak"));
   std::cout << table << std::endl;
-  std::string line = "B1 + L9 + A1";
+  std::string line = "J10 + L9";
   Cell* cell = table.HandleOperands(line);
+  *cell = *cell + Text("Marta");
   table.setValue(1, 4, *cell);
   std::cout << table << std::endl;
   std::cout << table.getCell("D1")->toString() << std::endl;
   delete cell;
 
-  line = "A2 + F5 + B1";
-  Cell* cell1 = table.HandleOperands(line);
-
-  table.setValue(2, 1, *cell1);
-  delete cell1;
   std::cout << table << std::endl;
 
   return 0;

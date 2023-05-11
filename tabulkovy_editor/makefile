@@ -21,7 +21,8 @@ PROGRAM = $(BIN_DIR)/tabulkovy_editor
 
 
 doc:
-	doxygen doc/Doxyfile
+	doxygen Doxyfile
+
 
 
 all: $(PROGRAM)
@@ -38,4 +39,4 @@ run : $(PROGRAM)
 
 
 clean: 
-	rm -f $(OBJ_DIR)/*.o $(PROGRAM)
+	rm -rf $(OBJ_DIR)/*.o $(PROGRAM) doc
