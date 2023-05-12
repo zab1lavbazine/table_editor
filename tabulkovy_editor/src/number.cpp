@@ -39,13 +39,14 @@ Number& Number::operator+=(const Number& number) {
 Object* Number::collide(Object& obj, const std::string Action) {
   return obj.collide(*this, Action);
 }
+
 Object* Number::collide(Text& obj, const std::string Action) {
   if (obj.getText() == "empty" && Action == SUM) {
     Object* result = new Text(std::to_string(this->m_number));
     return result;
   } else if (Action == SUM) {
     Object* result =
-        new Text(std::to_string(this->m_number) + " " + obj.getText());
+        new Text(obj.getText() + " " + std::to_string(this->m_number));
     return result;
   } else if (Action == SUB) {
     throw std::invalid_argument("Text cannot be subtracted");

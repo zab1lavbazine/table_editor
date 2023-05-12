@@ -41,7 +41,7 @@ Object* Text::collide(Text& obj, const std::string Action) {
     Object* result = new Text(obj.m_text);
     return result;
   } else if (Action == SUM) {
-    Object* result = new Text(this->m_text + " " + obj.m_text);
+    Object* result = new Text(obj.m_text + " " + this->m_text);
     return result;
   } else if (Action == SUB) {
     throw std::invalid_argument("Text cannot be subtracted");
@@ -82,4 +82,3 @@ Text& Text::operator+(const Text& text) {
   this->m_text += text.m_text;
   return *this;
 }
-
