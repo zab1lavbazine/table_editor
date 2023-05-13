@@ -3,11 +3,6 @@
 #include <iostream>
 #include <string>
 
-#define SUM "SUM"
-#define SUB "SUB"
-#define MUL "MUL"
-#define DIV "DIV"
-
 Text::Text() {}
 Text::Text(const std::string& text) : m_text(text) {}
 Text::~Text() {}
@@ -26,48 +21,76 @@ std::ostream& Text::print(std::ostream& os) const {
 std::string Text::get_text() const { return this->m_text; }
 
 // double dispatch for collision
-Object* Text::collide(Object& obj, const std::string Action) {
+Object* Text::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);
 }
 
-Object* Text::collide(Text& obj, const std::string Action) {
-  if (obj.m_text == "empty" && this->m_text == "empty") {
-    Object* result = new Text("empty");
-    return result;
-  } else if (obj.m_text == "empty" && Action == SUM) {
-    Object* result = new Text(this->m_text);
-    return result;
-  } else if (this->m_text == "empty" && Action == SUM) {
-    Object* result = new Text(obj.m_text);
-    return result;
-  } else if (Action == SUM) {
-    Object* result = new Text(obj.m_text + " " + this->m_text);
-    return result;
-  } else if (Action == SUB) {
-    throw std::invalid_argument("Text cannot be subtracted");
-  } else if (Action == MUL) {
-    throw std::invalid_argument("Text cannot be multiplied");
-  } else if (Action == DIV) {
-    throw std::invalid_argument("Text cannot be divided");
+Object* Text::collide(Text& obj, OPERATIONS Action) {
+  switch (Action) {
+    case OPERATIONS::SUM: {
+      if (this->m_text.length() == 0 && obj.m_text.length() == 0) {
+        Object* result = new Text("");
+        return result;
+      } else if (this->m_text.length() == 0) {
+        Object* result = new Text(obj.m_text);
+        return result;
+      } else if (obj.m_text.length() == 0) {
+        Object* result = new Text(this->m_text);
+        return result;
+      }
+      Object* result = new Text(obj.m_text + " " + this->m_text);
+      return result;
+      break;
+    }
+    case OPERATIONS::SUB: {
+      throw std::invalid_argument("Text cannot be subtracted");
+      break;
+    }
+    case OPERATIONS::MUL: {
+      throw std::invalid_argument("Text cannot be multiplied");
+      break;
+    }
+    case OPERATIONS::DIV: {
+      throw std::invalid_argument("Text cannot be divided");
+      break;
+    }
   }
   return nullptr;
 }
 
-Object* Text::collide(Number& obj, const std::string Action) {
-  if (this->m_text == "empty" && Action == SUM) {
-    Object* result = new Number(obj.getNumber());
-    return result;
-  } else if (Action == SUM) {
-    Object* result =
-        new Text(std::to_string(obj.getNumber()) + " " + this->m_text);
-    return result;
-  } else if (Action == SUB) {
-    throw std::invalid_argument("Text cannot be subtracted");
-  } else if (Action == MUL) {
-    throw std::invalid_argument("Text cannot be multiplied");
-  } else if (Action == DIV) {
-    throw std::invalid_argument("Text cannot be divided");
+Object* Text::collide(Number& obj, OPERATIONS Action) {
+  switch (Action) {
+    case OPERATIONS::SUM: {
+      if (this->m_text.length() == 0 &&
+          std::to_string(obj.getNumber()).length() == 0) {
+        Object* result = new Text("");
+        return result;
+      } else if (this->m_text.length() == 0) {
+        Object* result = new Text(std::to_string(obj.getNumber()));
+        return result;
+      } else if (std::to_string(obj.getNumber()).length() == 0) {
+        Object* result = new Text(this->m_text);
+        return result;
+      }
+      Object* result =
+          new Text(this->m_text + " " + std::to_string(obj.getNumber()));
+      return result;
+      break;
+    }
+    case OPERATIONS::SUB: {
+      throw std::invalid_argument("Text cannot be subtracted");
+      break;
+    }
+    case OPERATIONS::MUL: {
+      throw std::invalid_argument("Text cannot be multiplied");
+      break;
+    }
+    case OPERATIONS::DIV: {
+      throw std::invalid_argument("Text cannot be divided");
+      break;
+    }
   }
+
   return nullptr;
 }
 

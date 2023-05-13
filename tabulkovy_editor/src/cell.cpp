@@ -2,9 +2,6 @@
 
 #include <sstream>
 
-#include "../include/number.h"
-#include "../include/text.h"
-
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {}
 
 Cell::~Cell() { delete m_object; }
@@ -34,25 +31,29 @@ std::string Cell::toString() const {
 
 Cell Cell::operator+(const Cell& cell) {
   Cell new_cell;
-  new_cell.m_object = this->m_object->collide(*cell.m_object, "SUM");
+  new_cell.m_object =
+      this->m_object->collide(*cell.m_object, Object::OPERATIONS::SUM);
   return new_cell;
 }
 
 Cell Cell::operator*(const Cell& cell) {
   Cell new_cell;
-  new_cell.m_object = this->m_object->collide(*cell.m_object, "MUL");
+  new_cell.m_object =
+      this->m_object->collide(*cell.m_object, Object::OPERATIONS::MUL);
   return new_cell;
 }
 
 Cell Cell::operator-(const Cell& cell) {
   Cell new_cell;
-  new_cell.m_object = this->m_object->collide(*cell.m_object, "SUB");
+  new_cell.m_object =
+      this->m_object->collide(*cell.m_object, Object::OPERATIONS::SUB);
   return new_cell;
 }
 
 Cell Cell::operator/(const Cell& cell) {
   Cell new_cell;
-  new_cell.m_object = this->m_object->collide(*cell.m_object, "DIV");
+  new_cell.m_object =
+      this->m_object->collide(*cell.m_object, Object::OPERATIONS::DIV);
   return new_cell;
 }
 

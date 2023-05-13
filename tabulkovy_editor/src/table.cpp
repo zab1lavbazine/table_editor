@@ -66,7 +66,6 @@ void Table::setValue(const int& row, const int& column, const Cell& cell) {
   this->m_table[row - 1][column - 1] = new Cell(cell);
 }
 
-
 long int Table::getRows() const { return this->m_rows; }
 
 long int Table::getColumns() const { return this->m_columns; }
@@ -246,7 +245,7 @@ Cell Table::evaluate(const std::string& postfix) const {
       if (cell_token.length() != 0) {  // upload cell to stack
         Cell* cell = getCell(cell_token);
         if (cell == nullptr) {
-          operands.push(Cell(Text("empty")));
+          operands.push(Cell(Text("")));
         } else {
           operands.push(*cell);
         }

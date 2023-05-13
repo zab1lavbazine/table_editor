@@ -3,6 +3,7 @@
 
 #pragma once
 #include "../include/number.h"
+#include "../include/object.h"
 #include "../include/text.h"
 
 class Cell {

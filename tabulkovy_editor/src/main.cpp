@@ -25,7 +25,7 @@ int main(void) {
   table.setValue(1, 2, Text("svete"));
   table.setValue(1, 3, Text("jak"));
 
-  std::string line = "A1 + B1 + C1";
+  std::string line = "A1 + B1 + C1 + D1";
 
   Cell* new_cell = table.HandleOperands(line);
   std::cout << *new_cell << std::endl;

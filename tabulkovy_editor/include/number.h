@@ -20,9 +20,9 @@ class Number : public Object {
   Number& operator+(const Number& number);
 
   // double dispatch for collision
-  Object* collide(Object& obj, const std::string Action) override;
-  Object* collide(Text& obj, const std::string Action) override;
-  Object* collide(Number& obj, const std::string Action) override;
+  Object* collide(Object& obj, OPERATIONS Action) override;
+  Object* collide(Text& obj, OPERATIONS Action) override;
+  Object* collide(Number& obj, OPERATIONS Action) override;
 
  private:
   double m_number;
