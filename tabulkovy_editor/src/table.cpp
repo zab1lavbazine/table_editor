@@ -97,50 +97,37 @@ std::string get_cell_id(int column) {
 }
 
 int get_max_length(const int& rows) {
-  int FirtsColumn = 0;
-  int number = rows / 26;
-  if (number == 0)
-    FirtsColumn = 2;
-  else {
-    if (number / 100 == 0) {
-      FirtsColumn = 3;
-    } else {
-      FirtsColumn = 4;
-    }
-  }
-  return FirtsColumn;
+  int maxDigits = 0;
+  if (rows > 0) maxDigits = std::to_string(rows).length() + 1;
+  return maxDigits;
 }
 
 std::ostream& Table::print(std::ostream& os) const {
   int colWidth = 11;
-  int FirtsColumn = get_max_length(m_rows);
+  int firstColumn = get_max_length(m_rows);
+  std::cout << "first column: " << firstColumn << std::endl;
 
-  // print column numbers
-  os << std::setw(FirtsColumn) << "|";
+  // Print column numbers
+  os << std::setw(firstColumn) << "|";
   for (long int i = 0; i < m_columns; i++) {
     std::string identifier = get_cell_id(i);
-    os << std::setw(colWidth - 1) << std::setfill(' ') << identifier << "|";
+    os << std::setw(colWidth - identifier.length()) << std::setfill(' ')
+       << identifier << "|";
   }
   os << std::endl;
 
-  os << std::setw(FirtsColumn) << "+";
+  // Print horizontal separator
+  os << std::setw(firstColumn) << "+";
   for (long int i = 0; i < m_columns; i++) {
     os << std::setw(colWidth) << std::setfill('-') << "+";
   }
   os << std::setfill(' ') << std::endl;
 
-  // print table
+  // Print table
   for (long int i = 0; i < m_rows; i++) {
-    // print letter for each row
+    // Print row number
+    os << std::setw(firstColumn - 1) << std::setfill(' ') << i + 1 << "|";
 
-    int shift = 0;
-    // make shift larger if number is larger
-    if (i / 100 == 0) {
-      shift = 2;
-    } else {
-      shift = 3;
-    }
-    os << i + 1 << std::setw(FirtsColumn - shift) << std::setfill(' ') << "|";
     for (long int j = 0; j < m_columns; j++) {
       if (this->m_table[i][j] == nullptr) {
         os << std::setw(colWidth) << std::setfill(' ') << "|";
@@ -153,24 +140,72 @@ std::ostream& Table::print(std::ostream& os) const {
       }
     }
     os << std::endl;
-    // make the border
-    if (i == m_rows - 1) break;
-    os << "-" << std::setw(FirtsColumn - 1) << std::setfill('-') << "+";
+
+    // Print horizontal separator
+    os << "-" << std::setw(firstColumn - 1) << std::setfill('-') << "+";
     for (long int i = 0; i < m_columns; i++) {
       os << std::setw(colWidth) << std::setfill('-') << "+";
     }
-
     os << std::endl;
   }
 
-  // print last row
-  os << std::setw(FirtsColumn) << "+";
-  for (long int i = 0; i < m_columns; i++) {
-    os << std::setw(colWidth) << std::setfill('-') << "+";
-  }
-  os << std::setfill(' ') << std::endl;
-
   return os;
+
+  // int colWidth = 11;
+  // int firstColumn = get_max_length(m_rows);
+
+  // // Determine the maximum number of digits in the row numbers
+  // int maxDigits = 0;
+  // if (m_rows > 0) maxDigits = std::to_string(m_rows).length();
+
+  // // Print column numbers
+  // os << std::setw(firstColumn) << "|" << std::setw(colWidth)
+  //    << std::setfill(' ') << " ";
+  // for (long int i = 0; i < m_columns; i++) {
+  //   std::string identifier = get_cell_id(i);
+  //   os << std::setw(colWidth) << std::setfill(' ') << identifier;
+  // }
+  // os << std::endl;
+
+  // // Print horizontal separator
+  // os << std::setw(firstColumn) << "+" << std::setw(colWidth)
+  //    << std::setfill('-') << "+";
+  // for (long int i = 0; i < m_columns; i++) {
+  //   os << std::setw(colWidth) << std::setfill('-') << "+";
+  // }
+  // os << std::setfill(' ') << std::endl;
+
+  // // Print table
+  // for (long int i = 0; i < m_rows; i++) {
+  //   // Print row number
+  //   int shift = maxDigits - std::to_string(i + 1).length() + 1;
+  //   os << std::setw(firstColumn - shift) << std::setfill(' ') << i + 1 <<
+  //   "|";
+
+  //   for (long int j = 0; j < m_columns; j++) {
+  //     if (this->m_table[i][j] == nullptr) {
+  //       os << std::setw(colWidth) << std::setfill(' ') << "|";
+  //     } else {
+  //       std::string output = this->m_table[i][j]->toString();
+  //       if (int(output.length()) > colWidth) {
+  //         output = output.substr(0, colWidth - 3) + "...";
+  //       }
+  //       os << std::setw(colWidth) << std::setfill(' ') << output;
+  //     }
+  //   }
+  //   os << std::endl;
+
+  //   // Print horizontal separator
+  //   if (i == m_rows - 1) break;
+  //   os << std::setw(firstColumn) << "+" << std::setw(colWidth)
+  //      << std::setfill('-') << "+";
+  //   for (long int i = 0; i < m_columns; i++) {
+  //     os << std::setw(colWidth) << std::setfill('-') << "+";
+  //   }
+  //   os << std::setfill(' ') << std::endl;
+  // }
+
+  // return os;
 }
 
 int get_column_index(std::string column) {

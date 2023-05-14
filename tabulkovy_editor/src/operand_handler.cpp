@@ -54,5 +54,7 @@ std::string MessHandler::infixToPostfix(const std::string& infix) {
     operators.pop();
   }
 
+  std::cout << "postfix: " << postfix << std::endl;
+
   return postfix;
 }

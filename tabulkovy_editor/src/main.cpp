@@ -20,6 +20,7 @@ int main(void) {
 
   table.setValue(10, 10, Number(100));
   table.setValue(9, 12, Number(144));
+  table.setValue(100, 17, Number(169));
   // input text
   table.setValue(1, 1, Text("ahoj"));
   table.setValue(1, 2, Text("svete"));
