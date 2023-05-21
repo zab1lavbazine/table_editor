@@ -43,14 +43,38 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
         Object* result = new Text("");
         return result;
       } else if (obj.getText().length() == 0) {
-        Object* result = new Text(std::to_string(this->m_number));
-        return result;
+        if (this->m_number == int(this->m_number)) {
+          Object* result = new Text(std::to_string(int(this->m_number)));
+          return result;
+        } else {
+          Object* result = new Text(std::to_string(this->m_number));
+          return result;
+        }
       } else if (std::to_string(this->m_number).length() == 0) {
         Object* result = new Text(obj.getText());
         return result;
       }
-      Object* result = new Text(obj.getText() + std::to_string(this->m_number));
-      return result;
+      if (this->m_number == int(this->m_number)) {
+        if (obj.getText().length() == 0) {
+          Object* result =
+              new Text(std::to_string(int(this->m_number)) + obj.getText());
+          return result;
+        } else {
+          Object* result =
+              new Text(obj.getText() + std::to_string(int(this->m_number)));
+          return result;
+        }
+      } else {
+        if (obj.getText().length() == 0) {
+          Object* result =
+              new Text(std::to_string(this->m_number) + obj.getText());
+          return result;
+        } else {
+          Object* result =
+              new Text(obj.getText() + std::to_string(this->m_number));
+          return result;
+        }
+      }
       break;
     }
     case OPERATIONS::SUB: {

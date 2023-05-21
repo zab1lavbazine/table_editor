@@ -66,14 +66,31 @@ Object* Text::collide(Number& obj, OPERATIONS Action) {
         Object* result = new Text("");
         return result;
       } else if (this->m_text.length() == 0) {
-        Object* result = new Text(std::to_string(obj.getNumber()));
-        return result;
+        if (obj.getNumber() == int(obj.getNumber())) {
+          Object* result = new Text(std::to_string(int(obj.getNumber())));
+          return result;
+        } else {
+          if (std::to_string(obj.getNumber()).length() == 0) {
+            Object* result = new Text("");
+            return result;
+          }
+          Object* result = new Text(std::to_string(obj.getNumber()));
+          return result;
+        }
       } else if (std::to_string(obj.getNumber()).length() == 0) {
         Object* result = new Text(this->m_text);
         return result;
       }
-      Object* result = new Text(std::to_string(obj.getNumber()) + this->m_text);
-      return result;
+
+      if (obj.getNumber() == int(obj.getNumber())) {
+        Object* result =
+            new Text(this->m_text + std::to_string(int(obj.getNumber())));
+        return result;
+      } else {
+        Object* result =
+            new Text(std::to_string(obj.getNumber()) + this->m_text);
+        return result;
+      }
       break;
     }
     case OPERATIONS::SUB: {
