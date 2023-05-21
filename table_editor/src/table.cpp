@@ -7,6 +7,36 @@
 #include <string>
 #include <vector>
 
+// support functions
+
+int get_column_index(std::string column) {
+  int columnIndex = 0;
+  int base = 26;
+  for (size_t i = 0; i < column.length(); i++) {
+    int digitValue = column[i] - 'A' + 1;
+    columnIndex += digitValue * pow(base, column.length() - i - 1);
+  }
+  return columnIndex;
+}
+
+std::string outLetters(std::string line, int& shift) {
+  std::string letters;
+  for (size_t i = 0; i < line.length(); i++) {
+    char ch = line[i];
+    if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+      throw std::invalid_argument("Invalid argument");
+    }
+    if (isdigit(line[i])) {
+      shift = i;
+      break;
+    }
+    letters += ch;
+  }
+  return letters;
+}
+
+// -----------------------------
+
 Table::Table() {
   this->m_rows = 0;
   this->m_columns = 0;
@@ -84,6 +114,25 @@ void Table::ShowCell(const int row, const int column) const {
             << std::endl;
 }
 
+void Table::ShowCell(const std::string position) const {
+  std::cout << "position: " << position << std::endl;
+  int shift = 0;
+  std::string letters = outLetters(position, shift);
+
+  int column = get_column_index(letters);
+  int row = std::stoi(position.substr(shift));
+
+  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
+      row <= 0) {
+    throw std::out_of_range("Out of range");
+  }
+
+  if (this->m_table[row - 1][column - 1] == nullptr) return;
+
+  std::cout << this->m_table[row - 1][column - 1]->getCharacteistics()
+            << std::endl;
+}
+
 std::string get_cell_id(int column) {
   std::string identifier = "";
   int number = column / 26;
@@ -152,32 +201,6 @@ std::ostream& Table::print(std::ostream& os) const {
   return os;
 }
 
-int get_column_index(std::string column) {
-  int columnIndex = 0;
-  int base = 26;
-  for (size_t i = 0; i < column.length(); i++) {
-    int digitValue = column[i] - 'A' + 1;
-    columnIndex += digitValue * pow(base, column.length() - i - 1);
-  }
-  return columnIndex;
-}
-
-std::string outLetters(std::string line, int& shift) {
-  std::string letters;
-  for (size_t i = 0; i < line.length(); i++) {
-    char ch = line[i];
-    if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-      throw std::invalid_argument("Invalid argument");
-    }
-    if (isdigit(line[i])) {
-      shift = i;
-      break;
-    }
-    letters += ch;
-  }
-  return letters;
-}
-
 Cell* Table::getCell(const std::string position) const {
   // input can be A1 take the first letter and convert it to number
   int shift = 0;
@@ -195,9 +218,9 @@ Cell* Table::getCell(const std::string position) const {
     throw std::out_of_range("Out of range");
   }
 
-  return this->m_table[row - 1][column - 1] == nullptr
-             ? nullptr
-             : this->m_table[row - 1][column - 1];
+  Cell* cell = this->m_table[row - 1][column - 1];
+
+  return cell == nullptr ? nullptr : cell;
 }
 
 bool check_if_number(std::string number) {
@@ -286,7 +309,8 @@ Cell Table::evaluate(const std::string& postfix) const {
   return operands.top();
 }
 
-Cell* Table::HandleOperands(const std::string& expression) const {
+Cell* Table::HandleOperands(const std::string& expression,
+                            std::string position) const {
   std::string postfix = MessHandler::infixToPostfix(expression);
   Cell new_cell = evaluate(postfix);
   if (new_cell.getObject() == nullptr) {
@@ -315,4 +339,35 @@ void Table::setCell(Cell* cell, std::string position, std::string formula) {
   }
 
   this->m_table[row - 1][column - 1] = cell;
+}
+
+void Table::eraseCell(const std::string& position) {
+  int shift = 0;
+  std::string letters = outLetters(position, shift);
+
+  int column = get_column_index(letters);
+  int row = std::stoi(position.substr(shift));
+
+  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
+      row <= 0) {
+    throw std::out_of_range("Out of range");
+  }
+
+  if (this->m_table[row - 1][column - 1] != nullptr) {
+    delete this->m_table[row - 1][column - 1];
+  }
+
+  this->m_table[row - 1][column - 1] = nullptr;
+}
+
+void Table::eraseCell(const int& x, const int& y) {
+  if (x > this->m_columns || y > this->m_rows || x <= 0 || y <= 0) {
+    throw std::out_of_range("Out of range");
+  }
+
+  if (this->m_table[y - 1][x - 1] != nullptr) {
+    delete this->m_table[y - 1][x - 1];
+  }
+
+  this->m_table[y - 1][x - 1] = nullptr;
 }

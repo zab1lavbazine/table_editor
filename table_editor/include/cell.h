@@ -25,6 +25,7 @@ class Cell {
   Cell& operator=(const Cell& cell);
   friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
   std::ostream& print(std::ostream& os) const;
+  std::string getCharacteistics() const;
   std::string toString() const;
   void setFormula(const std::string& formula);
   std::string getFormula() const;

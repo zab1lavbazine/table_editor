@@ -20,6 +20,7 @@ class Table {
   long int getRows() const;
   long int getColumns() const;
   void ShowCell(const int row, const int column) const;
+  void ShowCell(const std::string position) const;
   ~Table();
   Table& operator=(const Table& table);
   friend std::ostream& operator<<(std::ostream& os, const Table& table);
@@ -28,5 +29,9 @@ class Table {
   Cell evaluate(const std ::string& postfix) const;
   void setCell(Cell* cell, std::string position, std::string formula);
 
-  Cell* HandleOperands(const std::string& expression) const;
+  void eraseCell(const std::string& position);
+  void eraseCell(const int& row, const int& column);
+
+  Cell* HandleOperands(const std::string& expression,
+                       std::string position) const;
 };

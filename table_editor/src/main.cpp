@@ -29,13 +29,18 @@ int main(void) {
   // Cell* new_cell = table.HandleOperands(line);
   // std::cout << *new_cell << std::endl;
 
-  // std::string position = "D3";
-  // std::string formula = line2;
-  // table.setCell(table.HandleOperands(line2), position, formula);
-  Cell* new_cell2 = table.HandleOperands(line2);
-  std::cout << *new_cell2 << std::endl;
+  std::string position = "D3";
+  std::string formula = line2;
+  table.setCell(table.HandleOperands(line2, position), position, formula);
+  // std::cout << *new_cell2 << std::endl;
 
-  delete new_cell2;
+  std::cout << "======================" << std::endl;
+
+  table.ShowCell("D3");
+  table.eraseCell("D3");
+  table.ShowCell("D3");
+  table.eraseCell("D1");
+
   // delete new_cell;
 
   std::cout << table << std::endl;

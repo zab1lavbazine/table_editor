@@ -5,7 +5,14 @@
 
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {}
 
-Cell::~Cell() { delete m_object; }
+Cell::~Cell() {
+  delete m_object;
+  for (auto& child : childs) {
+    delete child;
+  }
+  childs.clear();
+  formula = "";
+}
 
 Cell& Cell::operator=(const Cell& cell) {
   if (this != &cell) {
@@ -22,10 +29,15 @@ std::string Cell::getFormula() const { return this->formula; }
 std::ostream& Cell::print(std::ostream& os) const {
   if (m_object != nullptr) {
     m_object->print(os);
-  } else {
-    os << "empty";
   }
   return os;
+}
+
+std::string Cell::getCharacteistics() const {
+  std::stringstream ss;
+  ss << "Cell: " << this->toString() << std::endl;
+  ss << "Formula: " << this->getFormula() << std::endl;
+  return ss.str();
 }
 
 std::string Cell::toString() const {
