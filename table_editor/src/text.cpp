@@ -84,7 +84,7 @@ Object* Text::collide(Number& obj, OPERATIONS Action) {
 
       if (obj.getNumber() == int(obj.getNumber())) {
         Object* result =
-            new Text(this->m_text + std::to_string(int(obj.getNumber())));
+            new Text(std::to_string(int(obj.getNumber())) + this->m_text);
         return result;
       } else {
         Object* result =

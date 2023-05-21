@@ -183,7 +183,7 @@ Cell* Table::getCell(const std::string position) const {
   int shift = 0;
   std::string letters;
 
-  if (position.length() == 0) throw std::invalid_argument("Invalid argument");
+  if (position.length() == 0) return nullptr;
 
   letters = outLetters(position, shift);
 
@@ -201,143 +201,84 @@ Cell* Table::getCell(const std::string position) const {
 }
 
 bool check_if_number(std::string number) {
-  std::cout << "check for this number: " << number << std::endl;
+  std::cout << "check for this number: " << number
+            << " length: " << number.length() << std::endl;
   for (char c : number) {
-    if (!isdigit(c)) {
+    if (!isdigit(c) && c != '.') {
       return false;
     }
   }
-  std::cout << "return true" << std::endl;
+  std::cout << " check_number -----------true number: " << number << std::endl;
   return true;
 }
 
 Cell Table::evaluate(const std::string& postfix) const {
   std::stack<Cell> operands;
-  bool letter_check = 0;
-  bool number_check = 0;
-  bool string_check = false;
-  int number_of_quotes = 0;
+  std::stringstream ss(postfix);
   std::string cell_token;
+  std::string text;
 
-  for (size_t i = 0; i < postfix.length(); i++) {
-    char ch = postfix[i];
+  while (ss >> cell_token) {
+    std::cout << "cell token: " << cell_token << std::endl;
+    if (cell_token == "+" || cell_token == "-" || cell_token == "*" ||
+        cell_token == "/") {
+      Cell operand2 = operands.top();
+      operands.pop();
+      Cell operand1 = operands.top();
+      operands.pop();
 
-    // take for the string
-    if ((ch == '\"' && string_check == false) ||
-        (number_of_quotes < 2 && number_of_quotes > 0)) {
-      if (cell_token.length() != 0 && string_check == false) {
-        // upload the prev cell to stack
+      switch (cell_token[0]) {
+        case '+':
+          operands.push(Cell(operand1 + operand2));
+          std::cout << "operatoion +" << std::endl;
+          break;
+        case '-':
+          operands.push(Cell(operand1 - operand2));
+          std::cout << "operatoion -" << std::endl;
+          break;
+        case '*':
+          operands.push(Cell(operand1 * operand2));
+          std::cout << "operatoion *" << std::endl;
+          break;
+        case '/':
+          operands.push(Cell(operand1 / operand2));
+          std::cout << "operatoion /" << std::endl;
+          break;
+      }
+    } else {
+      if (check_if_number(
+              cell_token)) {  // check if number------------------------------
+        operands.push(Cell(Number(std::stod(cell_token))));
+        std::cout << "Push number:-------- " << cell_token << std::endl;
+      } else if (cell_token[0] == '\"' ||
+                 cell_token[cell_token.length() - 1] ==
+                     '\"') {  // check if text----------------
+        std::cout << "cell_token: " << cell_token << std::endl;
+        if (cell_token[0] == '\"' && cell_token[cell_token.length() - 1] ==
+                                         '\"') {  // first situation "hello"
+          std::cout << "first situation" << std::endl;
+          text = cell_token.substr(1, cell_token.length() - 2);
+          operands.push(Cell(Text(text)));
+        } else if (cell_token[0] == '\"') {  // second situation "hello ..."
+          text = cell_token.substr(1, cell_token.length());
+        } else if (cell_token[cell_token.length() - 1] ==
+                   '\"') {  // third situation "... hello"
+          text += cell_token.substr(0, cell_token.length() - 1);
+          operands.push(Cell(Text(text)));
+        }
+      } else {  // check if cell----------------
         Cell* cell = getCell(cell_token);
         if (cell == nullptr) {
-          operands.push(Text(""));
+          operands.push(Cell(Text("")));
         } else {
           operands.push(*cell);
+
           std::cout << "Push cell:-------- " << *cell << std::endl;
-        }
-        cell_token = "";
-      }
-      string_check = true;
-      if (ch == '\"') number_of_quotes++;
-
-      // upload the string to stack
-      if (number_of_quotes == 2) {
-        std::string text = cell_token.substr(1, cell_token.length() - 1);
-        std::cout << "=======================================>>>>>>>>text: "
-                  << text << std::endl;
-        operands.push(Cell(Text(text)));
-        std::cout << "Push text:-------- " << text << "  orig text  "
-                  << cell_token << std::endl;
-        cell_token = "";
-        string_check = false;
-        number_of_quotes = 0;
-      } else
-        cell_token += ch;
-    }
-    // take for the other situations
-    if (string_check == false &&
-        ch != '\"') {  // take for the other situations with cells, numbers and
-                       // operators
-      if (!isdigit(ch) && ch != '+' && ch != '-' && ch != '*' && ch != '/' &&
-          ch != ' ') {
-        if (cell_token.length() != 0 &&
-            number_check == true) {  // upload cell to stack
-          Cell* cell = getCell(cell_token);
-          if (cell == nullptr) {
-            operands.push(Cell(Text("")));
-          } else {
-            operands.push(*cell);
-            std::cout << "Push cell:-------- " << *cell << std::endl;
-          }
-          cell_token = "";                      // clear cell token
-          letter_check = number_check = false;  // clear flags
-        }
-        cell_token += ch;
-        letter_check = true;
-        std::cout << "letter in the first function: " << cell_token
-                  << std::endl;
-      } else if (isdigit(ch) ||
-                 (ch == ' ' && cell_token.length() != 0)) {  // taking number
-        std::cout << "the second function: " << cell_token << std::endl;
-        if (check_if_number(cell_token) && ch == ' ') {
-          operands.push(Cell(Number(std::stoi(cell_token))));
-          std::cout << "Push number:-------- " << cell_token << std::endl;
-          cell_token = "";
-        } else {
-          number_check = true;
-          cell_token += ch;
-        }
-      } else if ((ch == '+' || ch == '-' || ch == '*' || ch == '/')) {
-        // taking operator
-        std::cout << "cellToken : " << cell_token << std::endl;
-        if (cell_token.length() != 0) {  // upload the last cell to stack
-          if (check_if_number(cell_token)) {
-            operands.push(Cell(Number(std::stoi(cell_token))));
-            std::cout << "Push number:-------- " << cell_token << std::endl;
-          } else {
-            Cell* cell = getCell(cell_token);
-            if (cell == nullptr) {
-              operands.push(Cell(Text("")));
-            } else {
-              operands.push(*cell);
-              std::cout << "Push cell:-------- " << *cell << std::endl;
-            }
-          }
-
-          std::cout << "cell token: " << cell_token << std::endl;
-          cell_token = "";
-          letter_check = number_check = false;
-        }
-
-        number_check = letter_check = false;
-        Cell operand2 = operands.top();
-        operands.pop();
-        Cell operand1 = operands.top();
-        operands.pop();
-
-        std::cout << "operand1: " << operand1 << std::endl;
-        std::cout << "operand2: " << operand2 << std::endl;
-
-        switch (ch) {
-          case '+':
-            operands.push(Cell(operand1 + operand2));
-            std::cout << "operatoion +" << std::endl;
-            break;
-          case '-':
-            operands.push(Cell(operand1 - operand2));
-            std::cout << "operatoion -" << std::endl;
-            break;
-          case '*':
-            operands.push(Cell(operand1 * operand2));
-            std::cout << "operatoion *" << std::endl;
-            break;
-          case '/':
-            operands.push(Cell(operand1 / operand2));
-            std::cout << "operatoion /" << std::endl;
-            break;
         }
       }
     }
   }
+  std::cout << "===========KONEC FOR CYKLU====================" << std::endl;
 
   if (operands.size() <= 0) {
     return Cell();

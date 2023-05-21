@@ -25,13 +25,13 @@ int main(void) {
   table.setValue(1, 4, Number(12));
   // std::string line = "A1 + B1+C1+J10";
 
-  std::string line2 = " (D1 + D1) / 3 * 3 +\"hello kitty\"+ 3 + 2";
+  std::string line2 = "(1 + D1)/D1 +  \"hello\" + (D1 + 3 * D1)";
   // Cell* new_cell = table.HandleOperands(line);
   // std::cout << *new_cell << std::endl;
 
-  std::string position = "D3";
-  std::string formula = line2;
-  table.setCell(table.HandleOperands(line2), position, formula);
+  // std::string position = "D3";
+  // std::string formula = line2;
+  // table.setCell(table.HandleOperands(line2), position, formula);
   Cell* new_cell2 = table.HandleOperands(line2);
   std::cout << *new_cell2 << std::endl;
 

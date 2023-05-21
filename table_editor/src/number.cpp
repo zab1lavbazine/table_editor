@@ -57,7 +57,7 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
       if (this->m_number == int(this->m_number)) {
         if (obj.getText().length() == 0) {
           Object* result =
-              new Text(std::to_string(int(this->m_number)) + obj.getText());
+              new Text(obj.getText() + std::to_string(int(this->m_number)));
           return result;
         } else {
           Object* result =
@@ -67,7 +67,7 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
       } else {
         if (obj.getText().length() == 0) {
           Object* result =
-              new Text(std::to_string(this->m_number) + obj.getText());
+              new Text(obj.getText() + std::to_string(this->m_number));
           return result;
         } else {
           Object* result =
