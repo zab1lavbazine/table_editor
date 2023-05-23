@@ -22,13 +22,17 @@ int main(void) {
   table.changeValue("A1", "2 + 1 ");
   table.changeValue("A2", "100 ");
   table.setValue("A3", "30000");
+  table.changeValue("A2", "J10 + 1 + A3 ");
   // table.changeValue("A1", "2 + 1 + A2 ");
   table.printConnections(table.getCell("A2"));
   // table.changeValue("A2", "A1 + 1");
   table.printConnections(table.getCell("A1"));
 
   table.printConnections(table.getCell("A3"));
-  // table.setValue("A2", "3+2");
+  table.setValue("A2", "3+2");
+  table.printConnections(table.getCell("A2"));
+  table.setValue("A2", "A1+ 1");
+  table.printConnections(table.getCell("A2"));
   // table.printConnections(table.getCell("A2"));
   // table.printConnections(table.getCell("A1"));
   // table.changeValue("A1", new Text("ahoj"));

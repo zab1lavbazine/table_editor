@@ -369,8 +369,8 @@ void Table::changeValue(const std::string& position,
     putChild(current_cell, toPut);
   }
 
-  // delete parents
   m_graph.removeParents(current_cell);
+
   // rewrite childs
   changeChildrens(current_cell);
 }
