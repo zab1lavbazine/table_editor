@@ -112,78 +112,26 @@ Table& Table::operator=(const Table& table) {
   return *this;
 }
 
-void Table::setValue(const int& row, const int& column, const Cell& cell) {
-  if (cell.getObject() == nullptr) {
-    throw std::invalid_argument("Invalid argument");
-  }
-  // check table int this sell for Object and delete it
+void Table::setValue(const std::string& position, const std::string& formula) {
+  std::vector<std::shared_ptr<Cell>> toPut;
 
-  if (row <= 0 || column <= 0) {
-    throw std::out_of_range("set value error");
-  } else if (row > this->m_rows || column > this->m_columns) {
-    setSize(row, column);
-  }
-
-  // clear vector and formula
-  this->m_table[row - 1][column - 1]->clearChildrens();
-  this->m_table[row - 1][column - 1]->clearParents();
-  this->m_table[row - 1][column - 1]->setFormula("");
-
-  std::shared_ptr<Cell> new_cell(new Cell(cell));  // new cell
-
-  // check if this cell has something in it and delete
-
-  // delete from m_graph
-  std::unordered_set<std::shared_ptr<Cell>> parents =
-      this->m_table[row - 1][column - 1]->getSetParents();
-  for (auto& parent_ptr : parents) {
-    m_graph.removeEdge(parent_ptr, this->m_table[row - 1][column - 1]);
-    parent_ptr->removeChild(this->m_table[row - 1][column - 1]);
-  }
-  for (auto& child_ptr : this->m_table[row - 1][column - 1]->getSetChilds()) {
-    m_graph.removeEdge(this->m_table[row - 1][column - 1], child_ptr);
-    child_ptr->removeParent(this->m_table[row - 1][column - 1]);
-  }
-
-  this->m_table[row - 1][column - 1] = new_cell;
-}
-
-void Table::setValue(const std::string& position,
-                     const Cell& cell) {  // delete the prev data from the cell
-  // with formula and vector of childs
-
+  std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
   POS pos = get_position(position);
+  std::shared_ptr<Cell> current_cell =
+      this->m_table[pos.row - 1][pos.column - 1];
+  current_cell.get()->setObject(new_cell.get()->getObject()->clone());
+  current_cell.get()->setFormula(new_cell.get()->getFormula());
 
-  std::unordered_set<std::shared_ptr<Cell>> parents =
-      this->m_table[pos.row - 1][pos.column - 1]->getSetParents();
-  std::unordered_set<std::shared_ptr<Cell>> childs =
-      this->m_table[pos.row - 1][pos.column - 1]->getSetChilds();
-
-  for (auto& parent_ptr : parents) {
-    m_graph.removeEdge(parent_ptr, this->m_table[pos.row - 1][pos.column - 1]);
-    parent_ptr->removeChild(this->m_table[pos.row - 1][pos.column - 1]);
+  if (toPut.size() > 0) {
+    putChild(current_cell, toPut);
+  } else {
+    m_graph.removeFromAll(current_cell);
   }
-  for (auto& child_ptr : childs) {
-    m_graph.removeEdge(this->m_table[pos.row - 1][pos.column - 1], child_ptr);
-    child_ptr->removeParent(this->m_table[pos.row - 1][pos.column - 1]);
-  }
-  std::shared_ptr<Cell> new_cell(new Cell(cell));  // new cell
-  this->m_table[pos.row - 1][pos.column - 1] = new_cell;
 }
 
 void Table::setValueFormula(const std::string& position,
                             std::shared_ptr<Cell> cell) {
   POS pos = get_position(position);
-
-  std::unordered_set<std::shared_ptr<Cell>> parents = cell->getSetParents();
-
-  std::unordered_set<std::shared_ptr<Cell>> childs =
-      this->m_table[pos.row - 1][pos.column - 1]->getSetChilds();  // childs
-
-  for (auto& child : childs) {
-    m_graph.addEdge(cell, child);
-  }
-
   this->m_table[pos.row - 1][pos.column - 1] = cell;
 }
 
@@ -206,20 +154,10 @@ void Table::ShowCell(const int row, const int column) const {
 }
 
 void Table::ShowCell(const std::string position) const {
-  std::cout << "position: " << position << std::endl;
-  int shift = 0;
-  std::string letters = outLetters(position, shift);
-
-  int column = get_column_index(letters);
-  int row = std::stoi(position.substr(shift));
-
-  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
-      row <= 0) {
-    throw std::out_of_range("show cell error");
-  }
+  POS pos = get_position(position);
 
   std::cout << position << "\n"
-            << this->m_table[row - 1][column - 1]->getCharacteistics()
+            << this->m_table[pos.row - 1][pos.column - 1]->getCharacteistics()
             << std::endl;
 }
 
@@ -291,22 +229,8 @@ std::ostream& Table::print(std::ostream& os) const {
 }
 
 std::shared_ptr<Cell> Table::getCell(const std::string position) const {
-  // input can be A1 take the first letter and convert it to number
-  int shift = 0;
-  std::string letters;
-
-  if (position.length() == 0) return nullptr;
-
-  letters = outLetters(position, shift);
-
-  int column = get_column_index(letters);
-  int row = std::stoi(position.substr(shift));
-  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
-      row <= 0) {
-    throw std::out_of_range("get cell error");
-  }
-
-  return this->m_table[row - 1][column - 1];
+  POS pos = get_position(position);
+  return this->m_table[pos.row - 1][pos.column - 1];
 }
 
 bool check_if_number(std::string number) {
@@ -379,34 +303,27 @@ Cell Table::evaluate(const std::string& postfix,
   return operands.top();
 }
 
-std::shared_ptr<Cell> Table::HandleOperands(const std::string& expression) {
+std::shared_ptr<Cell> Table::HandleOperands(
+    const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut) {
   std::string postfix = MessHandler::infixToPostfix(expression);
-  std::vector<std::shared_ptr<Cell>> toPut;
   Cell new_cell = evaluate(postfix, toPut);
 
   //
   std::shared_ptr<Cell> cell = std::make_shared<Cell>(new_cell);
   cell->setFormula(postfix);  // save formula for the next operations
 
-  if (toPut.size() > 0 && toPut[0] != nullptr) {
-    putChild(cell, toPut);  // put child into taken cells
-  }
   return cell;
 }
 
 void Table::eraseCell(const std::string& position) {
-  int shift = 0;
-  std::string letters = outLetters(position, shift);
+  POS pos = get_position(position);
+  // delete from all connections
+  m_graph.removeChildrens(this->m_table[pos.row - 1][pos.column - 1]);
+  m_graph.removeParents(this->m_table[pos.row - 1][pos.column - 1]);
 
-  int column = get_column_index(letters);
-  int row = std::stoi(position.substr(shift));
-
-  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
-      row <= 0) {
-    throw std::out_of_range("erase error");
-  }
-
-  this->m_table[row - 1][column - 1] = nullptr;
+  // delete from table
+  std::shared_ptr<Cell> new_cell(new Cell(EMPTY()));
+  this->m_table[pos.row - 1][pos.column - 1] = new_cell;
 }
 
 void Table::eraseCell(const int& x, const int& y) {
@@ -414,51 +331,65 @@ void Table::eraseCell(const int& x, const int& y) {
     throw std::out_of_range("erase error");
   }
 
-  this->m_table[y - 1][x - 1] = nullptr;
+  // delete from all connections
+  m_graph.removeChildrens(this->m_table[y - 1][x - 1]);
+  m_graph.removeParents(this->m_table[y - 1][x - 1]);
+
+  // delete from table
+  std::shared_ptr<Cell> new_cell(new Cell(EMPTY()));
+  this->m_table[y - 1][x - 1] = new_cell;
 }
 
 void Table::changeValue(const std::string& position, Object* new_value) {
   POS pos = get_position(position);
 
-  Cell* current_cell = this->m_table[pos.row - 1][pos.column - 1].get();
-  current_cell->setObject(new_value);
+  std::shared_ptr<Cell> current_cell =
+      this->m_table[pos.row - 1][pos.column - 1];
+  current_cell.get()->setObject(new_value);  // set object delete also formula
 
-  // create here method for changing value in childrens
-  if (current_cell->getChildrencount() != 0) {
-    changeChildrens(current_cell);
-  }
+  // delete parents
+  m_graph.removeParents(current_cell);
+
+  // rewrite childs
+  changeChildrens(current_cell);
 }
 
 void Table::changeValue(const std::string& position,
                         const std::string& formula) {
-  std::shared_ptr<Cell> cell = HandleOperands(formula);
+  std::vector<std::shared_ptr<Cell>> toPut;
 
+  std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
   POS pos = get_position(position);
-  Cell* current_cell = this->m_table[pos.row - 1][pos.column - 1].get();
-  current_cell->setObject(cell->getObject()->clone());
-  current_cell->setFormula(cell->getFormula());
+  std::shared_ptr<Cell> current_cell =
+      this->m_table[pos.row - 1][pos.column - 1];
+  current_cell.get()->setObject(new_cell.get()->getObject()->clone());
+  current_cell.get()->setFormula(new_cell.get()->getFormula());
 
-  // rewrite childs
-  if (current_cell->getChildrencount() != 0) {
-    changeChildrens(current_cell);
+  if (toPut.size() > 0) {
+    putChild(current_cell, toPut);
   }
+
+  // delete parents
+  m_graph.removeParents(current_cell);
+  // rewrite childs
+  changeChildrens(current_cell);
 }
 
-void Table::changeChildrens(Cell* cell) {
+void Table::changeChildrens(std::shared_ptr<Cell> cell) {
   std::vector<std::shared_ptr<Cell>> toPut;
-  for (auto& child : cell->getSetChilds()) {
+  for (auto& child : m_graph.getChildrens(cell)) {
+    std::cout << "child: " << child.get()->toString() << " ===>>>   ";
+    std::cout << "Formula of child: " << child.get()->getFormula() << std::endl;
     Cell new_cell = evaluate(child.get()->getFormula(), toPut);
-    Cell* child_ptr = child.get();
-    child->changeObject(new_cell.getObject()->clone());
-    child->setSetParents(new_cell.getSetParents());
-    changeChildrens(child_ptr);
+    child.get()->changeObject(new_cell.getObject()->clone());
+    changeChildrens(child);
   }
 }
 
 void Table::putChild(std::shared_ptr<Cell> new_cell,
                      std::vector<std::shared_ptr<Cell>>& toPut) {
   for (std::shared_ptr<Cell> master : toPut) {
-    master->addChild(new_cell);
+    std::cout << "master: " << master.get()->toString() << std::endl;
     m_graph.addEdge(master, new_cell);
   }
   toPut.clear();

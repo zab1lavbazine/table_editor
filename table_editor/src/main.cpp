@@ -13,19 +13,27 @@
 
 int main(void) {
   Table table;
-  table.setSize(2, 10);
+  table.setSize(10, 10);
   // table.setValue(1, 1, Number(1));
 
-  table.setValue(10, 12, Number(100));
-  table.setValue("A1", Number(1));
-  table.setValueFormula("A2", table.HandleOperands("A1 + 1"));
-  table.setValueFormula("A3", table.HandleOperands("A2 + 2"));
-  table.setValueFormula("B1", table.HandleOperands("A2 + A1"));
+  table.setValue("A1", "100");
+  // table.setValue("A1", "\"ahoj\"");
+  table.setValue("A2", "A1 + 1");
+  table.changeValue("A1", "2 + 1 ");
+  table.changeValue("A2", "100 ");
+  table.setValue("A3", "30000");
+  // table.changeValue("A1", "2 + 1 + A2 ");
+  table.printConnections(table.getCell("A2"));
+  // table.changeValue("A2", "A1 + 1");
+  table.printConnections(table.getCell("A1"));
+
+  table.printConnections(table.getCell("A3"));
+  // table.setValue("A2", "3+2");
+  // table.printConnections(table.getCell("A2"));
+  // table.printConnections(table.getCell("A1"));
   // table.changeValue("A1", new Text("ahoj"));
-  table.ShowCell("A1");
-  table.changeValue("A3", "L10 + \"hello\"");
-  table.changeValue("A2", new Number(222));
-  table.ShowCell("A3");
+  // table.printConnections(table.getCell("A1"));
+  // table.ShowCell("A3");
 
   // table.setValueFormula("A1", table.HandleOperands("A3 + L10 "));
   // input text

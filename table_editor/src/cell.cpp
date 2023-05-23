@@ -7,15 +7,10 @@
 
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {
   this->formula = cell.formula;
-  for (auto& child : cell.childs) {
-    this->childs.insert(child);
-  }
 }
 
 Cell::~Cell() {
   delete m_object;
-  // clear vector
-  childs.clear();
   formula = "";
 }
 
@@ -40,19 +35,8 @@ std::ostream& Cell::print(std::ostream& os) const {
 
 std::string Cell::getCharacteistics() const {
   std::stringstream ss;
-  ss << "=====================\n";
   ss << "Formula: " << this->getFormula() << std::endl;
-  ss << "Childs: " << this->getChildrencount() << std::endl;
   ss << "value inside: " << *this->getObject() << std::endl;
-  ss << "=========childrens=========\n";
-  for (auto& i : this->childs) {
-    ss << "Child: \n" << i->getCharacteistics() << std::endl;
-  }
-
-  ss << "=========parents=========\n";
-  for (auto& i : this->m_parent) {
-    ss << "Parent: \n" << i->getCharacteistics() << std::endl;
-  }
   return ss.str();
 }
 
@@ -103,8 +87,6 @@ Cell Cell::clone() const {
 }
 
 void Cell::changeObject(Object* newObject) {
-  // delete old object
-  // set new object
   if (this->m_object != nullptr) delete m_object;
   m_object = newObject;
 }
@@ -112,28 +94,5 @@ void Cell::changeObject(Object* newObject) {
 void Cell::setObject(Object* object) {
   if (this->m_object != nullptr) delete m_object;
   m_object = object;
-  // set formula to empty
   formula = "";
 }
-
-void Cell::removeChild(std::shared_ptr<Cell> cell) {
-  for (auto it = childs.begin(); it != childs.end(); ++it) {
-    if ((*it).get() == cell.get()) {
-      childs.erase(it);
-      break;
-    }
-  }
-}
-
-void Cell::removeParent(std::shared_ptr<Cell> cell) {
-  for (auto it = m_parent.begin(); it != m_parent.end(); ++it) {
-    if ((*it).get() == cell.get()) {
-      m_parent.erase(it);
-      break;
-    }
-  }
-}
-
-void Cell::addChild(std::shared_ptr<Cell> cell) { childs.insert(cell); }
-
-void Cell::addParent(std::shared_ptr<Cell> cell) { m_parent.insert(cell); }

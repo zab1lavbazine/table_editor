@@ -21,7 +21,10 @@ class Cell {
     this->m_object = new T(object);
   }
   ~Cell();
+
   void setObject(Object* object);
+
+
   void changeObject(Object* object);
   Object* getObject() const;
   Cell& operator=(const Cell& cell);
@@ -32,9 +35,6 @@ class Cell {
   void setFormula(const std::string& formula);
   std::string getFormula() const;
 
-  int getChildrencount() const { return childs.size(); }
-  int getParentCount() const { return m_parent.size(); }
-
   bool operator==(const Cell& cell) const;
 
   Cell operator+(const Cell& cell);
@@ -44,36 +44,7 @@ class Cell {
 
   Cell clone() const;
 
-  Cell* getChild(int index) const;
-
-  void addChild(std::shared_ptr<Cell> cell);
-  void addParent(std::shared_ptr<Cell> cell);
-
-  void setSetChild(std::unordered_set<std::shared_ptr<Cell>> childs) {
-    this->childs = childs;
-  }
-
-  void setSetParents(std::unordered_set<std::shared_ptr<Cell>> parents) {
-    this->m_parent = parents;
-  }
-
-  std::unordered_set<std::shared_ptr<Cell>> getSetChilds() const {
-    return this->childs;
-  }
-
-  std::unordered_set<std::shared_ptr<Cell>> getSetParents() const {
-    return this->m_parent;
-  }
-
-  void removeChild(std::shared_ptr<Cell> cell);
-  void removeParent(std::shared_ptr<Cell> cell);
-
-  void clearChildrens() { childs.clear(); }
-  void clearParents() { m_parent.clear(); }
-
  private:
   Object* m_object;
   std::string formula;
-  std::unordered_set<std::shared_ptr<Cell>> childs;
-  std::unordered_set<std::shared_ptr<Cell>> m_parent;
 };
