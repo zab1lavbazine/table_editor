@@ -42,13 +42,7 @@ Table::Table() {
   this->m_columns = 0;
 }
 
-Table::~Table() {
-  for (long int i = 0; i < this->m_rows; i++) {
-    for (long int j = 0; j < this->m_columns; j++) {
-      delete this->m_table[i][j];
-    }
-  }
-}
+Table::~Table() {}
 
 Table::Table(const Table& table) {
   this->m_rows = table.m_rows;
@@ -58,17 +52,35 @@ Table::Table(const Table& table) {
 
 void Table::setSize(const int& rows, const int& columns) {
   if (rows > this->m_rows) {
+    this->m_table.resize(rows);
+
+    for (int i = this->m_rows; i < rows; i++) {
+      this->m_table[i].resize(columns);
+
+      for (int j = 0; j < columns; j++) {
+        if (this->m_table[i][j] == nullptr) {
+          std::shared_ptr<Cell> new_cell(new Cell(EMPTY()));
+          this->m_table[i][j] = new_cell;
+        }
+      }
+    }
+
     this->m_rows = rows;
-    this->m_table.resize(m_rows);
-    for (long int i = 0; i < m_rows; i++) {
-      this->m_table[i].resize(m_columns);
-    }
   }
+
   if (columns > this->m_columns) {
-    this->m_columns = columns;
-    for (long int i = 0; i < m_rows; i++) {
-      this->m_table[i].resize(m_columns);
+    for (int i = 0; i < this->m_rows; i++) {
+      this->m_table[i].resize(columns);
+
+      for (int j = this->m_columns; j < columns; j++) {
+        if (this->m_table[i][j] == nullptr) {
+          std::shared_ptr<Cell> new_cell(new Cell(EMPTY()));
+          this->m_table[i][j] = new_cell;
+        }
+      }
     }
+
+    this->m_columns = columns;
   }
 }
 
@@ -86,14 +98,74 @@ void Table::setValue(const int& row, const int& column, const Cell& cell) {
   // check table int this sell for Object and delete it
 
   if (row <= 0 || column <= 0) {
-    throw std::out_of_range("Out of range");
+    throw std::out_of_range("set value error");
   } else if (row > this->m_rows || column > this->m_columns) {
     setSize(row, column);
   }
-  if (this->m_table[row - 1][column - 1] != nullptr) {
-    delete this->m_table[row - 1][column - 1];
+
+  std::shared_ptr<Cell> new_cell(new Cell(cell));  // new cell
+
+  // check if this cell has something in it and delete
+
+  this->m_table[row - 1][column - 1] = new_cell;
+}
+
+void Table::setValue(const std::string& position,
+                     const Cell& cell) {  // delete the prev data from the cell
+                                          // with formula and vector of childs
+  int shift = 0;
+  std::string letters = outLetters(position, shift);
+
+  int column = get_column_index(letters);
+  int row = std::stoi(position.substr(shift));
+
+  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
+      row <= 0) {
+    throw std::out_of_range("set value error");
   }
-  this->m_table[row - 1][column - 1] = new Cell(cell);
+
+  std::shared_ptr<Cell> new_cell(new Cell(cell));  // new cell
+
+  this->m_table[row - 1][column - 1] = new_cell;
+}
+
+void Table::setValueFormula(const std::string& position,
+                            std::shared_ptr<Cell> cell) {
+  int shift = 0;
+  std::string letters = outLetters(position, shift);
+
+  int column = get_column_index(letters);
+  int row = std::stoi(position.substr(shift));
+
+  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
+      row <= 0) {
+    throw std::out_of_range("set value formula error");
+  }
+
+  std::vector<std::shared_ptr<Cell>> parents = cell->getVectorParents();
+
+  std::vector<std::shared_ptr<Cell>> childs =
+      this->m_table[row - 1][column - 1]->getVectorChilds();  // childs
+
+  if (parents.size() != 0 && childs.size() != 0) {
+    std::cout << "checking for cycle" << std::endl;
+    for (auto& parent : parents) {
+      for (auto& child : childs) {
+        if (parent.get() == child.get()) {
+          throw std::invalid_argument("Cycle");
+        }
+      }
+    }
+  }
+
+  std::cout << "without cycle" << std::endl;
+
+  if (childs.size() != 0) {
+    cell->setVectorChilds(childs);
+    changeChildrens(cell.get());
+  }
+
+  this->m_table[row - 1][column - 1] = cell;
 }
 
 long int Table::getRows() const { return this->m_rows; }
@@ -106,9 +178,9 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 
 void Table::ShowCell(const int row, const int column) const {
   if (row <= 0 || column <= 0) {
-    throw std::out_of_range("Out of range");
+    throw std::out_of_range("show cell error");
   } else if (row > this->m_rows || column > this->m_columns) {
-    throw std::out_of_range("Out of range");
+    throw std::out_of_range("show cell error");
   }
   std::cout << "Cell: " << this->m_table[row - 1][column - 1]->toString()
             << std::endl;
@@ -124,12 +196,11 @@ void Table::ShowCell(const std::string position) const {
 
   if (column > this->m_columns || row > this->m_rows || column <= 0 ||
       row <= 0) {
-    throw std::out_of_range("Out of range");
+    throw std::out_of_range("show cell error");
   }
 
-  if (this->m_table[row - 1][column - 1] == nullptr) return;
-
-  std::cout << this->m_table[row - 1][column - 1]->getCharacteistics()
+  std::cout << position << "\n"
+            << this->m_table[row - 1][column - 1]->getCharacteistics()
             << std::endl;
 }
 
@@ -154,7 +225,6 @@ int get_max_length(const int& rows) {
 std::ostream& Table::print(std::ostream& os) const {
   int colWidth = 11;
   int firstColumn = get_max_length(m_rows);
-  std::cout << "first column: " << firstColumn << std::endl;
 
   // Print column numbers
   os << std::setw(firstColumn) << "|";
@@ -212,37 +282,31 @@ Cell* Table::getCell(const std::string position) const {
 
   int column = get_column_index(letters);
   int row = std::stoi(position.substr(shift));
-  std::cout << " i take the position\n";
   if (column > this->m_columns || row > this->m_rows || column <= 0 ||
       row <= 0) {
-    throw std::out_of_range("Out of range");
+    throw std::out_of_range("get cell error");
   }
 
-  Cell* cell = this->m_table[row - 1][column - 1];
-
-  return cell == nullptr ? nullptr : cell;
+  return this->m_table[row - 1][column - 1].get();
 }
 
 bool check_if_number(std::string number) {
-  std::cout << "check for this number: " << number
-            << " length: " << number.length() << std::endl;
   for (char c : number) {
     if (!isdigit(c) && c != '.') {
       return false;
     }
   }
-  std::cout << " check_number -----------true number: " << number << std::endl;
   return true;
 }
 
-Cell Table::evaluate(const std::string& postfix) const {
+Cell Table::evaluate(const std::string& postfix,
+                     std::vector<Cell*>& toPut) const {
   std::stack<Cell> operands;
   std::stringstream ss(postfix);
   std::string cell_token;
   std::string text;
 
   while (ss >> cell_token) {
-    std::cout << "cell token: " << cell_token << std::endl;
     if (cell_token == "+" || cell_token == "-" || cell_token == "*" ||
         cell_token == "/") {
       Cell operand2 = operands.top();
@@ -253,33 +317,26 @@ Cell Table::evaluate(const std::string& postfix) const {
       switch (cell_token[0]) {
         case '+':
           operands.push(Cell(operand1 + operand2));
-          std::cout << "operatoion +" << std::endl;
           break;
         case '-':
           operands.push(Cell(operand1 - operand2));
-          std::cout << "operatoion -" << std::endl;
           break;
         case '*':
           operands.push(Cell(operand1 * operand2));
-          std::cout << "operatoion *" << std::endl;
           break;
         case '/':
           operands.push(Cell(operand1 / operand2));
-          std::cout << "operatoion /" << std::endl;
           break;
       }
     } else {
       if (check_if_number(
               cell_token)) {  // check if number------------------------------
         operands.push(Cell(Number(std::stod(cell_token))));
-        std::cout << "Push number:-------- " << cell_token << std::endl;
       } else if (cell_token[0] == '\"' ||
                  cell_token[cell_token.length() - 1] ==
                      '\"') {  // check if text----------------
-        std::cout << "cell_token: " << cell_token << std::endl;
         if (cell_token[0] == '\"' && cell_token[cell_token.length() - 1] ==
                                          '\"') {  // first situation "hello"
-          std::cout << "first situation" << std::endl;
           text = cell_token.substr(1, cell_token.length() - 2);
           operands.push(Cell(Text(text)));
         } else if (cell_token[0] == '\"') {  // second situation "hello ..."
@@ -291,17 +348,11 @@ Cell Table::evaluate(const std::string& postfix) const {
         }
       } else {  // check if cell----------------
         Cell* cell = getCell(cell_token);
-        if (cell == nullptr) {
-          operands.push(Cell(Text("")));
-        } else {
-          operands.push(*cell);
-
-          std::cout << "Push cell:-------- " << *cell << std::endl;
-        }
+        toPut.push_back(cell);
+        operands.push(*cell);
       }
     }
   }
-  std::cout << "===========KONEC FOR CYKLU====================" << std::endl;
 
   if (operands.size() <= 0) {
     return Cell();
@@ -309,36 +360,18 @@ Cell Table::evaluate(const std::string& postfix) const {
   return operands.top();
 }
 
-Cell* Table::HandleOperands(const std::string& expression,
-                            std::string position) const {
+std::shared_ptr<Cell> Table::HandleOperands(
+    const std::string& expression) const {
   std::string postfix = MessHandler::infixToPostfix(expression);
-  Cell new_cell = evaluate(postfix);
-  if (new_cell.getObject() == nullptr) {
-    return nullptr;
-  }
-  std::cout << "new cell: " << new_cell.toString() << std::endl;
-  return new Cell(new_cell);
-}
+  std::vector<Cell*> toPut;
+  Cell new_cell = evaluate(postfix, toPut);
 
-void Table::setCell(Cell* cell, std::string position, std::string formula) {
-  int shift = 0;
-  std::string letters = outLetters(position, shift);
+  //
+  std::shared_ptr<Cell> cell(new Cell(new_cell));
+  cell->setFormula(postfix);  // save formula for the next operations
 
-  cell->setFormula(formula);
-
-  int column = get_column_index(letters);
-  int row = std::stoi(position.substr(shift));
-
-  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
-      row <= 0) {
-    throw std::out_of_range("Out of range");
-  }
-
-  if (this->m_table[row - 1][column - 1] != nullptr) {
-    delete this->m_table[row - 1][column - 1];
-  }
-
-  this->m_table[row - 1][column - 1] = cell;
+  putChild(cell, toPut);  // put child into taken cells
+  return cell;
 }
 
 void Table::eraseCell(const std::string& position) {
@@ -350,11 +383,7 @@ void Table::eraseCell(const std::string& position) {
 
   if (column > this->m_columns || row > this->m_rows || column <= 0 ||
       row <= 0) {
-    throw std::out_of_range("Out of range");
-  }
-
-  if (this->m_table[row - 1][column - 1] != nullptr) {
-    delete this->m_table[row - 1][column - 1];
+    throw std::out_of_range("erase error");
   }
 
   this->m_table[row - 1][column - 1] = nullptr;
@@ -362,12 +391,57 @@ void Table::eraseCell(const std::string& position) {
 
 void Table::eraseCell(const int& x, const int& y) {
   if (x > this->m_columns || y > this->m_rows || x <= 0 || y <= 0) {
-    throw std::out_of_range("Out of range");
-  }
-
-  if (this->m_table[y - 1][x - 1] != nullptr) {
-    delete this->m_table[y - 1][x - 1];
+    throw std::out_of_range("erase error");
   }
 
   this->m_table[y - 1][x - 1] = nullptr;
+}
+
+void Table::changeValue(const std::string& position, Object* new_value) {
+  int shift = 0;
+  std::string letters = outLetters(position, shift);
+
+  int column = get_column_index(letters);
+  int row = std::stoi(position.substr(shift));
+
+  if (column > this->m_columns || row > this->m_rows || column <= 0 ||
+      row <= 0) {
+    throw std::out_of_range("change value error");
+  }
+
+  Cell* current_cell = this->m_table[row - 1][column - 1].get();
+  current_cell->setObject(new_value);
+
+  // create here method for changing value in childrens
+  if (current_cell->getChildrencount() != 0) {
+    changeChildrens(current_cell);
+  }
+}
+
+void Table::changeChildrens(Cell* cell) {
+  std::vector<Cell*> toPut;
+  for (int i = 0; i < cell->getChildrencount(); i++) {
+    std::cout << "change childrens-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "
+                 "-- -- -- -- -- --"
+              << std::endl;
+    std::string formula = cell->getChild(i)->getFormula();
+    Cell* new_cell = new Cell(evaluate(formula, toPut));
+    Cell* child = cell->getChild(i);
+    child->changeObject(new_cell->getObject()->clone());
+    std::cout << "new child: " << child->getCharacteistics() << std::endl;
+    child->setVectorParents(new_cell->getVectorParents());
+    changeChildrens(child);
+    delete new_cell;
+  }
+}
+
+void Table::putChild(std::shared_ptr<Cell> new_cell,
+                     std::vector<Cell*>& toPut) const {
+  for (Cell* master : toPut) {
+    std::shared_ptr<Cell> new_parent = std::make_shared<Cell>(*new_cell);
+    new_cell->addParent(new_parent);
+    std::cout << "parent: " << new_parent->getCharacteistics() << std::endl;
+    master->addChild(new_cell);  // child save into parent
+  }
+  toPut.clear();
 }

@@ -58,6 +58,32 @@ Object* Text::collide(Text& obj, OPERATIONS Action) {
   return nullptr;
 }
 
+Object* Text::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
+  switch (Action) {
+    case OPERATIONS::SUM: {
+      Object* result = new Text(this->m_text);
+      return result;
+      break;
+    }
+    case OPERATIONS::SUB: {
+      Object* result = new Text(this->m_text);
+      return result;
+      break;
+    }
+    case OPERATIONS::MUL: {
+      Object* result = new Text(this->m_text);
+      return result;
+      break;
+    }
+    case OPERATIONS::DIV: {
+      Object* result = new Text(this->m_text);
+      return result;
+      break;
+    }
+  }
+  return nullptr;
+}
+
 Object* Text::collide(Number& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {

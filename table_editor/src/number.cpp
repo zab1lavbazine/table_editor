@@ -35,6 +35,32 @@ Object* Number::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);
 }
 
+Object* Number::collide(EMPTY& obj, OPERATIONS Action) {
+  switch (Action) {
+    case OPERATIONS::SUM: {
+      Object* result = new Number(this->m_number);
+      return result;
+      break;
+    }
+    case OPERATIONS::SUB: {
+      Object* result = new Number(this->m_number);
+      return result;
+      break;
+    }
+    case OPERATIONS::MUL: {
+      Object* result = new Number(this->m_number);
+      return result;
+      break;
+    }
+    case OPERATIONS::DIV: {
+      Object* result = new Number(this->m_number);
+      return result;
+      break;
+    }
+  }
+  return nullptr;
+}
+
 Object* Number::collide(Text& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
