@@ -34,7 +34,7 @@ class Cell {
   int getChildrencount() const { return childs.size(); }
   int getParentCount() const { return m_parent.size(); }
 
-  bool operator==(Cell* cell) const;
+  bool operator==(const Cell& cell) const;
 
   Cell operator+(const Cell& cell);
   Cell operator-(const Cell& cell);

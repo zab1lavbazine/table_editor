@@ -91,8 +91,8 @@ Cell Cell::operator/(const Cell& cell) {
   return new_cell;
 }
 
-bool Cell ::operator==(Cell* cell) const {
-  return this->m_object == cell->m_object;
+bool Cell ::operator==(const Cell& cell) const {
+  return *this->m_object == *cell.m_object;
 }
 
 std::ostream& operator<<(std::ostream& os, const Cell& cell) {

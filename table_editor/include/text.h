@@ -27,6 +27,7 @@ class Text : public Object {
   Object* collide(Number& obj, OPERATIONS Action) override;
   Object* collide(EMPTY& obj, OPERATIONS Action) override;
 
+
  private:
   std::string m_text;
 };

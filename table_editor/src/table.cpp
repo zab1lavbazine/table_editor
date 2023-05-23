@@ -103,6 +103,11 @@ void Table::setValue(const int& row, const int& column, const Cell& cell) {
     setSize(row, column);
   }
 
+  // clear vector and formula
+  this->m_table[row - 1][column - 1]->clearChildrens();
+  this->m_table[row - 1][column - 1]->clearParents();
+  this->m_table[row - 1][column - 1]->setFormula("");
+
   std::shared_ptr<Cell> new_cell(new Cell(cell));  // new cell
 
   // check if this cell has something in it and delete
@@ -149,10 +154,11 @@ void Table::setValueFormula(const std::string& position,
 
   if (parents.size() != 0 && childs.size() != 0) {
     std::cout << "checking for cycle" << std::endl;
-    for (auto& parent : parents) {
-      for (auto& child : childs) {
-        if (parent.get() == child.get()) {
-          throw std::invalid_argument("Cycle");
+    for (auto& parent_ptr : parents) {
+      for (auto& child_ptr : childs) {
+        Cell *parent = parent_ptr.get(), *child = child_ptr.get();
+        if (*parent == *child) {
+          throw std::invalid_argument("cycle error");
         }
       }
     }

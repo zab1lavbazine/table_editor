@@ -24,6 +24,8 @@ class Number : public Object {
   Object* collide(Number& obj, OPERATIONS Action) override;
   Object* collide(EMPTY& obj, OPERATIONS Action) override;
 
+
+
  private:
   double m_number;
 };
