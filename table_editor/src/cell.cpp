@@ -1,5 +1,6 @@
 #include "../include/cell.h"
 
+#include <cstring>
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -7,7 +8,7 @@
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {
   this->formula = cell.formula;
   for (auto& child : cell.childs) {
-    this->childs.push_back(child);
+    this->childs.insert(child);
   }
 }
 
@@ -44,15 +45,13 @@ std::string Cell::getCharacteistics() const {
   ss << "Childs: " << this->getChildrencount() << std::endl;
   ss << "value inside: " << *this->getObject() << std::endl;
   ss << "=========childrens=========\n";
-  for (int i = 0; i < this->getChildrencount(); i++) {
-    ss << "Child " << i << ": \n"
-       << this->getChild(i)->getCharacteistics() << std::endl;
+  for (auto& i : this->childs) {
+    ss << "Child: \n" << i->getCharacteistics() << std::endl;
   }
 
   ss << "=========parents=========\n";
-  for (int i = 0; i < this->getParentCount(); i++) {
-    ss << "Parent " << i << ": \n"
-       << this->m_parent[i]->getCharacteistics() << std::endl;
+  for (auto& i : this->m_parent) {
+    ss << "Parent: \n" << i->getCharacteistics() << std::endl;
   }
   return ss.str();
 }
@@ -91,10 +90,6 @@ Cell Cell::operator/(const Cell& cell) {
   return new_cell;
 }
 
-bool Cell ::operator==(const Cell& cell) const {
-  return *this->m_object == *cell.m_object;
-}
-
 std::ostream& operator<<(std::ostream& os, const Cell& cell) {
   return cell.print(os);
 }
@@ -105,21 +100,6 @@ Cell Cell::clone() const {
   Cell new_cell;
   new_cell.m_object = this->m_object->clone();
   return new_cell;
-}
-
-bool Cell::checkForRepeatChild(Cell* cell) const {
-  for (auto& child : childs) {
-    if (child.get() == cell) return true;
-  }
-  return false;
-}
-
-void Cell::addChild(std::shared_ptr<Cell> cell) {
-  if (this->checkForRepeatChild(cell.get()))
-    throw std::invalid_argument("Repeat of the child");
-  // make shared
-
-  childs.push_back(cell);
 }
 
 void Cell::changeObject(Object* newObject) {
@@ -136,21 +116,24 @@ void Cell::setObject(Object* object) {
   formula = "";
 }
 
-Cell* Cell::getChild(size_t index) const {
-  if (index >= childs.size() || index < 0) return nullptr;
-  if (childs[index] == nullptr) return nullptr;
-  return childs[index].get();
-}
-
-bool Cell::checkForRepeatParent(Cell* cell) const {
-  for (auto& parent : m_parent) {
-    if (parent.get() == cell) return true;
+void Cell::removeChild(std::shared_ptr<Cell> cell) {
+  for (auto it = childs.begin(); it != childs.end(); ++it) {
+    if ((*it).get() == cell.get()) {
+      childs.erase(it);
+      break;
+    }
   }
-  return false;
 }
 
-void Cell::addParent(std::shared_ptr<Cell> cell) {
-  if (this->checkForRepeatParent(cell.get()))
-    throw std::invalid_argument("Repeat of the parent");
-  m_parent.push_back(cell);
+void Cell::removeParent(std::shared_ptr<Cell> cell) {
+  for (auto it = m_parent.begin(); it != m_parent.end(); ++it) {
+    if ((*it).get() == cell.get()) {
+      m_parent.erase(it);
+      break;
+    }
+  }
 }
+
+void Cell::addChild(std::shared_ptr<Cell> cell) { childs.insert(cell); }
+
+void Cell::addParent(std::shared_ptr<Cell> cell) { m_parent.insert(cell); }

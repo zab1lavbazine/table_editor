@@ -19,7 +19,15 @@ int main(void) {
   table.setValue(10, 12, Number(100));
   table.setValue("A1", Number(1));
   table.setValueFormula("A2", table.HandleOperands("A1 + 1"));
-  table.setValueFormula("A1", table.HandleOperands("A2 + L10 "));
+  table.setValueFormula("A3", table.HandleOperands("A2 + 2"));
+  table.setValueFormula("B1", table.HandleOperands("A2 + A1"));
+  // table.changeValue("A1", new Text("ahoj"));
+  table.ShowCell("A1");
+  table.changeValue("A3", "L10 + \"hello\"");
+  table.changeValue("A2", new Number(222));
+  table.ShowCell("A3");
+
+  // table.setValueFormula("A1", table.HandleOperands("A3 + L10 "));
   // input text
   // table.setValue(1, 1, Text("ahoj"));
   // table.setValue(1, 2, Text("svete"));

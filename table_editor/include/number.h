@@ -24,6 +24,10 @@ class Number : public Object {
   Object* collide(Number& obj, OPERATIONS Action) override;
   Object* collide(EMPTY& obj, OPERATIONS Action) override;
 
+  std::string toString() const override {
+    return std::to_string(this->m_number);
+  }
+
 
 
  private:

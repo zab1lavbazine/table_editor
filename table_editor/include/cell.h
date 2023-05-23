@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #pragma once
@@ -43,32 +44,29 @@ class Cell {
 
   Cell clone() const;
 
-  Cell* getChild(size_t index) const;
-  Cell* getLastChild() const { return childs.back().get(); }
-
-  bool checkForRepeatChild(Cell* cell) const;
-  bool checkForRepeatParent(Cell* cell) const;
+  Cell* getChild(int index) const;
 
   void addChild(std::shared_ptr<Cell> cell);
   void addParent(std::shared_ptr<Cell> cell);
 
-  void setVectorChilds(std::vector<std::shared_ptr<Cell>> childs) {
+  void setSetChild(std::unordered_set<std::shared_ptr<Cell>> childs) {
     this->childs = childs;
   }
 
-  void setVectorParents(std::vector<std::shared_ptr<Cell>> parents) {
+  void setSetParents(std::unordered_set<std::shared_ptr<Cell>> parents) {
     this->m_parent = parents;
   }
 
-  std::vector<std::shared_ptr<Cell>> getVectorChilds() const {
+  std::unordered_set<std::shared_ptr<Cell>> getSetChilds() const {
     return this->childs;
   }
 
-  std::vector<std::shared_ptr<Cell>> getVectorParents() const {
+  std::unordered_set<std::shared_ptr<Cell>> getSetParents() const {
     return this->m_parent;
   }
 
-  void clearLastChild() { childs.pop_back(); }
+  void removeChild(std::shared_ptr<Cell> cell);
+  void removeParent(std::shared_ptr<Cell> cell);
 
   void clearChildrens() { childs.clear(); }
   void clearParents() { m_parent.clear(); }
@@ -76,6 +74,6 @@ class Cell {
  private:
   Object* m_object;
   std::string formula;
-  std::vector<std::shared_ptr<Cell>> childs;
-  std::vector<std::shared_ptr<Cell>> m_parent;
+  std::unordered_set<std::shared_ptr<Cell>> childs;
+  std::unordered_set<std::shared_ptr<Cell>> m_parent;
 };

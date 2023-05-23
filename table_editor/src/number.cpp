@@ -146,11 +146,3 @@ Object* Number::collide(Number& obj, OPERATIONS Action) {
   }
   return nullptr;
 }
-
-bool Number::operator==(const Object& obj) const {
-  if (typeid(obj) == typeid(Number)) {
-    const Number& number = dynamic_cast<const Number&>(obj);
-    return this->m_number == number.m_number;
-  }
-  return false;
-}

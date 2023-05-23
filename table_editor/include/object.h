@@ -1,7 +1,6 @@
+#include <cstring>
 #include <iostream>
 #include <string>
-
-
 
 #pragma once
 
@@ -26,6 +25,8 @@ class Object {
   virtual Object* collide(class Text& obj, OPERATIONS Action) = 0;
   virtual Object* collide(class Number& obj, OPERATIONS Action) = 0;
   virtual Object* collide(class EMPTY& obj, OPERATIONS Action) = 0;
+
+  virtual std::string toString() const = 0;
 
 
 };
