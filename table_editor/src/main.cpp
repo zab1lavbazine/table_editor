@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../include/client_message.h"
 #include "../include/number.h"
 #include "../include/table.h"
 #include "../include/text.h"
@@ -13,32 +14,26 @@
 
 int main(void) {
   Table table;
+  // ClientMessage message;
+  // message.getCommand();
   table.setSize(10, 10);
-  // table.setValue(1, 1, Number(1));
 
-  table.setValue("A1", "100");
-  // table.setValue("A1", "\"ahoj\"");
-  table.setValue("A2", "A1 + 1");
-  table.changeValue("A1", "2 + 1 ");
-  table.changeValue("A2", "100 ");
-  table.setValue("A3", "30000");
-  table.changeValue("A2", "J10 + 1 + A3 ");
-  // table.changeValue("A1", "2 + 1 + A2 ");
-  table.printConnections(table.getCell("A2"));
-  // table.changeValue("A2", "A1 + 1");
-  table.printConnections(table.getCell("A1"));
-
-  table.printConnections(table.getCell("A3"));
-  table.setValue("A2", "3+2");
-  table.printConnections(table.getCell("A2"));
-  table.setValue("A2", "A1+ 1");
-  table.printConnections(table.getCell("A2"));
-  // table.printConnections(table.getCell("A2"));
-  // table.printConnections(table.getCell("A1"));
-  // table.changeValue("A1", new Text("ahoj"));
-  // table.printConnections(table.getCell("A1"));
-  // table.ShowCell("A3");
-
+  table.setValue("A1", " A2 + 23 ");
+  // table.ShowCell("A1");
+  table.setValue("A2", "23 + \"hello my name is\"");
+  table.setValue("A3", "23 / 34 + A2");
+  table.ShowCell("A3");
+  table.setValue("A3", "123 + 23 / 67");
+  table.ShowCell("A3");
+  table.setValue("A2", "123");
+  table.showFormula("A3");
+  // try {
+  //   table.setValue("A3", "A1");
+  // } catch (const std::exception& e) {
+  //   std::cout << "error" << std::endl;
+  // }
+  // table.setValue("A2", "10");
+  // table.setValue("A3", "1000");
   // table.setValueFormula("A1", table.HandleOperands("A3 + L10 "));
   // input text
   // table.setValue(1, 1, Text("ahoj"));

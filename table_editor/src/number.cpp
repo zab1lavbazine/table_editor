@@ -43,7 +43,7 @@ Object* Number::collide(EMPTY& obj, OPERATIONS Action) {
       break;
     }
     case OPERATIONS::SUB: {
-      Object* result = new Number(this->m_number);
+      Object* result = new Number(this->m_number * (-1));
       return result;
       break;
     }

@@ -6,13 +6,10 @@
 #include <vector>
 
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {
-  this->formula = cell.formula;
+  this->m_formula = cell.m_formula;
 }
 
-Cell::~Cell() {
-  delete m_object;
-  formula = "";
-}
+Cell::~Cell() { delete m_object; }
 
 Cell& Cell::operator=(const Cell& cell) {
   if (this != &cell) {
@@ -21,10 +18,6 @@ Cell& Cell::operator=(const Cell& cell) {
   }
   return *this;
 }
-
-void Cell::setFormula(const std::string& formula) { this->formula = formula; }
-
-std::string Cell::getFormula() const { return this->formula; }
 
 std::ostream& Cell::print(std::ostream& os) const {
   if (m_object != nullptr) {
@@ -94,5 +87,5 @@ void Cell::changeObject(Object* newObject) {
 void Cell::setObject(Object* object) {
   if (this->m_object != nullptr) delete m_object;
   m_object = object;
-  formula = "";
+  m_formula.setFormula(nullptr);
 }

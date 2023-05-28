@@ -14,14 +14,29 @@ struct POS {
   int column;
 };
 
-int get_column_index(std::string column) {
+int get_column_index(std::string& column) {
+  std::cout << "colum " << column << std::endl;
   int columnIndex = 0;
   int base = 26;
   for (size_t i = 0; i < column.length(); i++) {
+    // check for all capital letters
+    if (column[i] < 'A' || column[i] > 'Z') {
+      throw std::invalid_argument("Invalid letter for column");
+    }
     int digitValue = column[i] - 'A' + 1;
     columnIndex += digitValue * pow(base, column.length() - i - 1);
   }
   return columnIndex;
+}
+
+int get_row_index(std::string row) {
+  // check for all numbers
+  for (size_t i = 0; i < row.length(); i++) {
+    if (row[i] < '0' || row[i] > '9') {
+      throw std::invalid_argument("Invalid number for row");
+    }
+  }
+  return std::stoi(row);
 }
 
 std::string outLetters(std::string line, int& shift) {
@@ -45,7 +60,7 @@ POS get_position(std::string position) {
   std::string letters = outLetters(position, shift);
 
   int column = get_column_index(letters);
-  int row = std::stoi(position.substr(shift));
+  int row = get_row_index(position.substr(shift, position.length()));
   if (column <= 0 || row <= 0) {
     throw std::out_of_range("get position error");
   }
@@ -119,14 +134,19 @@ void Table::setValue(const std::string& position, const std::string& formula) {
   POS pos = get_position(position);
   std::shared_ptr<Cell> current_cell =
       this->m_table[pos.row - 1][pos.column - 1];
-  current_cell.get()->setObject(new_cell.get()->getObject()->clone());
-  current_cell.get()->setFormula(new_cell.get()->getFormula());
 
-  if (toPut.size() > 0) {
+  current_cell.get()->setObject(new_cell.get()->getObject()->clone());
+  std::cout << "current cell new object "
+            << current_cell.get()->getObject()->toString() << std::endl;
+  current_cell.get()->setFormula(new_cell.get()->getFormula());
+  std::cout << "current cell formula" << std::endl;
+  current_cell.get()->print(std::cout) << std::endl;
+
+  if (toPut.size() > 0)
     putChild(current_cell, toPut);
-  } else {
-    m_graph.removeFromAll(current_cell);
-  }
+  else
+    m_graph.removeParents(current_cell);
+  changeChildrens(current_cell);
 }
 
 void Table::setValueFormula(const std::string& position,
@@ -235,82 +255,79 @@ std::shared_ptr<Cell> Table::getCell(const std::string position) const {
 
 bool check_if_number(std::string number) {
   for (char c : number) {
-    if (!isdigit(c) && c != '.') {
+    if (!isdigit(c) && c != '.' && c != '-') {
       return false;
     }
   }
   return true;
 }
 
-Cell Table::evaluate(const std::string& postfix,
+Cell Table::evaluate(const std::shared_ptr<Node>& node,
                      std::vector<std::shared_ptr<Cell>>& toPut) const {
-  std::stack<Cell> operands;
-  std::stringstream ss(postfix);
-  std::string cell_token;
-  std::string text;
+  if (node == nullptr) {
+    return Cell();
+  }
 
-  while (ss >> cell_token) {
-    if (cell_token == "+" || cell_token == "-" || cell_token == "*" ||
-        cell_token == "/") {
-      Cell operand2 = operands.top();
-      operands.pop();
-      Cell operand1 = operands.top();
-      operands.pop();
-
-      switch (cell_token[0]) {
-        case '+':
-          operands.push(Cell(operand1 + operand2));
-          break;
-        case '-':
-          operands.push(Cell(operand1 - operand2));
-          break;
-        case '*':
-          operands.push(Cell(operand1 * operand2));
-          break;
-        case '/':
-          operands.push(Cell(operand1 / operand2));
-          break;
-      }
+  if (node->left == nullptr && node->right == nullptr) {
+    // Leaf node
+    std::string token = node->value;
+    if (check_if_number(token)) {
+      return Cell(Number(std::stod(token)));
+    } else if (token[0] == '\"' && token[token.length() - 1] == '\"') {
+      return Cell(Text(token.substr(1, token.length() - 2)));
     } else {
-      if (check_if_number(
-              cell_token)) {  // check if number------------------------------
-        operands.push(Cell(Number(std::stod(cell_token))));
-      } else if (cell_token[0] == '\"' ||
-                 cell_token[cell_token.length() - 1] ==
-                     '\"') {  // check if text----------------
-        if (cell_token[0] == '\"' && cell_token[cell_token.length() - 1] ==
-                                         '\"') {  // first situation "hello"
-          text = cell_token.substr(1, cell_token.length() - 2);
-          operands.push(Cell(Text(text)));
-        } else if (cell_token[0] == '\"') {  // second situation "hello ..."
-          text = cell_token.substr(1, cell_token.length());
-        } else if (cell_token[cell_token.length() - 1] ==
-                   '\"') {  // third situation "... hello"
-          text += cell_token.substr(0, cell_token.length() - 1);
-          operands.push(Cell(Text(text)));
-        }
-      } else {  // check if cell----------------
-        std::shared_ptr<Cell> cell = getCell(cell_token);
-        toPut.push_back(cell);
-        operands.push(*cell);
-      }
+      std::shared_ptr<Cell> cell = getCell(token);
+      toPut.push_back(cell);
+      return *cell;
     }
   }
 
-  if (operands.size() <= 0) {
+  Cell left = evaluate(node->left, toPut);
+  Cell right = evaluate(node->right, toPut);
+
+  std::string op = node->value;
+  // if (op == "+") {
+  //   return left + right;
+  // } else if (op == "-") {
+  //   return left - right;
+  // } else if (op == "*") {
+  //   return left * right;
+  // } else if (op == "/") {
+  //   return left / right;
+  // }
+
+  // check for null pointers
+
+  if (left.getObject() == nullptr || right.getObject() == nullptr) {
     return Cell();
   }
-  return operands.top();
+
+  if (op == "+") {
+    return left + right;
+  } else if (op == "-") {
+    return left - right;
+  } else if (op == "*") {
+    return left * right;
+  } else if (op == "/") {
+    return left / right;
+  }
+
+  return Cell();
 }
 
 std::shared_ptr<Cell> Table::HandleOperands(
     const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut) {
-  std::string postfix = MessHandler::infixToPostfix(expression);
-  Cell new_cell = evaluate(postfix, toPut);
+  std::shared_ptr<Node> root = m_handler.buildParseTree(expression);
+  m_handler.printParseTree(root);
 
-  //
+  Cell new_cell = evaluate(root, toPut);
+  new_cell.setFormula(root);
+
+  std::cout << "new cell: " << new_cell.toString() << std::endl;
   std::shared_ptr<Cell> cell = std::make_shared<Cell>(new_cell);
-  cell->setFormula(postfix);  // save formula for the next operations
+  //
+  // std::shared_ptr<Cell> cell = std::make_shared<Cell>(new_cell);
+  // cell->setFormula(postfix);  // save formula for the next operations
 
   return cell;
 }
@@ -378,9 +395,9 @@ void Table::changeValue(const std::string& position,
 void Table::changeChildrens(std::shared_ptr<Cell> cell) {
   std::vector<std::shared_ptr<Cell>> toPut;
   for (auto& child : m_graph.getChildrens(cell)) {
-    std::cout << "child: " << child.get()->toString() << " ===>>>   ";
-    std::cout << "Formula of child: " << child.get()->getFormula() << std::endl;
-    Cell new_cell = evaluate(child.get()->getFormula(), toPut);
+    Cell new_cell = evaluate(child->getFormula(), toPut);
+    std::cout << "483" << std::endl;
+    std::cout << "new cell: " << new_cell.toString() << std::endl;
     child.get()->changeObject(new_cell.getObject()->clone());
     changeChildrens(child);
   }
@@ -389,8 +406,14 @@ void Table::changeChildrens(std::shared_ptr<Cell> cell) {
 void Table::putChild(std::shared_ptr<Cell> new_cell,
                      std::vector<std::shared_ptr<Cell>>& toPut) {
   for (std::shared_ptr<Cell> master : toPut) {
-    std::cout << "master: " << master.get()->toString() << std::endl;
     m_graph.addEdge(master, new_cell);
   }
   toPut.clear();
+}
+
+void Table::showFormula(const std::string& position) const {
+  POS pos = get_position(position);
+  std::cout << "formula: "
+            << this->m_table[pos.row - 1][pos.column - 1]->toStringFormula()
+            << std::endl;
 }

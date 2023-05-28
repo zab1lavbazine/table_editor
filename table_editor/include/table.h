@@ -13,6 +13,7 @@ class Table {
   long int m_rows;
   long int m_columns;
   Graph m_graph;
+  MessHandler m_handler;
 
  public:
   Table();
@@ -30,7 +31,7 @@ class Table {
   friend std::ostream& operator<<(std::ostream& os, const Table& table);
   std::ostream& print(std::ostream& os) const;
   std::shared_ptr<Cell> getCell(const std::string position) const;
-  Cell evaluate(const std ::string& postfix,
+  Cell evaluate(const std::shared_ptr<Node>& node,
                 std::vector<std::shared_ptr<Cell>>& toPut) const;
   void changeValue(const std::string& position, Object* cell);
   void changeValue(const std::string& position, const std::string& formula);
@@ -46,6 +47,8 @@ class Table {
     m_graph.printChildrens(master);
     m_graph.printParents(master);
   }
+
+  void showFormula(const std::string& position) const;
 
   std::shared_ptr<Cell> HandleOperands(
       const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut);

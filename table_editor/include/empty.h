@@ -11,12 +11,14 @@ class EMPTY : public Object {
   ~EMPTY(){};
   EMPTY(const EMPTY& obj) = default;
   // print object
-  virtual std::ostream& print(std::ostream& os) const override { return os; }
+  virtual std::ostream& print(std::ostream& os) const override {
+    return os << "";
+  }
   virtual Object* clone() const override {
     return new EMPTY(*this);
   }  // clone object
 
-  std::string toString() const override { return ""; }
+  std::string toString() const override { return "EMPTY"; }
 
   // double dispatch for collision
   Object* collide(Object& obj, OPERATIONS Action) override;

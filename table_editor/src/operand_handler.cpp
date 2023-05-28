@@ -1,77 +1,156 @@
 #include "operand_handler.h"
 
+#include <cctype>
 #include <iostream>
+#include <memory>
 
-int MessHandler::getPrecedence(char op) {
-  if (op == '+' || op == '-') {
-    return 1;
-  } else if (op == '*' || op == '/') {
-    return 2;
-  } else {
+std::string removeSpaces(const std::string& formula) {
+  std::string result;
+  bool check = 1;
+  for (char ch : formula) {
+    if (ch == '"') {
+      check = !check;
+    }
+    if (!std::isspace(ch) || check == 0) {
+      result += ch;
+    }
+  }
+  std::cout << "result: " << result << std::endl;
+  return result;
+}
+
+
+
+int MessHandler::countFormulas(const std::shared_ptr<Node>& node) {
+  if (node == nullptr) {
     return 0;
+  }
+
+  int count = 0;
+  if (isOperator(node->value[0])) {
+    count += countFormulas(node->left);
+    count += countFormulas(node->right);
+  } else {
+    count++;
+  }
+
+  return count;
+}
+
+bool MessHandler::isOperator(const char& ch) {
+  return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+}
+
+std::string MessHandler::getIndentation(int depth) {
+  std::string indentation;
+  for (int i = 0; i < depth; ++i) {
+    indentation += "  ";
+  }
+  return indentation;
+}
+
+void MessHandler::skipWhitespace(const std::string& formula, size_t& index,
+                                 size_t length) {
+  while (index < length && std::isspace(formula[index])) {
+    ++index;
   }
 }
 
-std::string MessHandler::infixToPostfix(const std::string& infix) {
-  std::string postfix;
-  std::stack<char> operators;
-  bool check_letter = false;
-  bool check_number = false;
-  bool check_string = false;
-  int check_quotes = 0;
+std::shared_ptr<Node> MessHandler::buildParseTree(
+    const std::string& new_formula) {
+  std::string formula = removeSpaces(new_formula);
 
-  for (size_t i = 0; i < infix.length(); i++) {
-    char ch = infix[i];
+  size_t length = formula.length();
+  size_t index = 0;
 
-    // take the string from the input
-    if ((ch == '\"' && check_quotes < 2) || check_string == true) {
-      check_string = true;
-      if (ch == '\"') check_quotes++;
-      if (check_quotes == 2) {
-        postfix += ch;
-        postfix += ' ';
-        check_string = false;
-      } else
-        postfix += ch;
-    } else if (check_string == false) {
-      // take the letter from the input
-      if (ch != '+' && ch != '-' && ch != '*' && ch != '/' && ch != ' ' &&
-          ch != '(' && ch != ')' && !isdigit(ch) && !check_number &&
-          !check_letter) {
-        postfix += ch;
-        check_letter = true;
-      } else if (isdigit(ch) || ch == '.') {  // take the number of row
-        postfix += ch;
-        check_number = true;
-      } else if ((ch == '+' || ch == '-' || ch == '*' ||
-                  ch == '/')) {  // take the operator
-        postfix += ' ';
-        check_letter = check_number = false;
-        while (!operators.empty() && operators.top() != '(' &&
-               getPrecedence(ch) <= getPrecedence(operators.top())) {
-          postfix += operators.top();
-          postfix += ' ';
-          operators.pop();
-        }
-        operators.push(ch);
-      } else if (ch == '(') {
-        operators.push(ch);
-      } else if (ch == ')') {
-        while (!operators.empty() && operators.top() != '(') {
-          postfix += ' ';
-          postfix += operators.top();
-          operators.pop();
-        }
-        operators.pop();
+  std::shared_ptr<Node> root = parseExpression(formula, index, length);
+  return root;
+}
+
+std::shared_ptr<Node> MessHandler::parseExpression(const std::string& formula,
+                                                   size_t& index,
+                                                   size_t length) {
+  std::shared_ptr<Node> left = parseTerm(formula, index, length);
+
+  while (index < length && (formula[index] == '+' || formula[index] == '-')) {
+    char op = formula[index];
+    ++index;
+    std::shared_ptr<Node> right = parseTerm(formula, index, length);
+
+    std::shared_ptr<Node> newNode = std::make_shared<Node>(std::string(1, op));
+    newNode->left = left;
+    newNode->right = right;
+    left = newNode;
+  }
+
+  return left;
+}
+
+std::shared_ptr<Node> MessHandler::parseTerm(const std::string& formula,
+                                             size_t& index, size_t length) {
+  std::shared_ptr<Node> left = parseFactor(formula, index, length);
+
+  while (index < length && (formula[index] == '*' || formula[index] == '/')) {
+    char op = formula[index];
+    ++index;
+    std::shared_ptr<Node> right = parseFactor(formula, index, length);
+
+    std::shared_ptr<Node> newNode = std::make_shared<Node>(std::string(1, op));
+    newNode->left = left;
+    newNode->right = right;
+    left = newNode;
+  }
+
+  return left;
+}
+
+std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
+                                               size_t& index, size_t length) {
+  std::shared_ptr<Node> node = nullptr;
+
+  if (index < length) {
+    char ch = formula[index];
+
+    if (std::isalpha(ch)) {
+      // Parsing a cell or a string
+      size_t startIndex = index;
+      while (index < length && (std::isalnum(formula[index]))) {
+        ++index;
+      }
+      std::string token = formula.substr(startIndex, index - startIndex);
+      node = std::make_shared<Node>(token);
+    } else if (ch == '"') {
+      // Parsing a string enclosed in double quotes
+      size_t startIndex = index;
+      ++index;
+      while (index < length && formula[index] != '"') {
+        ++index;
+      }
+      std::string token = formula.substr(startIndex, index - startIndex + 1);
+      node = std::make_shared<Node>(token);
+      ++index;
+    } else if (std::isdigit(ch) || ch == '.' || ch == '-') {
+      // Parsing a number or number with a negative sign
+      if (ch == '-') ++index;
+
+      size_t startIndex = index;
+      while (index < length &&
+             (std::isdigit(formula[index]) || formula[index] == '.')) {
+        ++index;
+      }
+      std::string token = formula.substr(startIndex, index - startIndex);
+      node = std::make_shared<Node>(token);
+    } else if (ch == '(') {
+      // Parsing a subexpression enclosed in parentheses
+      ++index;
+      node = parseExpression(formula, index, length);
+      if (index < length && formula[index] == ')') {
+        ++index;
+      } else {
+        std::cerr << "Error: Unbalanced parentheses!" << std::endl;
       }
     }
   }
 
-  while (!operators.empty()) {
-    postfix += ' ';
-    postfix += operators.top();
-    operators.pop();
-  }
-
-  return postfix;
+  return node;
 }
