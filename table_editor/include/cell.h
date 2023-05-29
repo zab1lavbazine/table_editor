@@ -29,7 +29,6 @@ class Cell {
 
   void changeObject(Object* object);
   Object* getObject() const;
-  Cell& operator=(const Cell& cell);
   friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
   std::ostream& print(std::ostream& os) const;
   std::string getCharacteistics() const;
@@ -44,8 +43,11 @@ class Cell {
   Cell operator-(const Cell& cell);
   Cell operator*(const Cell& cell);
   Cell operator/(const Cell& cell);
+  Cell operator=(const Cell& cell);
 
   Cell clone() const;
+
+
 
  private:
   Object* m_object;

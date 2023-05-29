@@ -17,16 +17,22 @@ int main(void) {
   // ClientMessage message;
   // message.getCommand();
   table.setSize(10, 10);
+  table.setValue("A2", "-123");
+  table.showFormula("A2");
 
-  table.setValue("A1", " A2 + 23 ");
-  // table.ShowCell("A1");
-  table.setValue("A2", "23 + \"hello my name is\"");
-  table.setValue("A3", "23 / 34 + A2");
-  table.ShowCell("A3");
-  table.setValue("A3", "123 + 23 / 67");
-  table.ShowCell("A3");
-  table.setValue("A2", "123");
-  table.showFormula("A3");
+  std::cout << "======================" << std::endl;
+  table.setValue("A1", "-123 * A2 -\"hello\"");
+  table.showFormula("A1");
+  table.printConnections(table.getCell("A1"));
+
+  // table.setValue("A1", " A2 + 23 ");
+  // // table.ShowCell("A1");
+  // table.setValue("A2", "23 + \"hello my name is\"");
+  // table.setValue("A3", "23 / 34 + A2");
+  // table.ShowCell("A3");
+  // table.ShowCell("A3");
+  // table.setValue("A2", "123");
+  // table.showFormula("A3");
   // try {
   //   table.setValue("A3", "A1");
   // } catch (const std::exception& e) {

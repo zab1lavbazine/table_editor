@@ -19,8 +19,6 @@ std::string removeSpaces(const std::string& formula) {
   return result;
 }
 
-
-
 int MessHandler::countFormulas(const std::shared_ptr<Node>& node) {
   if (node == nullptr) {
     return 0;
@@ -47,13 +45,6 @@ std::string MessHandler::getIndentation(int depth) {
     indentation += "  ";
   }
   return indentation;
-}
-
-void MessHandler::skipWhitespace(const std::string& formula, size_t& index,
-                                 size_t length) {
-  while (index < length && std::isspace(formula[index])) {
-    ++index;
-  }
 }
 
 std::shared_ptr<Node> MessHandler::buildParseTree(
@@ -111,9 +102,12 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
   if (index < length) {
     char ch = formula[index];
 
-    if (std::isalpha(ch)) {
+    if (std::isalpha(ch) || ch == '-') {
       // Parsing a cell or a string
+
       size_t startIndex = index;
+      if (ch == '-') ++index;
+
       while (index < length && (std::isalnum(formula[index]))) {
         ++index;
       }
@@ -131,9 +125,9 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
       ++index;
     } else if (std::isdigit(ch) || ch == '.' || ch == '-') {
       // Parsing a number or number with a negative sign
-      if (ch == '-') ++index;
 
       size_t startIndex = index;
+      if (ch == '-') ++index;
       while (index < length &&
              (std::isdigit(formula[index]) || formula[index] == '.')) {
         ++index;

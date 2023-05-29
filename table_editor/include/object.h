@@ -27,6 +27,4 @@ class Object {
   virtual Object* collide(class EMPTY& obj, OPERATIONS Action) = 0;
 
   virtual std::string toString() const = 0;
-
-
 };

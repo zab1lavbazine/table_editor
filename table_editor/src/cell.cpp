@@ -11,14 +11,6 @@ Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {
 
 Cell::~Cell() { delete m_object; }
 
-Cell& Cell::operator=(const Cell& cell) {
-  if (this != &cell) {
-    delete m_object;
-    m_object = cell.m_object->clone();
-  }
-  return *this;
-}
-
 std::ostream& Cell::print(std::ostream& os) const {
   if (m_object != nullptr) {
     m_object->print(os);
@@ -28,7 +20,7 @@ std::ostream& Cell::print(std::ostream& os) const {
 
 std::string Cell::getCharacteistics() const {
   std::stringstream ss;
-  ss << "Formula: " << this->getFormula() << std::endl;
+  ss << "Formula: " << this->m_formula.toString() << std::endl;
   ss << "value inside: " << *this->getObject() << std::endl;
   return ss.str();
 }
@@ -88,4 +80,13 @@ void Cell::setObject(Object* object) {
   if (this->m_object != nullptr) delete m_object;
   m_object = object;
   m_formula.setFormula(nullptr);
+}
+
+Cell Cell::operator=(const Cell& cell) {
+  if (this != &cell) {
+    delete m_object;
+    m_object = cell.m_object->clone();
+    m_formula = cell.m_formula;
+  }
+  return *this;
 }

@@ -15,7 +15,6 @@ struct POS {
 };
 
 int get_column_index(std::string& column) {
-  std::cout << "colum " << column << std::endl;
   int columnIndex = 0;
   int base = 26;
   for (size_t i = 0; i < column.length(); i++) {
@@ -136,11 +135,7 @@ void Table::setValue(const std::string& position, const std::string& formula) {
       this->m_table[pos.row - 1][pos.column - 1];
 
   current_cell.get()->setObject(new_cell.get()->getObject()->clone());
-  std::cout << "current cell new object "
-            << current_cell.get()->getObject()->toString() << std::endl;
   current_cell.get()->setFormula(new_cell.get()->getFormula());
-  std::cout << "current cell formula" << std::endl;
-  current_cell.get()->print(std::cout) << std::endl;
 
   if (toPut.size() > 0)
     putChild(current_cell, toPut);
@@ -276,7 +271,20 @@ Cell Table::evaluate(const std::shared_ptr<Node>& node,
     } else if (token[0] == '\"' && token[token.length() - 1] == '\"') {
       return Cell(Text(token.substr(1, token.length() - 2)));
     } else {
+      bool minus = false;
+      std::cout << "token: " << token << std::endl;
+      if (token[0] == '-') {
+        minus = true;
+        token = token.substr(1, token.length() - 1);
+      }
+
       std::shared_ptr<Cell> cell = getCell(token);
+      if (minus == true) {
+        std::cout << "cell with -1" << std::endl;
+        Cell new_cell = *cell * Cell(Number(-1));
+        return new_cell;
+      }
+
       toPut.push_back(cell);
       return *cell;
     }
@@ -286,15 +294,6 @@ Cell Table::evaluate(const std::shared_ptr<Node>& node,
   Cell right = evaluate(node->right, toPut);
 
   std::string op = node->value;
-  // if (op == "+") {
-  //   return left + right;
-  // } else if (op == "-") {
-  //   return left - right;
-  // } else if (op == "*") {
-  //   return left * right;
-  // } else if (op == "/") {
-  //   return left / right;
-  // }
 
   // check for null pointers
 
@@ -320,14 +319,11 @@ std::shared_ptr<Cell> Table::HandleOperands(
   std::shared_ptr<Node> root = m_handler.buildParseTree(expression);
   m_handler.printParseTree(root);
 
-  Cell new_cell = evaluate(root, toPut);
-  new_cell.setFormula(root);
+  Cell new_cell = evaluate(root, toPut);  // evaluate expression
+  new_cell.setFormula(root);              // set formula to cell
 
-  std::cout << "new cell: " << new_cell.toString() << std::endl;
-  std::shared_ptr<Cell> cell = std::make_shared<Cell>(new_cell);
-  //
-  // std::shared_ptr<Cell> cell = std::make_shared<Cell>(new_cell);
-  // cell->setFormula(postfix);  // save formula for the next operations
+  std::shared_ptr<Cell> cell =
+      std::make_shared<Cell>(new_cell);  // make cell and pointer to it
 
   return cell;
 }
@@ -335,6 +331,7 @@ std::shared_ptr<Cell> Table::HandleOperands(
 void Table::eraseCell(const std::string& position) {
   POS pos = get_position(position);
   // delete from all connections
+
   m_graph.removeChildrens(this->m_table[pos.row - 1][pos.column - 1]);
   m_graph.removeParents(this->m_table[pos.row - 1][pos.column - 1]);
 
@@ -396,8 +393,6 @@ void Table::changeChildrens(std::shared_ptr<Cell> cell) {
   std::vector<std::shared_ptr<Cell>> toPut;
   for (auto& child : m_graph.getChildrens(cell)) {
     Cell new_cell = evaluate(child->getFormula(), toPut);
-    std::cout << "483" << std::endl;
-    std::cout << "new cell: " << new_cell.toString() << std::endl;
     child.get()->changeObject(new_cell.getObject()->clone());
     changeChildrens(child);
   }
