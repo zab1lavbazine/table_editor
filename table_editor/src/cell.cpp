@@ -20,8 +20,9 @@ std::ostream& Cell::print(std::ostream& os) const {
 
 std::string Cell::getCharacteistics() const {
   std::stringstream ss;
-  ss << "Formula: " << this->m_formula.toString() << std::endl;
-  ss << "value inside: " << *this->getObject() << std::endl;
+  ss << "Formula: ";
+  ss << this->m_formula.toString() << std::endl;
+  ss << "value inside: " << *this->getObject();
   return ss.str();
 }
 

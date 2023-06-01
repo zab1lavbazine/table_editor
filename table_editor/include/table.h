@@ -6,6 +6,12 @@
 
 #include "../include/graph_cell_relations.h"
 #include "../include/operand_handler.h"
+#include "../libs/tabulate.hpp"
+
+struct POS {
+  int row;
+  int column;
+};
 
 class Table {
  private:
@@ -47,6 +53,8 @@ class Table {
     m_graph.printChildrens(master);
     m_graph.printParents(master);
   }
+
+  POS get_position(const std::string& position) const;
 
   void showFormula(const std::string& position) const;
 

@@ -15,7 +15,6 @@ std::string removeSpaces(const std::string& formula) {
       result += ch;
     }
   }
-  std::cout << "result: " << result << std::endl;
   return result;
 }
 

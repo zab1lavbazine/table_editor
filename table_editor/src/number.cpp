@@ -35,7 +35,7 @@ Object* Number::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);
 }
 
-Object* Number::collide(EMPTY& obj, OPERATIONS Action) {
+Object* Number::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
       Object* result = new Number(this->m_number);

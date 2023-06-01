@@ -10,20 +10,25 @@
 #include "../include/number.h"
 #include "../include/table.h"
 #include "../include/text.h"
+#include "../libs/json.hpp"
 #include "../libs/tabulate.hpp"
 
-int main(void) {
-  Table table;
-  // ClientMessage message;
-  // message.getCommand();
-  table.setSize(10, 10);
-  table.setValue("A2", "-123");
-  table.showFormula("A2");
+using json = nlohmann::json;
 
-  std::cout << "======================" << std::endl;
-  table.setValue("A1", "-123 * A2 -\"hello\"");
-  table.showFormula("A1");
-  table.printConnections(table.getCell("A1"));
+int main(void) {
+  // Table table;
+  // table.setSize(10, 10);
+
+  ClientMessage message;
+  message.getCommand();
+  // table.setValue("A2", "-123 * A3");
+  // // table.showFormula("A2");
+  // table.setValue("A3", "-1");
+
+  // std::cout << "======================" << std::endl;
+  // table.setValue("A1", "-123 * A2  +\"hello\"");
+  // table.showFormula("A1");
+  // table.printConnections(table.getCell("A1"));
 
   // table.setValue("A1", " A2 + 23 ");
   // // table.ShowCell("A1");
@@ -75,7 +80,7 @@ int main(void) {
   // table.setValue("A4", Number(2));
   // table.ShowCell("A4");
 
-  std::cout << table << std::endl;
+  // std::cout << table << std::endl;
 
   return 0;
 }

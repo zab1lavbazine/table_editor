@@ -130,12 +130,10 @@ void Graph::printParents(std::shared_ptr<Cell> master) const {
 void Graph::removeFromAll(std::shared_ptr<Cell> cell) {
   for (const auto& entry : m_graph_childs) {
     std::shared_ptr<Cell> parent = entry.first;
-    const std::vector<std::shared_ptr<Cell>>& children = entry.second;
     removeChild(parent, cell);
   }
   for (const auto& entry : m_graph_parents) {
     std::shared_ptr<Cell> child = entry.first;
-    const std::vector<std::shared_ptr<Cell>>& parents = entry.second;
     removeParent(child, cell);
   }
 }

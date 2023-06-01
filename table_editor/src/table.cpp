@@ -9,11 +9,6 @@
 
 // support functions
 
-struct POS {
-  int row;
-  int column;
-};
-
 int get_column_index(std::string& column) {
   int columnIndex = 0;
   int base = 26;
@@ -54,14 +49,17 @@ std::string outLetters(std::string line, int& shift) {
   return letters;
 }
 
-POS get_position(std::string position) {
+POS Table::get_position(const std::string& position) const {
   int shift = 0;
   std::string letters = outLetters(position, shift);
 
   int column = get_column_index(letters);
   int row = get_row_index(position.substr(shift, position.length()));
-  if (column <= 0 || row <= 0) {
-    throw std::out_of_range("get position error");
+
+  if (column <= 0 || row <= 0) throw std::out_of_range("get position error");
+
+  if (column > this->m_columns || row >= this->m_rows) {
+    throw std::out_of_range("too big position");
   }
 
   POS pos;
@@ -128,9 +126,17 @@ Table& Table::operator=(const Table& table) {
 
 void Table::setValue(const std::string& position, const std::string& formula) {
   std::vector<std::shared_ptr<Cell>> toPut;
+  std::cout << "position: >" << position << "< formula: " << formula
+            << std::endl;
 
   std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
-  POS pos = get_position(position);
+  POS pos;
+  try {
+    pos = get_position(position);
+  } catch (const std::exception& e) {
+    std::cout << "error" << std::endl;
+    return;
+  }
   std::shared_ptr<Cell> current_cell =
       this->m_table[pos.row - 1][pos.column - 1];
 
@@ -272,7 +278,6 @@ Cell Table::evaluate(const std::shared_ptr<Node>& node,
       return Cell(Text(token.substr(1, token.length() - 2)));
     } else {
       bool minus = false;
-      std::cout << "token: " << token << std::endl;
       if (token[0] == '-') {
         minus = true;
         token = token.substr(1, token.length() - 1);
@@ -317,7 +322,7 @@ Cell Table::evaluate(const std::shared_ptr<Node>& node,
 std::shared_ptr<Cell> Table::HandleOperands(
     const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut) {
   std::shared_ptr<Node> root = m_handler.buildParseTree(expression);
-  m_handler.printParseTree(root);
+  // m_handler.printParseTree(root);
 
   Cell new_cell = evaluate(root, toPut);  // evaluate expression
   new_cell.setFormula(root);              // set formula to cell
