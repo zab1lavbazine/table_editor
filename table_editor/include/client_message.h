@@ -36,5 +36,5 @@ class ClientMessage {
 
  private:
   static const std::vector<COMMAND> commands;
-  Table table;
+  TABLE table;
 };

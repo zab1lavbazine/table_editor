@@ -26,5 +26,6 @@ class Object {
   virtual Object* collide(class Number& obj, OPERATIONS Action) = 0;
   virtual Object* collide(class EMPTY& obj, OPERATIONS Action) = 0;
 
+  // toString for printing
   virtual std::string toString() const = 0;
 };

@@ -101,17 +101,56 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
   if (index < length) {
     char ch = formula[index];
 
-    if (std::isalpha(ch) || ch == '-') {
-      // Parsing a cell or a string
+    if (std::isalpha(ch)) {
+      // Parsing a cell or a string or sin or cos
 
       size_t startIndex = index;
-      if (ch == '-') ++index;
-
-      while (index < length && (std::isalnum(formula[index]))) {
+      if (ch == 's' || ch == 'c') {  // checking for sin or cos
         ++index;
+        while (index < length && std::isalpha(formula[index])) {
+          ++index;
+        }
+      } else {
+        while (index < length && std::isalnum(formula[index])) {
+          ++index;
+        }
       }
+
       std::string token = formula.substr(startIndex, index - startIndex);
-      node = std::make_shared<Node>(token);
+
+      if (token == "sin") {                             // sin
+        if (index < length && formula[index] == '(') {  // check for (
+          ++index;
+          std::shared_ptr<Node> expression =
+              parseExpression(formula, index, length);
+          if (index < length && formula[index] == ')') {
+            ++index;
+            node = std::make_shared<Node>("sin");
+            node->left = expression;
+          } else {
+            throw std::invalid_argument("Unbalanced parentheses! ) after sin");
+          }
+        } else {
+          throw std::invalid_argument("Expected '(' after sin!");
+        }
+      } else if (token == "cos") {                      // cos
+        if (index < length && formula[index] == '(') {  // check for
+          ++index;
+          std::shared_ptr<Node> expression =
+              parseExpression(formula, index, length);
+          if (index < length && formula[index] == ')') {
+            ++index;
+            node = std::make_shared<Node>("cos");
+            node->left = expression;
+          } else {
+            std::cerr << "Error: Unbalanced parentheses!" << std::endl;
+          }
+        } else {
+          std::cerr << "Error: Expected '(' after cos!" << std::endl;
+        }
+      } else  // Cell token or string
+        node = std::make_shared<Node>(token);
+
     } else if (ch == '"') {
       // Parsing a string enclosed in double quotes
       size_t startIndex = index;
@@ -122,11 +161,11 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
       std::string token = formula.substr(startIndex, index - startIndex + 1);
       node = std::make_shared<Node>(token);
       ++index;
-    } else if (std::isdigit(ch) || ch == '.' || ch == '-') {
+    } else if (std::isdigit(ch) || ch == '.') {
       // Parsing a number or number with a negative sign
 
       size_t startIndex = index;
-      if (ch == '-') ++index;
+      // if (ch == '-') ++index;
       while (index < length &&
              (std::isdigit(formula[index]) || formula[index] == '.')) {
         ++index;

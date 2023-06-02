@@ -27,8 +27,9 @@ std::string Cell::getCharacteistics() const {
 }
 
 std::string Cell::toString() const {
+  if (this->m_object == nullptr) return std::string("empty");
   std::stringstream ss;
-  ss << *this->m_object;
+  ss << this->m_object->toString();
   return ss.str();
 }
 

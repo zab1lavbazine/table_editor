@@ -31,12 +31,13 @@ bool Graph::detectLoop(std::shared_ptr<Cell> currentCell,
   return false;
 }
 
-// add edge to graph
+// add edge to graph with new connection
 void Graph::addEdge(std::shared_ptr<Cell> parent, std::shared_ptr<Cell> child) {
   m_graph_childs[parent].push_back(child);
-  std::unordered_set<std::shared_ptr<Cell>> visited;
-  std::unordered_set<std::shared_ptr<Cell>> memorized;
-  if (detectLoop(child, visited, memorized)) {
+  std::unordered_set<std::shared_ptr<Cell>> visited;    // visited cells
+  std::unordered_set<std::shared_ptr<Cell>> memorized;  // memorized cells
+  if (detectLoop(child, visited,
+                 memorized)) {  // if loop detected delete edge from graph
     m_graph_childs[parent].pop_back();
     m_graph_childs.erase(child);
     throw std::invalid_argument("Loop detected");

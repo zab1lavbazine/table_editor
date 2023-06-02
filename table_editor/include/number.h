@@ -25,10 +25,11 @@ class Number : public Object {
   Object* collide(EMPTY& obj, OPERATIONS Action) override;
 
   std::string toString() const override {
+    if (this->m_number == (int)this->m_number) {
+      return std::to_string((int)this->m_number);
+    }
     return std::to_string(this->m_number);
   }
-
-
 
  private:
   double m_number;

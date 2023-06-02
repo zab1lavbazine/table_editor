@@ -13,7 +13,7 @@ struct POS {
   int column;
 };
 
-class Table {
+class TABLE {
  private:
   std::vector<std::vector<std::shared_ptr<Cell>>> m_table;
   long int m_rows;
@@ -22,8 +22,8 @@ class Table {
   MessHandler m_handler;
 
  public:
-  Table();
-  Table(const Table& table);
+  TABLE();
+  TABLE(const TABLE& table);
   void setSize(const int& rows, const int& columns);
   // void setValue(const std::string& position, const Cell& cell);
   void setValue(const std::string& position, const std::string& formula);
@@ -32,9 +32,9 @@ class Table {
   long int getColumns() const;
   void ShowCell(const int row, const int column) const;
   void ShowCell(const std::string position) const;
-  ~Table();
-  Table& operator=(const Table& table);
-  friend std::ostream& operator<<(std::ostream& os, const Table& table);
+  ~TABLE();
+  TABLE& operator=(const TABLE& table);
+  friend std::ostream& operator<<(std::ostream& os, const TABLE& table);
   std::ostream& print(std::ostream& os) const;
   std::shared_ptr<Cell> getCell(const std::string position) const;
   Cell evaluate(const std::shared_ptr<Node>& node,

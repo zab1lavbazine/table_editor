@@ -10,9 +10,9 @@ std::string COMMAND::CommandToString(const COMMAND_TYPE& command) const {
     case COMMAND_TYPE::EXIT:
       return "exit";
     case COMMAND_TYPE::SH_TAB:
-      return "show table";
+      return "show table | sh tb";
     case COMMAND_TYPE::SH_CELL:
-      return "show cell \"...\"";
+      return "show cell \"...\" | sh ce \"...\"";
     case COMMAND_TYPE::SET:
       return "set";
     case COMMAND_TYPE::SETSIZE:
@@ -33,6 +33,22 @@ void COMMAND::print(std::ostream& out) const {
   out << "command: " << CommandToString(command) << std::endl;
 }
 
+std::string getLastSubstring(const std::string& str) {
+  size_t lastNonSpaceIndex = str.find_last_not_of(' ');
+
+  if (lastNonSpaceIndex == std::string::npos) {
+    return "";
+  }
+
+  size_t lastSpaceIndex = str.find_last_of(' ', lastNonSpaceIndex);
+
+  if (lastSpaceIndex == std::string::npos) {
+    return str.substr(0, lastNonSpaceIndex + 1);
+  }
+
+  return str.substr(lastSpaceIndex + 1, lastNonSpaceIndex - lastSpaceIndex);
+}
+
 void removeSpaces(std::string& str) {
   bool check = false;
   for (size_t i = 0; i < str.length(); i++) {
@@ -49,7 +65,6 @@ bool isNumber(const std::string& s) {
 }
 
 bool checkIfPosition(const std::string& position) {
-  std::cout << "position: " << position << std::endl;
   if (position.length() < 2) return false;
 
   bool letter = false;
@@ -66,8 +81,22 @@ bool checkIfPosition(const std::string& position) {
   return true;
 }
 
+void checkIfSaved(bool saved) {
+  if (!saved) {
+    std::cout << "Do you want to save changes? (y/n)" << std::endl;
+    std::string answer;
+    std::cin >> answer;
+    if (answer == "y") {
+      // save
+      std::cout << "saved" << std::endl;
+    }
+  }
+}
+
 void ClientMessage::getCommand() {
   std::string command = "";
+  bool saved = false;
+  std::cout << "-------Welcome to table editor------" << std::endl;
   while (std::getline(std::cin, command)) {
     TODO todo = checkWithRegex(command);
 
@@ -83,8 +112,6 @@ void ClientMessage::getCommand() {
       std::string position = todo.formula.substr(0, todo.formula.find("="));
       std::string formula = todo.formula.substr(todo.formula.find("=") + 1);
       if (checkIfPosition(position)) {  // check if position is valid
-        std::cout << "position = " << position << " formula = " << formula
-                  << std::endl;
         table.setValue(position, formula);
       } else {
         std::cout << "wrong position" << std::endl;
@@ -93,9 +120,10 @@ void ClientMessage::getCommand() {
       std::cout << table << std::endl;
     } else if (todo.command == COMMAND_TYPE::SH_CELL ||
                todo.command == COMMAND_TYPE::SH_CELL) {  // show cell command
-      // take the last substring from command
-      std::string position =
-          todo.formula.substr(todo.formula.find_last_of(" ") + 1);
+      // take the third substring from command
+
+      std::string position = getLastSubstring(todo.formula);
+
       if (checkIfPosition(position)) {  // check if position is valid
         try {                           // show cell
           table.ShowCell(position);
@@ -106,13 +134,13 @@ void ClientMessage::getCommand() {
         std::cout << "wrong position" << std::endl;
       }
     } else if (todo.command == COMMAND_TYPE::EXIT) {  // exit command
+      checkIfSaved(saved);
       break;
     } else if (todo.command == COMMAND_TYPE::EMP) {  // empty command
       std::cout << "empty command" << std::endl;
     } else if (todo.command == COMMAND_TYPE::DEL) {  // delete command
       // take the last substring from command
-      std::string position =
-          todo.formula.substr(todo.formula.find_last_of(" ") + 1);
+      std::string position = getLastSubstring(todo.formula);
       if (checkIfPosition(position)) {
         try {
           table.eraseCell(position);
@@ -128,7 +156,7 @@ void ClientMessage::getCommand() {
   }
   // check for EOF
   if (std::cin.eof()) {
-    std::cout << "EOF" << std::endl;
+    checkIfSaved(saved);
   }
 }
 
@@ -147,11 +175,9 @@ TODO ClientMessage::checkWithRegex(const std::string& comm) {
 
 const std::vector<COMMAND> ClientMessage::commands = {
     {std::regex(R"(^\s*exit\s*$)"), COMMAND_TYPE::EXIT},
-    {std::regex(R"(^\s*show\s+table\s*$)"), COMMAND_TYPE::SH_TAB},
-    {std::regex(R"(^\s*sh\s+tb\s*$)"), COMMAND_TYPE::SH_TAB},
-    {std::regex(R"(^\s*show\s+cell\s+([A-Z]+[0-9]+)\s*$)"),
+    {std::regex(R"(^\s*(?:show\s+table|sh\s+tb)\s*$)"), COMMAND_TYPE::SH_TAB},
+    {std::regex(R"(^\s*(?:sh\s+ce|show\s+cell)\s+([A-Z]+[0-9]+)\s*$)"),
      COMMAND_TYPE::SH_CELL},
-    {std::regex(R"(^\s*sh\s+ce\s*$)"), COMMAND_TYPE::SH_CELL},
     {std::regex(R"(^([A-Z][0-9]+)\s*=\s*(.*))"), COMMAND_TYPE::SET},
     {std::regex(R"(^set\s+size\s+(\d+)\s+(\d+)\s*$)"), COMMAND_TYPE::SETSIZE},
     {std::regex(R"(^(?:delete|del)\s+([A-Z]+[0-9]+)\s*$)"), COMMAND_TYPE::DEL},
@@ -182,7 +208,7 @@ void ClientMessage::setCellValue(const std::string& position,
     try {
       table.setValue(position, formula);
     } catch (const std::exception& e) {
-      std::cout << "error" << std::endl;
+      std::cout << "error: " << e.what() << std::endl;
     }
   } else {
     std::cout << "wrong position" << std::endl;

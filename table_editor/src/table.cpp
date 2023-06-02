@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -49,7 +50,7 @@ std::string outLetters(std::string line, int& shift) {
   return letters;
 }
 
-POS Table::get_position(const std::string& position) const {
+POS TABLE::get_position(const std::string& position) const {
   int shift = 0;
   std::string letters = outLetters(position, shift);
 
@@ -58,7 +59,7 @@ POS Table::get_position(const std::string& position) const {
 
   if (column <= 0 || row <= 0) throw std::out_of_range("get position error");
 
-  if (column > this->m_columns || row >= this->m_rows) {
+  if (column > this->m_columns || row > this->m_rows) {
     throw std::out_of_range("too big position");
   }
 
@@ -70,20 +71,20 @@ POS Table::get_position(const std::string& position) const {
 
 // -----------------------------
 
-Table::Table() {
+TABLE::TABLE() {
   this->m_rows = 0;
   this->m_columns = 0;
 }
 
-Table::~Table() {}
+TABLE::~TABLE() {}
 
-Table::Table(const Table& table) {
+TABLE::TABLE(const TABLE& table) {
   this->m_rows = table.m_rows;
   this->m_columns = table.m_columns;
   this->m_table = table.m_table;
 }
 
-void Table::setSize(const int& rows, const int& columns) {
+void TABLE::setSize(const int& rows, const int& columns) {
   if (rows > this->m_rows) {
     this->m_table.resize(rows);
 
@@ -117,54 +118,64 @@ void Table::setSize(const int& rows, const int& columns) {
   }
 }
 
-Table& Table::operator=(const Table& table) {
+TABLE& TABLE::operator=(const TABLE& table) {
   this->m_rows = table.m_rows;
   this->m_columns = table.m_columns;
   this->m_table = table.m_table;
   return *this;
 }
 
-void Table::setValue(const std::string& position, const std::string& formula) {
+void TABLE::setValue(const std::string& position, const std::string& formula) {
   std::vector<std::shared_ptr<Cell>> toPut;
-  std::cout << "position: >" << position << "< formula: " << formula
-            << std::endl;
-
-  std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
   POS pos;
   try {
     pos = get_position(position);
   } catch (const std::exception& e) {
-    std::cout << "error" << std::endl;
+    std::cout << "error: position " << e.what() << std::endl;
     return;
   }
+
+  // creating new cell with formula
+  std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
+
+  // getting current cell from table if it is empty
   std::shared_ptr<Cell> current_cell =
       this->m_table[pos.row - 1][pos.column - 1];
 
-  current_cell.get()->setObject(new_cell.get()->getObject()->clone());
-  current_cell.get()->setFormula(new_cell.get()->getFormula());
+  current_cell.get()->setObject(
+      new_cell.get()->getObject()->clone());  // set new oject to current cell
+  current_cell.get()->setFormula(
+      new_cell.get()->getFormula());  // set formula to current cell
 
-  if (toPut.size() > 0)
-    putChild(current_cell, toPut);
-  else
-    m_graph.removeParents(current_cell);
-  changeChildrens(current_cell);
+  // insert new cell to graph (parents and childrens)
+  if (toPut.size() > 0) {
+    try {
+      putChild(current_cell,
+               toPut);  // insert new cell to graph (parents and childrens)
+    } catch (const std::exception& e) {
+      throw std::invalid_argument("invalid child connection, loop detected");
+    }
+  } else {
+    m_graph.removeParents(current_cell);  // delete parents if there are no
+  }                                       // childrens
+  changeChildrens(current_cell);          // rewrite all childrens
 }
 
-void Table::setValueFormula(const std::string& position,
+void TABLE::setValueFormula(const std::string& position,
                             std::shared_ptr<Cell> cell) {
   POS pos = get_position(position);
   this->m_table[pos.row - 1][pos.column - 1] = cell;
 }
 
-long int Table::getRows() const { return this->m_rows; }
+long int TABLE::getRows() const { return this->m_rows; }
 
-long int Table::getColumns() const { return this->m_columns; }
+long int TABLE::getColumns() const { return this->m_columns; }
 
-std::ostream& operator<<(std::ostream& os, const Table& table) {
+std::ostream& operator<<(std::ostream& os, const TABLE& table) {
   return table.print(os);
 }
 
-void Table::ShowCell(const int row, const int column) const {
+void TABLE::ShowCell(const int row, const int column) const {
   if (row <= 0 || column <= 0) {
     throw std::out_of_range("show cell error");
   } else if (row > this->m_rows || column > this->m_columns) {
@@ -174,7 +185,7 @@ void Table::ShowCell(const int row, const int column) const {
             << std::endl;
 }
 
-void Table::ShowCell(const std::string position) const {
+void TABLE::ShowCell(const std::string position) const {
   POS pos = get_position(position);
 
   std::cout << position << "\n"
@@ -200,56 +211,40 @@ int get_max_length(const int& rows) {
   return maxDigits;
 }
 
-std::ostream& Table::print(std::ostream& os) const {
-  int colWidth = 11;
-  int firstColumn = get_max_length(m_rows);
-
-  // Print column numbers
-  os << std::setw(firstColumn) << "|";
-  for (long int i = 0; i < m_columns; i++) {
-    std::string identifier = get_cell_id(i);
-    os << std::setw(colWidth - identifier.length()) << std::setfill(' ')
-       << identifier << "|";
+std::ostream& TABLE::print(std::ostream& os) const {
+  tabulate::Table table;
+  std::vector<std::string> identifier;
+  identifier.push_back(" ");
+  // taking the first row with letters for columns
+  for (int i = 0; i < m_columns; i++) {
+    identifier.push_back(get_cell_id(i));
   }
-  os << std::endl;
-
-  // Print horizontal separator
-  os << std::setw(firstColumn) << "+";
-  for (long int i = 0; i < m_columns; i++) {
-    os << std::setw(colWidth) << std::setfill('-') << "+";
+  // loading the first row
+  table.add_row(tabulate::Table::Row_t(identifier.begin(), identifier.end()));
+  // coloring the first row
+  for (int i = 0; i < m_columns; i++) {
+    table[0][i + 1]
+        .format()
+        .font_color(tabulate::Color::yellow)
+        .font_align(tabulate::FontAlign::center);
   }
-  os << std::setfill(' ') << std::endl;
 
-  // Print table
-  for (long int i = 0; i < m_rows; i++) {
-    // Print row number
-    os << std::setw(firstColumn - 1) << std::setfill(' ') << i + 1 << "|";
-
-    for (long int j = 0; j < m_columns; j++) {
-      if (this->m_table[i][j] == nullptr) {
-        os << std::setw(colWidth) << std::setfill(' ') << "|";
-      } else {
-        std::string output = this->m_table[i][j]->toString();
-        if (int(output.length()) > colWidth - 1) {
-          output = output.substr(0, colWidth - 4) + "...";
-        }
-        os << std::setw(colWidth - 1) << std::setfill(' ') << output << "|";
-      }
+  // loading the rest of the table
+  for (int i = 0; i < m_rows; i++) {
+    std::vector<std::string> row;
+    row.push_back(std::to_string(i + 1));
+    for (int j = 0; j < m_columns; j++) {
+      // row.push_back(std::to_string(rowDigit));
+      row.push_back(this->m_table[i][j]->toString());
     }
-    os << std::endl;
-
-    // Print horizontal separator
-    os << "-" << std::setw(firstColumn - 1) << std::setfill('-') << "+";
-    for (long int i = 0; i < m_columns; i++) {
-      os << std::setw(colWidth) << std::setfill('-') << "+";
-    }
-    os << std::endl;
+    table.add_row(tabulate::Table::Row_t{row.begin(), row.end()});
   }
 
+  os << table << std::endl;
   return os;
 }
 
-std::shared_ptr<Cell> Table::getCell(const std::string position) const {
+std::shared_ptr<Cell> TABLE::getCell(const std::string position) const {
   POS pos = get_position(position);
   return this->m_table[pos.row - 1][pos.column - 1];
 }
@@ -263,19 +258,29 @@ bool check_if_number(std::string number) {
   return true;
 }
 
-Cell Table::evaluate(const std::shared_ptr<Node>& node,
+Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
                      std::vector<std::shared_ptr<Cell>>& toPut) const {
-  if (node == nullptr) {
+  if (node == nullptr) {  // check for null pointers
     return Cell();
   }
 
   if (node->left == nullptr && node->right == nullptr) {
     // Leaf node
     std::string token = node->value;
-    if (check_if_number(token)) {
+    if (check_if_number(token)) {  // check if the last is number
       return Cell(Number(std::stod(token)));
-    } else if (token[0] == '\"' && token[token.length() - 1] == '\"') {
+    } else if (token[0] == '\"' && token[token.length() - 1] ==
+                                       '\"') {  // check if the last is text
       return Cell(Text(token.substr(1, token.length() - 2)));
+    } else if (token == "sin") {
+      // Handle sin function
+      Cell expression = evaluate(node->left, toPut);
+      std::cout << "sin expression: " << expression.toString() << std::endl;
+      return Cell(Text("sin")) * expression;
+    } else if (token == "cos") {
+      // Handle cos function
+      Cell expression = evaluate(node->left, toPut);
+      return Cell(Text("cos")) * expression;
     } else {
       bool minus = false;
       if (token[0] == '-') {
@@ -302,6 +307,11 @@ Cell Table::evaluate(const std::shared_ptr<Node>& node,
 
   // check for null pointers
 
+  if (op == "sin" || op == "cos") return Cell(Text(op)) * left;
+
+  if (op == "-" && right.getObject() != nullptr && left.getObject() == nullptr)
+    return right * Cell(Number(-1));
+
   if (left.getObject() == nullptr || right.getObject() == nullptr) {
     return Cell();
   }
@@ -319,9 +329,10 @@ Cell Table::evaluate(const std::shared_ptr<Node>& node,
   return Cell();
 }
 
-std::shared_ptr<Cell> Table::HandleOperands(
+std::shared_ptr<Cell> TABLE::HandleOperands(
     const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut) {
-  std::shared_ptr<Node> root = m_handler.buildParseTree(expression);
+  std::shared_ptr<Node> root =
+      m_handler.buildParseTree(expression);  // build parse tree
   // m_handler.printParseTree(root);
 
   Cell new_cell = evaluate(root, toPut);  // evaluate expression
@@ -333,7 +344,7 @@ std::shared_ptr<Cell> Table::HandleOperands(
   return cell;
 }
 
-void Table::eraseCell(const std::string& position) {
+void TABLE::eraseCell(const std::string& position) {
   POS pos = get_position(position);
   // delete from all connections
 
@@ -345,7 +356,7 @@ void Table::eraseCell(const std::string& position) {
   this->m_table[pos.row - 1][pos.column - 1] = new_cell;
 }
 
-void Table::eraseCell(const int& x, const int& y) {
+void TABLE::eraseCell(const int& x, const int& y) {
   if (x > this->m_columns || y > this->m_rows || x <= 0 || y <= 0) {
     throw std::out_of_range("erase error");
   }
@@ -359,7 +370,7 @@ void Table::eraseCell(const int& x, const int& y) {
   this->m_table[y - 1][x - 1] = new_cell;
 }
 
-void Table::changeValue(const std::string& position, Object* new_value) {
+void TABLE::changeValue(const std::string& position, Object* new_value) {
   POS pos = get_position(position);
 
   std::shared_ptr<Cell> current_cell =
@@ -373,7 +384,7 @@ void Table::changeValue(const std::string& position, Object* new_value) {
   changeChildrens(current_cell);
 }
 
-void Table::changeValue(const std::string& position,
+void TABLE::changeValue(const std::string& position,
                         const std::string& formula) {
   std::vector<std::shared_ptr<Cell>> toPut;
 
@@ -394,7 +405,7 @@ void Table::changeValue(const std::string& position,
   changeChildrens(current_cell);
 }
 
-void Table::changeChildrens(std::shared_ptr<Cell> cell) {
+void TABLE::changeChildrens(std::shared_ptr<Cell> cell) {
   std::vector<std::shared_ptr<Cell>> toPut;
   for (auto& child : m_graph.getChildrens(cell)) {
     Cell new_cell = evaluate(child->getFormula(), toPut);
@@ -403,7 +414,7 @@ void Table::changeChildrens(std::shared_ptr<Cell> cell) {
   }
 }
 
-void Table::putChild(std::shared_ptr<Cell> new_cell,
+void TABLE::putChild(std::shared_ptr<Cell> new_cell,
                      std::vector<std::shared_ptr<Cell>>& toPut) {
   for (std::shared_ptr<Cell> master : toPut) {
     m_graph.addEdge(master, new_cell);
@@ -411,7 +422,7 @@ void Table::putChild(std::shared_ptr<Cell> new_cell,
   toPut.clear();
 }
 
-void Table::showFormula(const std::string& position) const {
+void TABLE::showFormula(const std::string& position) const {
   POS pos = get_position(position);
   std::cout << "formula: "
             << this->m_table[pos.row - 1][pos.column - 1]->toStringFormula()
