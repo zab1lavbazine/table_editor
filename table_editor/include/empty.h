@@ -18,11 +18,13 @@ class EMPTY : public Object {
     return new EMPTY(*this);
   }  // clone object
 
-  std::string toString() const override { return "   "; }
+  std::string toString() const override { return ""; }
 
   // double dispatch for collision
   Object* collide(Object& obj, OPERATIONS Action) override;
   Object* collide(class Text& obj, OPERATIONS Action) override;
   Object* collide(class Number& obj, OPERATIONS Action) override;
   Object* collide(class EMPTY& obj, OPERATIONS Action) override;
+
+  nlohmann::json toJSON() const override;
 };

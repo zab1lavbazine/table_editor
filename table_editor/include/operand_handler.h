@@ -30,5 +30,4 @@ class MessHandler {
  private:
   bool isOperator(const char& ch);
   std::string getIndentation(int depth);
-  void skipWhitespace(const std::string& formula, size_t& index, size_t length);
 };

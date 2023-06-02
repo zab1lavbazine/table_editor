@@ -83,3 +83,5 @@ Object* EMPTY::collide(Text& obj, OPERATIONS Action) {
   }
   return nullptr;
 }
+
+nlohmann::json EMPTY::toJSON() const { return nlohmann::json(); }

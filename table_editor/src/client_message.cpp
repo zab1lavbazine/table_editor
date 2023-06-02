@@ -1,6 +1,7 @@
 
 #include "../include/client_message.h"
 
+#include <fstream>
 #include <iostream>
 #include <regex>
 #include <sstream>
@@ -25,6 +26,10 @@ std::string COMMAND::CommandToString(const COMMAND_TYPE& command) const {
       return "empty";
     case COMMAND_TYPE::UNKNOWN:
       return "unknown";
+    case COMMAND_TYPE::SAVE:
+      return "save";
+    case COMMAND_TYPE::IMPORT:
+      return "import";
   }
   return "";
 }
@@ -92,19 +97,36 @@ void checkIfSaved(bool saved) {
     }
   }
 }
+// save function for table
+void ClientMessage::saveIntoFile(bool& saved) const {
+  std::cout << "Enter file name: ";
+  std::string fileName;
+  std::cin >> fileName;
+  std::string file = fileName + ".json";
+  int check = parseToJSON(fileName);
+  if (check == 0) {
+    saved = true;
+  } else {
+    std::cout << "error: save" << std::endl;
+  }
+}
 
 void ClientMessage::getCommand() {
   std::string command = "";
-  bool saved = false;
+  bool saved = true;
   std::cout << "-------Welcome to table editor------" << std::endl;
+  std::cout << "Type info to see all commands" << std::endl;
   while (std::getline(std::cin, command)) {
     TODO todo = checkWithRegex(command);
 
     if (todo.command == COMMAND_TYPE::INFO) {
       // cout all commands
       print(std::cout);
+    } else if (todo.command == COMMAND_TYPE::SAVE) {
+      saveIntoFile(saved);
     } else if (todo.command ==
                COMMAND_TYPE::SETSIZE) {  // set size command for table
+      saved = false;
       setTableSize(todo.formula);
     } else if (todo.command ==
                COMMAND_TYPE::SET) {  // set value command for cell
@@ -112,12 +134,12 @@ void ClientMessage::getCommand() {
       std::string position = todo.formula.substr(0, todo.formula.find("="));
       std::string formula = todo.formula.substr(todo.formula.find("=") + 1);
       if (checkIfPosition(position)) {  // check if position is valid
-        table.setValue(position, formula);
+        m_table.setValue(position, formula);
       } else {
         std::cout << "wrong position" << std::endl;
       }
     } else if (todo.command == COMMAND_TYPE::SH_TAB) {
-      std::cout << table << std::endl;
+      std::cout << m_table << std::endl;
     } else if (todo.command == COMMAND_TYPE::SH_CELL ||
                todo.command == COMMAND_TYPE::SH_CELL) {  // show cell command
       // take the third substring from command
@@ -126,7 +148,7 @@ void ClientMessage::getCommand() {
 
       if (checkIfPosition(position)) {  // check if position is valid
         try {                           // show cell
-          table.ShowCell(position);
+          m_table.ShowCell(position);
         } catch (const std::exception& e) {
           std::cout << "error: show cell" << std::endl;
         }
@@ -143,7 +165,7 @@ void ClientMessage::getCommand() {
       std::string position = getLastSubstring(todo.formula);
       if (checkIfPosition(position)) {
         try {
-          table.eraseCell(position);
+          m_table.eraseCell(position);
         } catch (const std::exception& e) {
           std::cout << "error: delete table" << std::endl;
         }
@@ -174,15 +196,19 @@ TODO ClientMessage::checkWithRegex(const std::string& comm) {
 }
 
 const std::vector<COMMAND> ClientMessage::commands = {
-    {std::regex(R"(^\s*exit\s*$)"), COMMAND_TYPE::EXIT},
-    {std::regex(R"(^\s*(?:show\s+table|sh\s+tb)\s*$)"), COMMAND_TYPE::SH_TAB},
+    {std::regex(R"(^\s*exit\s*$)"), COMMAND_TYPE::EXIT, "exit"},
+    {std::regex(R"(^\s*(?:show\s+table|sh\s+tb)\s*$)"), COMMAND_TYPE::SH_TAB,
+     "show table | sh tb"},
     {std::regex(R"(^\s*(?:sh\s+ce|show\s+cell)\s+([A-Z]+[0-9]+)\s*$)"),
-     COMMAND_TYPE::SH_CELL},
-    {std::regex(R"(^([A-Z][0-9]+)\s*=\s*(.*))"), COMMAND_TYPE::SET},
-    {std::regex(R"(^set\s+size\s+(\d+)\s+(\d+)\s*$)"), COMMAND_TYPE::SETSIZE},
-    {std::regex(R"(^(?:delete|del)\s+([A-Z]+[0-9]+)\s*$)"), COMMAND_TYPE::DEL},
-    {std::regex(R"(^\s*info\s*$)"), COMMAND_TYPE::INFO},
-    {std::regex(R"(^\s*\S+\s*$)"), COMMAND_TYPE::EMP}};
+     COMMAND_TYPE::SH_CELL, "show cell A1 | sh ce A1"},
+    {std::regex(R"(^([A-Z][0-9]+)\s*=\s*(.*))"), COMMAND_TYPE::SET, "A1 = 1+2"},
+    {std::regex(R"(^set\s+size\s+(\d+)\s+(\d+)\s*$)"), COMMAND_TYPE::SETSIZE,
+     "set size 10 10"},
+    {std::regex(R"(^(?:delete|del)\s+([A-Z]+[0-9]+)\s*$)"), COMMAND_TYPE::DEL,
+     "delete A1 | del A1"},
+    {std::regex(R"(^\s*info\s*$)"), COMMAND_TYPE::INFO, "info"},
+    {std::regex(R"(^\s*save\s*$)"), COMMAND_TYPE::SAVE, "save"},
+    {std::regex(R"(^\s*\S+\s*$)"), COMMAND_TYPE::EMP, "wrong command"}};
 
 void ClientMessage::setTableSize(const std::string& formula) {
   std::stringstream ss(formula);
@@ -194,19 +220,19 @@ void ClientMessage::setTableSize(const std::string& formula) {
       ss >> token;
       if (isNumber(token)) {
         y = std::stoi(token);
-        table.setSize(x, y);
+        m_table.setSize(x, y);
         break;
       }
     }
   }
-  table.setSize(x, y);
+  m_table.setSize(x, y);
 }
 
 void ClientMessage::setCellValue(const std::string& position,
                                  const std::string& formula) {
   if (checkIfPosition(position)) {  // check if position is valid
     try {
-      table.setValue(position, formula);
+      m_table.setValue(position, formula);
     } catch (const std::exception& e) {
       std::cout << "error: " << e.what() << std::endl;
     }
@@ -218,7 +244,29 @@ void ClientMessage::setCellValue(const std::string& position,
 void ClientMessage::print(std::ostream& out) const {
   // load in ostream all commands
   out << "Commands: " << std::endl;
-  for (auto& command : commands) {
-    command.print(out);
+  tabulate::Table table;
+
+  for (size_t i = 0; i < commands.size(); i++) {
+    table.add_row({commands[i].CommandToString(commands[i].command),
+                   commands[i].example});
   }
+  std::cout << table << std::endl;
+}
+
+int ClientMessage::parseToJSON(const std::string& fileName) const {
+  std::string file = fileName + ".json";
+  std::fstream out{file, std::ios::out | out.binary};
+
+  // check for file opening
+  if (!out.is_open()) {
+    std::cout << "error opening file" << std::endl;
+    return 1;
+  }
+
+  nlohmann::json j = m_table.toJSON();
+  out << j.dump(4);
+  out.close();
+  std::cout << "file saved" << std::endl;
+
+  return 0;
 }

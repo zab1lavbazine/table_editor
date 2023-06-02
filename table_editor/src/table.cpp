@@ -142,23 +142,20 @@ void TABLE::setValue(const std::string& position, const std::string& formula) {
   std::shared_ptr<Cell> current_cell =
       this->m_table[pos.row - 1][pos.column - 1];
 
-  current_cell.get()->setObject(
-      new_cell.get()->getObject()->clone());  // set new oject to current cell
-  current_cell.get()->setFormula(
-      new_cell.get()->getFormula());  // set formula to current cell
-
   // insert new cell to graph (parents and childrens)
   if (toPut.size() > 0) {
-    try {
-      putChild(current_cell,
-               toPut);  // insert new cell to graph (parents and childrens)
-    } catch (const std::exception& e) {
-      throw std::invalid_argument("invalid child connection, loop detected");
-    }
+    // insert new cell to graph (parents and childrens)
+    bool putted = putChild(current_cell, toPut);
+    if (!putted) return;  // if there is a loop return and dont put inside
   } else {
     m_graph.removeParents(current_cell);  // delete parents if there are no
   }                                       // childrens
   changeChildrens(current_cell);          // rewrite all childrens
+
+  current_cell.get()->setObject(
+      new_cell.get()->getObject()->clone());  // set new oject to current cell
+  current_cell.get()->setFormula(
+      new_cell.get()->getFormula());  // set formula to current cell
 }
 
 void TABLE::setValueFormula(const std::string& position,
@@ -414,12 +411,14 @@ void TABLE::changeChildrens(std::shared_ptr<Cell> cell) {
   }
 }
 
-void TABLE::putChild(std::shared_ptr<Cell> new_cell,
+bool TABLE::putChild(std::shared_ptr<Cell> new_cell,
                      std::vector<std::shared_ptr<Cell>>& toPut) {
   for (std::shared_ptr<Cell> master : toPut) {
-    m_graph.addEdge(master, new_cell);
+    bool putted = m_graph.addEdge(master, new_cell);
+    if (!putted) return false;
   }
   toPut.clear();
+  return true;
 }
 
 void TABLE::showFormula(const std::string& position) const {
@@ -427,4 +426,21 @@ void TABLE::showFormula(const std::string& position) const {
   std::cout << "formula: "
             << this->m_table[pos.row - 1][pos.column - 1]->toStringFormula()
             << std::endl;
+}
+
+nlohmann::json TABLE::toJSON() const {
+  nlohmann::json json;
+  for (int i = 0; i < m_rows; i++) {
+    for (int j = 0; j < m_columns; j++) {
+      // check if cell is empty
+      if (m_table[i][j]->getObject()->toString() == "")
+        continue;
+      else {
+        // save the position of the cells
+        json += {{"position", get_cell_id(j) + std::to_string(i + 1)},
+                 {"Cell", m_table[i][j]->toJSON()}};
+      }
+    }
+  }
+  return json;
 }

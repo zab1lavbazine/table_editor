@@ -12,6 +12,7 @@
 #include "../include/number.h"
 #include "../include/object.h"
 #include "../include/text.h"
+#include "../libs/json.hpp"
 
 class Cell {
  public:
@@ -47,7 +48,7 @@ class Cell {
 
   Cell clone() const;
 
-
+  nlohmann::json toJSON() const;
 
  private:
   Object* m_object;

@@ -92,3 +92,8 @@ Cell Cell::operator=(const Cell& cell) {
   }
   return *this;
 }
+
+nlohmann::json Cell::toJSON() const {
+  return nlohmann::json{{"value", this->m_object->toJSON()},
+                        {"formula", this->m_formula.toString()}};
+}

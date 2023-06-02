@@ -5,6 +5,7 @@
 
 #include "../include/object.h"
 #include "../include/text.h"
+#include "../libs/json.hpp"
 
 class Number : public Object {
  public:
@@ -30,6 +31,8 @@ class Number : public Object {
     }
     return std::to_string(this->m_number);
   }
+
+  nlohmann::json toJSON() const override;
 
  private:
   double m_number;

@@ -147,3 +147,7 @@ Text& Text::operator+(const Text& text) {
   this->m_text += text.m_text;
   return *this;
 }
+
+nlohmann::json Text::toJSON() const {
+  return nlohmann::json{{"type", "text"}, {"value", this->m_text}};
+}

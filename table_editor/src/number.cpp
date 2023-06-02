@@ -156,3 +156,7 @@ Object* Number::collide(Number& obj, OPERATIONS Action) {
   }
   return nullptr;
 }
+
+nlohmann::json Number::toJSON() const {
+  return nlohmann::json{{"type", "number"}, {"value", this->m_number}};
+}

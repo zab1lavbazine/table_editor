@@ -29,6 +29,7 @@ class Text : public Object {
 
   std::string toString() const override { return this->m_text; }
 
+  nlohmann::json toJSON() const override;
 
  private:
   std::string m_text;

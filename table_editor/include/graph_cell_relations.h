@@ -23,7 +23,7 @@ class Graph {
                   std::unordered_set<std::shared_ptr<Cell>>& memorized);
 
  public:
-  void addEdge(std::shared_ptr<Cell> parent, std::shared_ptr<Cell> child);
+  bool addEdge(std::shared_ptr<Cell> parent, std::shared_ptr<Cell> child);
   void removeEdge(std::shared_ptr<Cell> parent, std::shared_ptr<Cell> child);
   void removeFromAll(std::shared_ptr<Cell> cell);
   void removeChildrens(std::shared_ptr<Cell> parent);

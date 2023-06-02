@@ -6,6 +6,7 @@
 
 #include "../include/graph_cell_relations.h"
 #include "../include/operand_handler.h"
+#include "../libs/json.hpp"
 #include "../libs/tabulate.hpp"
 
 struct POS {
@@ -42,7 +43,7 @@ class TABLE {
   void changeValue(const std::string& position, Object* cell);
   void changeValue(const std::string& position, const std::string& formula);
 
-  void putChild(std::shared_ptr<Cell> new_cell,
+  bool putChild(std::shared_ptr<Cell> new_cell,
                 std::vector<std::shared_ptr<Cell>>& toPut);
   void changeChildrens(std::shared_ptr<Cell> new_cell);
 
@@ -60,4 +61,6 @@ class TABLE {
 
   std::shared_ptr<Cell> HandleOperands(
       const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut);
+
+  nlohmann::json toJSON() const;
 };

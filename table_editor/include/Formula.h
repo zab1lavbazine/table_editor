@@ -47,6 +47,12 @@ class Formula {
       return node->value;
     }
 
+    if (node->value == "sin" || node->value == "cos") {
+      std::string leftString = treeToString(node->left);
+      std::string result = node->value + "(" + leftString + ")";
+      return result;
+    }
+
     std::string leftString = treeToString(node->left);
     std::string rightString = treeToString(node->right);
 

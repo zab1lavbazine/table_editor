@@ -9,6 +9,7 @@ enum COMMAND_TYPE {
   EMP,
   DEL,
   UNKNOWN,
-  INFO
+  INFO,
+  SAVE,
+  IMPORT
 };
-
