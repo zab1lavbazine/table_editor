@@ -9,6 +9,7 @@
 #include "table.h"
 
 // struct for TODO
+
 struct TODO {
   COMMAND_TYPE command;
   std::string formula;
@@ -36,7 +37,6 @@ class ClientMessage {
   // set size
   void setTableSize(const std::string& formula);
   // set value
-  void setCellValue(const std::string& position, const std::string& formula);
 
   // operator for output
   friend void operator<<(std::ostream& out, const ClientMessage& c) {
@@ -44,10 +44,21 @@ class ClientMessage {
   }
   void print(std::ostream& out) const;
 
+  // parser for json
   int parseToJSON(const std::string& fileName) const;
 
-  void saveIntoFile(bool& saved) const;
+  // all commands for table
+  void setValue(const std::string& formula);
+  void showCell(const std::string& formula);
+  void deleteCell(const std::string& formula);
 
+  // all fucntions for saving and loading
+  /// @brief function for saving table into json file
+  int fromJSON(const std::string& fileName);
+  void importFromFile();
+  void saveIntoFile(bool& saved) const;
+  void checkIfSaved(bool& saved) const;
+  //------------------------
  private:
   static const std::vector<COMMAND> commands;
   TABLE m_table;

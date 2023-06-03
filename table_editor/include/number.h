@@ -12,11 +12,18 @@ class Number : public Object {
   Number();
   Number(const double& number);
   ~Number();
+
+  // get and set number
   double getNumber() const;
   void setNumber(const double& number);
+
+  // print object
   std::ostream& print(std::ostream& os) const override;
+
+  // clone object
   Object* clone() const override;
 
+  // operator overloading +- ---------------------------------
   Number& operator+=(const Number& number);
   Number& operator+(const Number& number);
   // double dispatch for collision
@@ -25,6 +32,7 @@ class Number : public Object {
   Object* collide(Number& obj, OPERATIONS Action) override;
   Object* collide(EMPTY& obj, OPERATIONS Action) override;
 
+  // toString for saving in json
   std::string toString() const override {
     if (this->m_number == (int)this->m_number) {
       return std::to_string((int)this->m_number);
@@ -32,6 +40,7 @@ class Number : public Object {
     return std::to_string(this->m_number);
   }
 
+  // parse from json
   nlohmann::json toJSON() const override;
 
  private:

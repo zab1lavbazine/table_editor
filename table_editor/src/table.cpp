@@ -78,12 +78,6 @@ TABLE::TABLE() {
 
 TABLE::~TABLE() {}
 
-TABLE::TABLE(const TABLE& table) {
-  this->m_rows = table.m_rows;
-  this->m_columns = table.m_columns;
-  this->m_table = table.m_table;
-}
-
 void TABLE::setSize(const int& rows, const int& columns) {
   if (rows > this->m_rows) {
     this->m_table.resize(rows);
@@ -121,7 +115,11 @@ void TABLE::setSize(const int& rows, const int& columns) {
 TABLE& TABLE::operator=(const TABLE& table) {
   this->m_rows = table.m_rows;
   this->m_columns = table.m_columns;
-  this->m_table = table.m_table;
+  for (int i = 0; i < m_rows; i++) {
+    for (int j = 0; j < m_columns; j++) {
+      this->m_table[i][j] = table.m_table[i][j];
+    }
+  }
   return *this;
 }
 
@@ -156,12 +154,6 @@ void TABLE::setValue(const std::string& position, const std::string& formula) {
       new_cell.get()->getObject()->clone());  // set new oject to current cell
   current_cell.get()->setFormula(
       new_cell.get()->getFormula());  // set formula to current cell
-}
-
-void TABLE::setValueFormula(const std::string& position,
-                            std::shared_ptr<Cell> cell) {
-  POS pos = get_position(position);
-  this->m_table[pos.row - 1][pos.column - 1] = cell;
 }
 
 long int TABLE::getRows() const { return this->m_rows; }
@@ -367,50 +359,17 @@ void TABLE::eraseCell(const int& x, const int& y) {
   this->m_table[y - 1][x - 1] = new_cell;
 }
 
-void TABLE::changeValue(const std::string& position, Object* new_value) {
-  POS pos = get_position(position);
-
-  std::shared_ptr<Cell> current_cell =
-      this->m_table[pos.row - 1][pos.column - 1];
-  current_cell.get()->setObject(new_value);  // set object delete also formula
-
-  // delete parents
-  m_graph.removeParents(current_cell);
-
-  // rewrite childs
-  changeChildrens(current_cell);
-}
-
-void TABLE::changeValue(const std::string& position,
-                        const std::string& formula) {
-  std::vector<std::shared_ptr<Cell>> toPut;
-
-  std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
-  POS pos = get_position(position);
-  std::shared_ptr<Cell> current_cell =
-      this->m_table[pos.row - 1][pos.column - 1];
-  current_cell.get()->setObject(new_cell.get()->getObject()->clone());
-  current_cell.get()->setFormula(new_cell.get()->getFormula());
-
-  if (toPut.size() > 0) {
-    putChild(current_cell, toPut);
-  }
-
-  m_graph.removeParents(current_cell);
-
-  // rewrite childs
-  changeChildrens(current_cell);
-}
-
+// change childrens of cell
 void TABLE::changeChildrens(std::shared_ptr<Cell> cell) {
   std::vector<std::shared_ptr<Cell>> toPut;
   for (auto& child : m_graph.getChildrens(cell)) {
     Cell new_cell = evaluate(child->getFormula(), toPut);
-    child.get()->changeObject(new_cell.getObject()->clone());
+    child.get()->setObject(new_cell.getObject()->clone());
     changeChildrens(child);
   }
 }
 
+// add new edge to graph
 bool TABLE::putChild(std::shared_ptr<Cell> new_cell,
                      std::vector<std::shared_ptr<Cell>>& toPut) {
   for (std::shared_ptr<Cell> master : toPut) {
@@ -421,6 +380,7 @@ bool TABLE::putChild(std::shared_ptr<Cell> new_cell,
   return true;
 }
 
+// show formula of cell
 void TABLE::showFormula(const std::string& position) const {
   POS pos = get_position(position);
   std::cout << "formula: "
@@ -428,8 +388,10 @@ void TABLE::showFormula(const std::string& position) const {
             << std::endl;
 }
 
+// export to json file
 nlohmann::json TABLE::toJSON() const {
   nlohmann::json json;
+  json += {{"rows", m_rows}, {"columns", m_columns}};
   for (int i = 0; i < m_rows; i++) {
     for (int j = 0; j < m_columns; j++) {
       // check if cell is empty
@@ -443,4 +405,39 @@ nlohmann::json TABLE::toJSON() const {
     }
   }
   return json;
+}
+
+// import from json file
+void TABLE::importFromJSON(const nlohmann::json& j) {
+  bool first = true;
+  for (auto& element : j) {
+    if (first) {
+      int rows = element.at("rows");
+      int columns = element.at("columns");
+      setSize(rows, columns);
+      first = false;
+      continue;
+    }
+    std::string position = element.at("position");
+    std::string formula = element.at("Cell").at("formula");
+    std::cout << "position: " << position << std::endl;
+    std::cout << "formula: " << formula << std::endl;
+    setValue(position, formula);
+  }
+}
+
+bool TABLE::isEmpty() const {
+  if (m_rows == 0 && m_columns == 0) return true;
+
+  for (int i = 0; i < m_rows; i++) {
+    for (int j = 0; j < m_columns; j++) {
+      if (m_table[i][j]->getObject()->toString() != "") return false;
+    }
+  }
+  return false;
+}
+
+std::string TABLE::getValue(const std::string& position) const {
+  POS pos = get_position(position);
+  return this->m_table[pos.row - 1][pos.column - 1].get()->toStringFormula();
 }

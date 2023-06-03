@@ -14,52 +14,26 @@ class Formula {
   ~Formula() = default;
   Formula() = default;
 
+  // manipulations with formula
   std::shared_ptr<Node> getFormula() const { return this->m_formula; }
   void setFormula(const std::shared_ptr<Node>& formula) {
     this->m_formula = formula;
   }
 
-  std::ostream& print(std::ostream& os) const {
-    if (m_formula != nullptr) {
-      os << m_formula->value;
-    }
-    return os;
-  }
+  // print fucntion for formula
+  std::ostream& print(std::ostream& os) const;
+  friend std::ostream& operator<<(std::ostream& os, const Formula& formula);
+  std::string toString() const { return treeToString(m_formula); }
+  std::string treeToString(std::shared_ptr<Node> node) const;
 
-  friend std::ostream& operator<<(std::ostream& os, const Formula& formula) {
-    if (formula.get() != nullptr) {
-      os << formula.get()->value;
-    }
-    return os;
-  }
+  // clone formula
+  Formula clone() const;
 
+  // get formula
   std::shared_ptr<Node> get() const { return this->m_formula; }
 
-  std::string toString() const { return treeToString(m_formula); }
-
-  std::string treeToString(std::shared_ptr<Node> node) const {
-    if (!node) {
-      return "";
-    }
-
-    if (!node->left && !node->right) {
-      // Leaf node, return its value
-      return node->value;
-    }
-
-    if (node->value == "sin" || node->value == "cos") {
-      std::string leftString = treeToString(node->left);
-      std::string result = node->value + "(" + leftString + ")";
-      return result;
-    }
-
-    std::string leftString = treeToString(node->left);
-    std::string rightString = treeToString(node->right);
-
-    std::string result =
-        "(" + leftString + " " + node->value + " " + rightString + ")";
-    return result;
-  }
+ private:
+  std::shared_ptr<Node> cloneTree(std::shared_ptr<Node> node) const;
 
  private:
   std::shared_ptr<Node> m_formula;

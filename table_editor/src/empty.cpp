@@ -2,10 +2,12 @@
 
 #include <iostream>
 
+// double  dispatch
 Object* EMPTY::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);
 }
 
+// collide with Empty Object
 Object* EMPTY::collide(EMPTY& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
@@ -32,6 +34,7 @@ Object* EMPTY::collide(EMPTY& obj, OPERATIONS Action) {
   return nullptr;
 }
 
+// collide with Number Object
 Object* EMPTY::collide(Number& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
@@ -58,6 +61,7 @@ Object* EMPTY::collide(Number& obj, OPERATIONS Action) {
   return nullptr;
 }
 
+// collide with Text Object
 Object* EMPTY::collide(Text& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
@@ -84,4 +88,5 @@ Object* EMPTY::collide(Text& obj, OPERATIONS Action) {
   return nullptr;
 }
 
+// parse to JSON
 nlohmann::json EMPTY::toJSON() const { return nlohmann::json(); }

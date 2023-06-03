@@ -1,5 +1,5 @@
 
-
+// Enum for command types
 enum COMMAND_TYPE {
   SETSIZE,
   SET,

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 
+// helper function for removing spaces from formula
 std::string removeSpaces(const std::string& formula) {
   std::string result;
   bool check = 1;
@@ -18,6 +19,7 @@ std::string removeSpaces(const std::string& formula) {
   return result;
 }
 
+// helper function for counting formulas in formula
 int MessHandler::countFormulas(const std::shared_ptr<Node>& node) {
   if (node == nullptr) {
     return 0;
@@ -34,6 +36,7 @@ int MessHandler::countFormulas(const std::shared_ptr<Node>& node) {
   return count;
 }
 
+// helper function for checking if operator is valid
 bool MessHandler::isOperator(const char& ch) {
   return ch == '+' || ch == '-' || ch == '*' || ch == '/';
 }
@@ -46,6 +49,7 @@ std::string MessHandler::getIndentation(int depth) {
   return indentation;
 }
 
+// main function for parsing formula to tree
 std::shared_ptr<Node> MessHandler::buildParseTree(
     const std::string& new_formula) {
   std::string formula = removeSpaces(new_formula);
@@ -57,6 +61,7 @@ std::shared_ptr<Node> MessHandler::buildParseTree(
   return root;
 }
 
+// helper function for parsing formula to tree with recursion +/-
 std::shared_ptr<Node> MessHandler::parseExpression(const std::string& formula,
                                                    size_t& index,
                                                    size_t length) {
@@ -76,6 +81,7 @@ std::shared_ptr<Node> MessHandler::parseExpression(const std::string& formula,
   return left;
 }
 
+// helper function for parsing formula to tree with recursion */ /
 std::shared_ptr<Node> MessHandler::parseTerm(const std::string& formula,
                                              size_t& index, size_t length) {
   std::shared_ptr<Node> left = parseFactor(formula, index, length);
@@ -94,6 +100,7 @@ std::shared_ptr<Node> MessHandler::parseTerm(const std::string& formula,
   return left;
 }
 
+// helper function for parsing formula to tree with recursion
 std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
                                                size_t& index, size_t length) {
   std::shared_ptr<Node> node = nullptr;

@@ -22,7 +22,10 @@ class Object {
   virtual std::ostream& print(std::ostream& os) const = 0;
   virtual Object* clone() const = 0;  // clone object
 
-  // double dispatch for collision
+  /// @brief Collide function for all objects in cell
+  /// @param obj
+  /// @param Action
+  /// @return Object*
   virtual Object* collide(Object& obj, OPERATIONS Action) = 0;
   virtual Object* collide(class Text& obj, OPERATIONS Action) = 0;
   virtual Object* collide(class Number& obj, OPERATIONS Action) = 0;

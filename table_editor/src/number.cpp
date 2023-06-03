@@ -36,6 +36,7 @@ Object* Number::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);
 }
 
+// collide with Empty Object
 Object* Number::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
@@ -62,9 +63,11 @@ Object* Number::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
   return nullptr;
 }
 
+// collide with Text Object
 Object* Number::collide(Text& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
+      // text + number / number can be like int or double / check if number is
       if (obj.getText().length() == 0 &&
           std::to_string(this->m_number).length() == 0) {
         Object* result = new Text("");
@@ -128,6 +131,8 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
   }
   return nullptr;
 }
+
+// collide with Number Object
 Object* Number::collide(Number& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
@@ -157,6 +162,7 @@ Object* Number::collide(Number& obj, OPERATIONS Action) {
   return nullptr;
 }
 
+// collide with Formula Object
 nlohmann::json Number::toJSON() const {
   return nlohmann::json{{"type", "number"}, {"value", this->m_number}};
 }

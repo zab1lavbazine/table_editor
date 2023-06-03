@@ -10,6 +10,7 @@
 
 #include "graph_cell_relations.h"
 
+// detect loop in graph
 bool Graph::detectLoop(std::shared_ptr<Cell> currentCell,
                        std::unordered_set<std::shared_ptr<Cell>>& visited,
                        std::unordered_set<std::shared_ptr<Cell>>& memorized) {
@@ -24,6 +25,7 @@ bool Graph::detectLoop(std::shared_ptr<Cell> currentCell,
     if (visited.count(child) > 0 || detectLoop(child, visited, memorized)) {
       visited.erase(currentCell);
       memorized.insert(child);
+      std::cout << "Loop detected" << std::endl;
       return true;
     }
   }
@@ -35,11 +37,12 @@ bool Graph::addEdge(std::shared_ptr<Cell> parent, std::shared_ptr<Cell> child) {
   m_graph_childs[parent].push_back(child);
   std::unordered_set<std::shared_ptr<Cell>> visited;    // visited cells
   std::unordered_set<std::shared_ptr<Cell>> memorized;  // memorized cells
-  if (detectLoop(child, visited,
-                 memorized)) {  // if loop detected delete edge from graph
+  // if loop detected delete edge from graph
+  if (detectLoop(child, visited, memorized)) {
     removeEdge(parent, child);
     return false;
   }
+  // add edge to graph
   m_graph_parents[child].push_back(parent);
   return true;
 }
@@ -56,6 +59,7 @@ void Graph::removeEdge(std::shared_ptr<Cell> parent,
       m_graph_parents[child].end());
 }
 
+// determine relations in graph
 void Graph::determineRelations() {
   std::cout << "Graph: " << std::endl;
   for (const auto& entry : m_graph_childs) {
@@ -80,6 +84,7 @@ void Graph::determineRelations() {
   }
 }
 
+// remove all edges from graph for one cell (child)
 void Graph::removeChild(
     std::shared_ptr<Cell> parent,
     std::shared_ptr<Cell> child) {  // remove one specific child
@@ -88,6 +93,7 @@ void Graph::removeChild(
                                m_graph_childs[parent].end());
 }
 
+// remove all edges from graph for one cell (parent)
 void Graph::removeParent(std::shared_ptr<Cell> child,
                          std::shared_ptr<Cell> parent) {  // remove one specific
                                                           // parent
@@ -97,6 +103,7 @@ void Graph::removeParent(std::shared_ptr<Cell> child,
       m_graph_parents[child].end());
 }
 
+// print graph
 void Graph::printChildrens(std::shared_ptr<Cell> master) const {
   std::cout << "========================" << std::endl;
   std::cout << "Graph: " << *master.get() << std::endl;
@@ -127,6 +134,7 @@ void Graph::printParents(std::shared_ptr<Cell> master) const {
   std::cout << "========================" << std::endl;
 }
 
+// remove all edges from graph for one cell (child)
 void Graph::removeFromAll(std::shared_ptr<Cell> cell) {
   for (const auto& entry : m_graph_childs) {
     std::shared_ptr<Cell> parent = entry.first;
@@ -138,6 +146,7 @@ void Graph::removeFromAll(std::shared_ptr<Cell> cell) {
   }
 }
 
+// remove all edges from childrens
 void Graph::removeChildrens(std::shared_ptr<Cell> parent) {
   for (const auto& child : m_graph_childs[parent]) {
     removeParent(child, parent);
@@ -145,6 +154,7 @@ void Graph::removeChildrens(std::shared_ptr<Cell> parent) {
   m_graph_childs.erase(parent);
 }
 
+// remove all edges from parents
 void Graph::removeParents(std::shared_ptr<Cell> child) {
   for (const auto& parent : m_graph_parents[child]) {
     removeChild(parent, child);

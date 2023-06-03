@@ -8,8 +8,12 @@
 
 class MessHandler {
  public:
-  std::shared_ptr<Node> buildParseTree(
-      const std::string& formula);  // builds parse tree from formula
+  // function for parsing formula in tree
+
+  /// @brief function for parsing formula in tree
+  /// @param formula
+  /// @return std::shared_ptr<Node>
+  std::shared_ptr<Node> buildParseTree(const std::string& formula);
   std::shared_ptr<Node> parseExpression(const std::string& formula,
                                         size_t& index, size_t length);
   std::shared_ptr<Node> parseTerm(const std::string& formula, size_t& index,
@@ -19,6 +23,7 @@ class MessHandler {
 
   int countFormulas(const std::shared_ptr<Node>& node);
 
+  // print function for tree
   void printParseTree(const std::shared_ptr<Node>& node, int depth = 0) {
     if (node != nullptr) {
       std::cout << getIndentation(depth) << "|_" << node->value << std::endl;
