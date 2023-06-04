@@ -59,6 +59,9 @@ class Cell {
   Cell operator/(const Cell& cell);
   Cell operator=(const Cell& cell);
 
+  Cell sinus();
+  Cell cosinus();
+
   Cell clone() const;
 
   // for saving and loading

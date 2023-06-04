@@ -89,7 +89,4 @@ class TABLE {
 
   // get Value from cell as string
   std::string getValue(const std::string& position) const;
-
-  Cell sinus(const Cell& cell) const;
-  Cell cosinus(const Cell& cell) const;
 };

@@ -265,11 +265,11 @@ Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
       // Handle sin function
       Cell expression = evaluate(node->left, toPut);
       std::cout << "sin expression: " << expression.toString() << std::endl;
-      return sinus(expression);
+      return expression.sinus();
     } else if (token == "cos") {
       // Handle cos function
       Cell expression = evaluate(node->left, toPut);
-      return cosinus(expression);
+      return expression.cosinus();
     } else {
       bool minus = false;
       if (token[0] == '-') {
@@ -438,16 +438,4 @@ bool TABLE::isEmpty() const {
 std::string TABLE::getValue(const std::string& position) const {
   POS pos = get_position(position);
   return this->m_table[pos.row - 1][pos.column - 1].get()->toStringFormula();
-}
-
-Cell TABLE::sinus(const Cell& cell) const {
-  Object* emp = new EMPTY();
-  Object* obj = cell.getObject()->collide(*emp, Object::OPERATIONS::SIN);
-  return Cell(obj);
-}
-
-Cell TABLE ::cosinus(const Cell& cell) const {
-  Object* emp = new EMPTY();
-  Object* obj = cell.getObject()->collide(*emp, Object::OPERATIONS::COS);
-  return Cell(obj);
 }

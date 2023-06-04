@@ -88,7 +88,6 @@ void Cell::setObject(Object* object) {
   m_formula.setFormula(nullptr);
 }
 
-
 void Cell::changeObject(Object* object) {
   if (this->m_object != nullptr) delete m_object;
   m_object = object;
@@ -106,4 +105,17 @@ Cell Cell::operator=(const Cell& cell) {
 // function for json parsing
 nlohmann::json Cell::toJSON() const {
   return nlohmann::json{{"formula", this->m_formula.toString()}};
+}
+
+Cell Cell::sinus() {
+  Cell new_cell;
+
+  return new_cell.m_object = this->m_object->collide(*new_cell.m_object,
+                                                     Object::OPERATIONS::SIN);
+}
+
+Cell Cell::cosinus() {
+  Cell new_cell;
+  return new_cell.m_object = this->m_object->collide(*new_cell.m_object,
+                                                     Object::OPERATIONS::COS);
 }
