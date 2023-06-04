@@ -28,6 +28,16 @@ Object* EMPTY::collide(EMPTY& obj, OPERATIONS Action) {
       return result;
       break;
     }
+    case OPERATIONS::SIN: {
+      Object* result = new EMPTY(obj);
+      return result;
+      break;
+    }
+    case OPERATIONS::COS: {
+      Object* result = new EMPTY(obj);
+      return result;
+      break;
+    }
   }
   return nullptr;
 }
@@ -52,6 +62,16 @@ Object* EMPTY::collide(Number& obj, OPERATIONS Action) {
     }
     case OPERATIONS::DIV: {
       Object* result = new Number(obj.getNumber());
+      return result;
+      break;
+    }
+    case OPERATIONS::SIN: {
+      Object* result = new Number(std::sin(obj.getNumber()));
+      return result;
+      break;
+    }
+    case OPERATIONS::COS: {
+      Object* result = new Number(std::cos(obj.getNumber()));
       return result;
       break;
     }
@@ -81,6 +101,12 @@ Object* EMPTY::collide(Text& obj, OPERATIONS Action) {
       Object* result = new Text(obj.getText());
       return result;
       break;
+    }
+    case OPERATIONS::SIN: {
+      throw std::invalid_argument("cannot use sin on text");
+    }
+    case OPERATIONS::COS: {
+      throw std::invalid_argument("cannot use cos on text");
     }
   }
   return nullptr;

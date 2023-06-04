@@ -19,16 +19,14 @@ int main(void) {
   table.setSize(5, 5);
 
   table.setValue("A1", "5");
-  table.setValue("A2", "10 + A1");
-
-  table.setValue("A3", "A2 + A1");
-  table.ShowCell("A3");
-  table.setValue("A1", "\"Hello\"");
-
-  // table.setValue("A1", "10");
-  // TABLE table2;
-  // table2.importFromJSON(file);
-  // std::cout << table2 << std::endl;
+  // check sin and cos
+  table.setValue("A2", "sin(A1)");
+  table.setValue("A3", "cos(A1)");
+  // check sum
+  table.setValue("A4", "A1+A2");
+  // check text
+  table.setValue("A5", "\"test text\" + A1");
+  // check empty
 
   std::cout << table << std::endl;
   return 0;

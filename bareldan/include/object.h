@@ -7,7 +7,7 @@
 
 class Object {
  public:
-  enum class OPERATIONS { SUM, MUL, DIV, SUB };
+  enum class OPERATIONS { SUM, MUL, DIV, SUB, SIN, COS };
   virtual ~Object() {}
   Object() = default;
 

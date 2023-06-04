@@ -1,7 +1,5 @@
 #include "../include/text.h"
 
-
-
 Text::Text() {}
 Text::Text(const std::string& text) : m_text(text) {}
 Text::~Text() {}
@@ -53,6 +51,14 @@ Object* Text::collide(Text& obj, OPERATIONS Action) {
       throw std::invalid_argument("Text cannot be divided");
       break;
     }
+    case OPERATIONS::SIN: {
+      throw std::invalid_argument("cannot use sin on text");
+      break;
+    }
+    case OPERATIONS::COS: {
+      throw std::invalid_argument("cannot use cos on text");
+      break;
+    }
   }
   return nullptr;
 }
@@ -77,6 +83,14 @@ Object* Text::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
     case OPERATIONS::DIV: {
       Object* result = new Text(this->m_text);
       return result;
+      break;
+    }
+    case OPERATIONS::SIN: {
+      throw std::invalid_argument("cannot use sin on text");
+      break;
+    }
+    case OPERATIONS::COS: {
+      throw std::invalid_argument("cannot use cos on text");
       break;
     }
   }
@@ -128,6 +142,14 @@ Object* Text::collide(Number& obj, OPERATIONS Action) {
     }
     case OPERATIONS::DIV: {
       throw std::invalid_argument("Text cannot be divided");
+      break;
+    }
+    case OPERATIONS::SIN: {
+      throw std::invalid_argument("cannot use sin on text");
+      break;
+    }
+    case OPERATIONS::COS: {
+      throw std::invalid_argument("cannot use cos on text");
       break;
     }
   }

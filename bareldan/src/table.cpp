@@ -265,11 +265,11 @@ Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
       // Handle sin function
       Cell expression = evaluate(node->left, toPut);
       std::cout << "sin expression: " << expression.toString() << std::endl;
-      return Cell(Text("sin")) * expression;
+      return sinus(expression);
     } else if (token == "cos") {
       // Handle cos function
       Cell expression = evaluate(node->left, toPut);
-      return Cell(Text("cos")) * expression;
+      return cosinus(expression);
     } else {
       bool minus = false;
       if (token[0] == '-') {
@@ -374,7 +374,6 @@ bool TABLE::putChild(std::shared_ptr<Cell> new_cell,
                      std::vector<std::shared_ptr<Cell>>& toPut) {
   for (std::shared_ptr<Cell> master : toPut) {
     bool putted = m_graph.addEdge(master, new_cell);
-
     if (!putted) return false;
   }
   toPut.clear();
@@ -439,4 +438,16 @@ bool TABLE::isEmpty() const {
 std::string TABLE::getValue(const std::string& position) const {
   POS pos = get_position(position);
   return this->m_table[pos.row - 1][pos.column - 1].get()->toStringFormula();
+}
+
+Cell TABLE::sinus(const Cell& cell) const {
+  Object* emp = new EMPTY();
+  Object* obj = cell.getObject()->collide(*emp, Object::OPERATIONS::SIN);
+  return Cell(obj);
+}
+
+Cell TABLE ::cosinus(const Cell& cell) const {
+  Object* emp = new EMPTY();
+  Object* obj = cell.getObject()->collide(*emp, Object::OPERATIONS::COS);
+  return Cell(obj);
 }

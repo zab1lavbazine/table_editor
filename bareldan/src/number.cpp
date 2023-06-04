@@ -55,6 +55,16 @@ Object* Number::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
       return result;
       break;
     }
+    case OPERATIONS::SIN: {
+      Object* result = new Number(std::sin(this->m_number));
+      return result;
+      break;
+    }
+    case OPERATIONS::COS: {
+      Object* result = new Number(std::cos(this->m_number));
+      return result;
+      break;
+    }
   }
   return nullptr;
 }
@@ -124,6 +134,15 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
       throw std::invalid_argument("Text cannot be divided");
       break;
     }
+
+    case OPERATIONS::SIN: {
+      throw std::invalid_argument("Text cannot be used with sin");
+      break;
+    }
+    case OPERATIONS::COS: {
+      throw std::invalid_argument("Text cannot be used with cos");
+      break;
+    }
   }
   return nullptr;
 }
@@ -152,6 +171,14 @@ Object* Number::collide(Number& obj, OPERATIONS Action) {
       }
       Object* result = new Number(obj.getNumber() / this->m_number);
       return result;
+      break;
+    }
+    case OPERATIONS::SIN: {
+      throw std::invalid_argument("Number cannot be used with sin");
+      break;
+    }
+    case OPERATIONS::COS: {
+      throw std::invalid_argument("Number cannot be used with cos");
       break;
     }
   }
