@@ -1,0 +1,85 @@
+\hypertarget{classEMPTY}{}\doxysection{EMPTY Class Reference}
+\label{classEMPTY}\index{EMPTY@{EMPTY}}
+
+
+Inheritance diagram for EMPTY\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=130pt]{classEMPTY__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for EMPTY\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=130pt]{classEMPTY__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classEMPTY_aa9b4b717749d64bcd27a0fb9e56f30ba}\label{classEMPTY_aa9b4b717749d64bcd27a0fb9e56f30ba}} 
+{\bfseries EMPTY} (const \mbox{\hyperlink{classEMPTY}{EMPTY}} \&obj)=default
+\item 
+\mbox{\Hypertarget{classEMPTY_a5e37fd151f4ddf9fc3b953ce97af246e}\label{classEMPTY_a5e37fd151f4ddf9fc3b953ce97af246e}} 
+virtual std\+::ostream \& {\bfseries print} (std\+::ostream \&os) const override
+\item 
+\mbox{\Hypertarget{classEMPTY_a81f0e9b5e536136a7cbc3e5a1373bfa3}\label{classEMPTY_a81f0e9b5e536136a7cbc3e5a1373bfa3}} 
+virtual \mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries clone} () const override
+\item 
+\mbox{\Hypertarget{classEMPTY_aceb7fd7ae04b96954ecd58d82694ce27}\label{classEMPTY_aceb7fd7ae04b96954ecd58d82694ce27}} 
+std\+::string {\bfseries to\+String} () const override
+\item 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ \mbox{\hyperlink{classEMPTY_ae180c6d2f0f173cdfd4e69bb4690c880}{collide}} (\mbox{\hyperlink{classObject}{Object}} \&obj, OPERATIONS Action) override
+\begin{DoxyCompactList}\small\item\em Collide function for all objects in cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classEMPTY_a768565444c108e01c890857d9bf49e54}\label{classEMPTY_a768565444c108e01c890857d9bf49e54}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (class \mbox{\hyperlink{classText}{Text}} \&obj, OPERATIONS Action) override
+\item 
+\mbox{\Hypertarget{classEMPTY_a7a5adb7216cc76e75f9852ef42a62b68}\label{classEMPTY_a7a5adb7216cc76e75f9852ef42a62b68}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (class \mbox{\hyperlink{classNumber}{Number}} \&obj, OPERATIONS Action) override
+\item 
+\mbox{\Hypertarget{classEMPTY_a41145d1f856d233fcfdb481b3d8c30e1}\label{classEMPTY_a41145d1f856d233fcfdb481b3d8c30e1}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (class \mbox{\hyperlink{classEMPTY}{EMPTY}} \&obj, OPERATIONS Action) override
+\item 
+\mbox{\Hypertarget{classEMPTY_aaf50663cbb09e835a982d9081fbe71a0}\label{classEMPTY_aaf50663cbb09e835a982d9081fbe71a0}} 
+nlohmann\+::json {\bfseries to\+JSON} () const override
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classEMPTY_ae180c6d2f0f173cdfd4e69bb4690c880}\label{classEMPTY_ae180c6d2f0f173cdfd4e69bb4690c880}} 
+\index{EMPTY@{EMPTY}!collide@{collide}}
+\index{collide@{collide}!EMPTY@{EMPTY}}
+\doxysubsubsection{\texorpdfstring{collide()}{collide()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classObject}{Object}} $\ast$ EMPTY\+::collide (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classObject}{Object}} \&}]{obj,  }\item[{OPERATIONS}]{Action }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Collide function for all objects in cell. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & \\
+\hline
+{\em Action} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Object$\ast$ 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classObject_aa1dc806aff980529039869a24ae8581c}{Object}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/empty.\+h\item 
+src/empty.\+cpp\end{DoxyCompactItemize}

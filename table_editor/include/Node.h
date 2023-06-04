@@ -1,8 +1,8 @@
-
-#pragma once
 #include <iostream>
 #include <memory>
 #include <string>
+
+#pragma once
 
 /// @brief Node for tree in formula class
 struct Node {

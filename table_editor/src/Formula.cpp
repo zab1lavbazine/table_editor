@@ -1,6 +1,4 @@
-#include "Formula.h"
-
-#include <../include/Formula.h>
+#include "../include/Formula.h"
 
 // print function for formula
 std::ostream& Formula::print(std::ostream& os) const {

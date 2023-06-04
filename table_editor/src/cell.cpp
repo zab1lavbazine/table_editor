@@ -1,10 +1,5 @@
 #include "../include/cell.h"
 
-#include <cstring>
-#include <memory>
-#include <sstream>
-#include <vector>
-
 // copy constructor
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {
   this->m_formula = cell.m_formula.clone();
@@ -104,6 +99,5 @@ Cell Cell::operator=(const Cell& cell) {
 
 // function for json parsing
 nlohmann::json Cell::toJSON() const {
-  return nlohmann::json{{"value", this->m_object->toJSON()},
-                        {"formula", this->m_formula.toString()}};
+  return nlohmann::json{{"formula", this->m_formula.toString()}};
 }

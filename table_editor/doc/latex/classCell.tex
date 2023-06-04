@@ -1,0 +1,126 @@
+\hypertarget{classCell}{}\doxysection{Cell Class Reference}
+\label{classCell}\index{Cell@{Cell}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classCell_adce620be13d0d95b315c76f127faa532}\label{classCell_adce620be13d0d95b315c76f127faa532}} 
+{\bfseries Cell} (const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\item 
+\mbox{\Hypertarget{classCell_a4762cff879e35677d133bf044bb152a3}\label{classCell_a4762cff879e35677d133bf044bb152a3}} 
+{\bfseries Cell} (\mbox{\hyperlink{classObject}{Object}} $\ast$object)
+\item 
+{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{classCell_a24e7d941497d185e3e8e33bd0df08486}{Cell}} (const T \&object)
+\begin{DoxyCompactList}\small\item\em constructor for creating cell with object inside \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classCell_a7edf80ef56d5885da7e5b59c10d4ae18}\label{classCell_a7edf80ef56d5885da7e5b59c10d4ae18}} 
+void {\bfseries set\+Object} (\mbox{\hyperlink{classObject}{Object}} $\ast$object)
+\item 
+\mbox{\Hypertarget{classCell_a8616fc8b8e82a7ef66a6280bef43bb19}\label{classCell_a8616fc8b8e82a7ef66a6280bef43bb19}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries get\+Object} () const
+\item 
+\mbox{\Hypertarget{classCell_a91ad55bed619b87bc444f09c69a67463}\label{classCell_a91ad55bed619b87bc444f09c69a67463}} 
+void {\bfseries set\+Formula} (const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNode}{Node}} $>$ \&formula)
+\item 
+\mbox{\Hypertarget{classCell_ac89466f5021b6efc898b5176e2a0927e}\label{classCell_ac89466f5021b6efc898b5176e2a0927e}} 
+std\+::ostream \& {\bfseries print} (std\+::ostream \&os) const
+\item 
+\mbox{\Hypertarget{classCell_af40a6be28758079ceac827d126daba90}\label{classCell_af40a6be28758079ceac827d126daba90}} 
+std\+::string {\bfseries get\+Characteistics} () const
+\item 
+\mbox{\Hypertarget{classCell_acf0eb4c641d1e9038465cf77e6570f23}\label{classCell_acf0eb4c641d1e9038465cf77e6570f23}} 
+std\+::string {\bfseries to\+String} () const
+\item 
+\mbox{\Hypertarget{classCell_a2b854f9244bd4a80767457335795120c}\label{classCell_a2b854f9244bd4a80767457335795120c}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNode}{Node}} $>$ {\bfseries get\+Formula} () const
+\item 
+\mbox{\Hypertarget{classCell_aeedabd6a9af769c438cb2f236afaad42}\label{classCell_aeedabd6a9af769c438cb2f236afaad42}} 
+std\+::string {\bfseries to\+String\+Formula} () const
+\item 
+\mbox{\hyperlink{classCell}{Cell}} \mbox{\hyperlink{classCell_ab1f74f4c74a23d08c963b76071f7359e}{operator+}} (const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\begin{DoxyCompactList}\small\item\em all operators for manipulating with cells and objects in them \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classCell_a66c2cf08cf9edda4e9d9cd863196fd6f}\label{classCell_a66c2cf08cf9edda4e9d9cd863196fd6f}} 
+\mbox{\hyperlink{classCell}{Cell}} {\bfseries operator-\/} (const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\item 
+\mbox{\Hypertarget{classCell_a1a911c3d287363a63adabbb71d96538d}\label{classCell_a1a911c3d287363a63adabbb71d96538d}} 
+\mbox{\hyperlink{classCell}{Cell}} {\bfseries operator$\ast$} (const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\item 
+\mbox{\Hypertarget{classCell_a19e5ac539309a81164bb20a7b822dd13}\label{classCell_a19e5ac539309a81164bb20a7b822dd13}} 
+\mbox{\hyperlink{classCell}{Cell}} {\bfseries operator/} (const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\item 
+\mbox{\Hypertarget{classCell_a49942f1f6cb2019f52f868c17e035c57}\label{classCell_a49942f1f6cb2019f52f868c17e035c57}} 
+\mbox{\hyperlink{classCell}{Cell}} {\bfseries operator=} (const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\item 
+\mbox{\Hypertarget{classCell_a124fb1c1ebe267c1a1e49b236157f57e}\label{classCell_a124fb1c1ebe267c1a1e49b236157f57e}} 
+\mbox{\hyperlink{classCell}{Cell}} {\bfseries clone} () const
+\item 
+nlohmann\+::json \mbox{\hyperlink{classCell_a9213be04573f1a23b0b25e3f0d1244f1}{to\+JSON}} () const
+\begin{DoxyCompactList}\small\item\em load cell from json \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classCell_a18c5003bde2144a087676f7b59341a1c}\label{classCell_a18c5003bde2144a087676f7b59341a1c}} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{classCell}{Cell}} \&cell)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCell_a24e7d941497d185e3e8e33bd0df08486}\label{classCell_a24e7d941497d185e3e8e33bd0df08486}} 
+\index{Cell@{Cell}!Cell@{Cell}}
+\index{Cell@{Cell}!Cell@{Cell}}
+\doxysubsubsection{\texorpdfstring{Cell()}{Cell()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+Cell\+::\+Cell (\begin{DoxyParamCaption}\item[{const T \&}]{object }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+constructor for creating cell with object inside 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em object} & \mbox{\hyperlink{classText}{Text}}, \mbox{\hyperlink{classNumber}{Number}} or Empty \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCell_ab1f74f4c74a23d08c963b76071f7359e}\label{classCell_ab1f74f4c74a23d08c963b76071f7359e}} 
+\index{Cell@{Cell}!operator+@{operator+}}
+\index{operator+@{operator+}!Cell@{Cell}}
+\doxysubsubsection{\texorpdfstring{operator+()}{operator+()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classCell}{Cell}} Cell\+::operator+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classCell}{Cell}} \&}]{cell }\end{DoxyParamCaption})}
+
+
+
+all operators for manipulating with cells and objects in them 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cell} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Cewll 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCell_a9213be04573f1a23b0b25e3f0d1244f1}\label{classCell_a9213be04573f1a23b0b25e3f0d1244f1}} 
+\index{Cell@{Cell}!toJSON@{toJSON}}
+\index{toJSON@{toJSON}!Cell@{Cell}}
+\doxysubsubsection{\texorpdfstring{toJSON()}{toJSON()}}
+{\footnotesize\ttfamily nlohmann\+::json Cell\+::to\+JSON (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+load cell from json 
+
+\begin{DoxyReturn}{Returns}
+json file with cell 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/cell.\+h\item 
+src/cell.\+cpp\end{DoxyCompactItemize}

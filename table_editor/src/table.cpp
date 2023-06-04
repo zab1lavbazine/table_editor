@@ -1,13 +1,5 @@
 #include "../include/table.h"
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <vector>
-
 // support functions
 
 int get_column_index(std::string& column) {
@@ -79,7 +71,11 @@ TABLE::TABLE() {
 TABLE::~TABLE() {}
 
 void TABLE::setSize(const int& rows, const int& columns) {
-  if (rows > this->m_rows) {
+  if (rows <= 0 || columns <= 0) {
+    throw std::out_of_range("set size error");
+  }
+
+  if (rows != this->m_rows) {
     this->m_table.resize(rows);
 
     for (int i = this->m_rows; i < rows; i++) {
@@ -96,7 +92,7 @@ void TABLE::setSize(const int& rows, const int& columns) {
     this->m_rows = rows;
   }
 
-  if (columns > this->m_columns) {
+  if (columns != this->m_columns) {
     for (int i = 0; i < this->m_rows; i++) {
       this->m_table[i].resize(columns);
 
@@ -128,8 +124,8 @@ void TABLE::setValue(const std::string& position, const std::string& formula) {
   POS pos;
   try {
     pos = get_position(position);
-  } catch (const std::exception& e) {
-    std::cout << "error: position " << e.what() << std::endl;
+  } catch (const std::out_of_range& e) {
+    std::cout << "error: " << e.what() << std::endl;
     return;
   }
 
@@ -144,16 +140,18 @@ void TABLE::setValue(const std::string& position, const std::string& formula) {
   if (toPut.size() > 0) {
     // insert new cell to graph (parents and childrens)
     bool putted = putChild(current_cell, toPut);
-    if (!putted) return;  // if there is a loop return and dont put inside
+    if (!putted) {
+      return;
+    }  // if there is a loop return and dont put inside
   } else {
     m_graph.removeParents(current_cell);  // delete parents if there are no
-  }                                       // childrens
-  changeChildrens(current_cell);          // rewrite all childrens
-
+  }
   current_cell.get()->setObject(
       new_cell.get()->getObject()->clone());  // set new oject to current cell
   current_cell.get()->setFormula(
       new_cell.get()->getFormula());  // set formula to current cell
+
+  changeChildrens(current_cell);  // rewrite all childrens
 }
 
 long int TABLE::getRows() const { return this->m_rows; }
@@ -420,8 +418,6 @@ void TABLE::importFromJSON(const nlohmann::json& j) {
     }
     std::string position = element.at("position");
     std::string formula = element.at("Cell").at("formula");
-    std::cout << "position: " << position << std::endl;
-    std::cout << "formula: " << formula << std::endl;
     setValue(position, formula);
   }
 }

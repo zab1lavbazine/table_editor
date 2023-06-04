@@ -25,7 +25,7 @@ doc:
 
 
 
-all: $(PROGRAM)
+all: $(PROGRAM) doc
 
 $(PROGRAM): $(OBJS)
 	$(CC) $(CXXFLAGS) $^ -o $@
@@ -39,4 +39,4 @@ run : $(PROGRAM)
 
 
 clean: 
-	rm -rf $(OBJ_DIR)/*.o $(PROGRAM) doc
+	rm -rf $(OBJ_DIR)/*.o $(PROGRAM)

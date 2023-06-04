@@ -5,7 +5,7 @@
     },
     {
         "Cell": {
-            "formula": "((4 + 5) + (3 * 5))",
+            "formula": "((4 + 5) + A1 + (3 * 5))",
             "value": {
                 "type": "number",
                 "value": 24.0

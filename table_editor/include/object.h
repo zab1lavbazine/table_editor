@@ -2,9 +2,8 @@
 #include <iostream>
 #include <string>
 
-#include "../libs/json.hpp"
-
 #pragma once
+#include "../libs/json.hpp"
 
 class Object {
  public:

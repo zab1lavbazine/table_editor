@@ -1,8 +1,5 @@
 #include "operand_handler.h"
 
-#include <cctype>
-#include <iostream>
-#include <memory>
 
 // helper function for removing spaces from formula
 std::string removeSpaces(const std::string& formula) {

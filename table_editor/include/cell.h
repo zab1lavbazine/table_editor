@@ -2,8 +2,6 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include <unordered_set>
-#include <vector>
 
 #pragma once
 #include "../include/Formula.h"

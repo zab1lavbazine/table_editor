@@ -1,7 +1,6 @@
 #include "../include/text.h"
 
-#include <iostream>
-#include <string>
+
 
 Text::Text() {}
 Text::Text(const std::string& text) : m_text(text) {}

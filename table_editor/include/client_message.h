@@ -58,6 +58,7 @@ class ClientMessage {
   void importFromFile();
   void saveIntoFile(bool& saved) const;
   void checkIfSaved(bool& saved) const;
+  void automaticSave(bool& saved) const;
   //------------------------
  private:
   static const std::vector<COMMAND> commands;

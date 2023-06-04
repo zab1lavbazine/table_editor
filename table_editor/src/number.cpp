@@ -1,9 +1,5 @@
 #include "../include/number.h"
 
-#include <cmath>
-#include <iostream>
-#include <string>
-
 Number::Number() {}
 Number::Number(const double& number) : m_number(number) {}
 Number::~Number() {}

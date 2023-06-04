@@ -1,0 +1,100 @@
+\hypertarget{classText}{}\doxysection{Text Class Reference}
+\label{classText}\index{Text@{Text}}
+
+
+Inheritance diagram for Text\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=128pt]{classText__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Text\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=128pt]{classText__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classText_abcee5ddde86df1976b8b10f01efe8340}\label{classText_abcee5ddde86df1976b8b10f01efe8340}} 
+{\bfseries Text} (const std\+::string \&text)
+\item 
+\mbox{\Hypertarget{classText_ac2ce828bba1934276041ba6f8272e1f0}\label{classText_ac2ce828bba1934276041ba6f8272e1f0}} 
+std\+::string {\bfseries get\+Text} () const
+\item 
+\mbox{\Hypertarget{classText_a14b9f0937696af5fd95317eb8313bf92}\label{classText_a14b9f0937696af5fd95317eb8313bf92}} 
+void {\bfseries set\+Text} (const std\+::string \&text)
+\item 
+\mbox{\Hypertarget{classText_a0e13c55aa0d343ca74f3edb071db4e90}\label{classText_a0e13c55aa0d343ca74f3edb071db4e90}} 
+std\+::string {\bfseries get\+\_\+text} () const
+\item 
+\mbox{\Hypertarget{classText_ab88b853156a765b27e731da5008157af}\label{classText_ab88b853156a765b27e731da5008157af}} 
+std\+::ostream \& {\bfseries print} (std\+::ostream \&os) const override
+\item 
+\mbox{\Hypertarget{classText_a6db32f149450624fb9ce2a774b6eca0c}\label{classText_a6db32f149450624fb9ce2a774b6eca0c}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries clone} () const override
+\item 
+\mbox{\Hypertarget{classText_a5a2565b5f12660e91e24ebedd5493191}\label{classText_a5a2565b5f12660e91e24ebedd5493191}} 
+\mbox{\hyperlink{classText}{Text}} \& {\bfseries operator+} (const \mbox{\hyperlink{classText}{Text}} \&text)
+\item 
+\mbox{\Hypertarget{classText_a3de1acb896b97ee7dc10be8d30b89983}\label{classText_a3de1acb896b97ee7dc10be8d30b89983}} 
+\mbox{\hyperlink{classText}{Text}} \& {\bfseries operator+=} (const \mbox{\hyperlink{classText}{Text}} \&text)
+\item 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ \mbox{\hyperlink{classText_a5df837a328fe1bf95bc337e6d044945f}{collide}} (\mbox{\hyperlink{classObject}{Object}} \&obj, OPERATIONS Action) override
+\begin{DoxyCompactList}\small\item\em Collide function for all objects in cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classText_a23640950ce2d29bd77889904b321e7d0}\label{classText_a23640950ce2d29bd77889904b321e7d0}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (\mbox{\hyperlink{classText}{Text}} \&obj, OPERATIONS Action) override
+\item 
+\mbox{\Hypertarget{classText_a9a47082a0c79cbddffc1d9517b04d09d}\label{classText_a9a47082a0c79cbddffc1d9517b04d09d}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (\mbox{\hyperlink{classNumber}{Number}} \&obj, OPERATIONS Action) override
+\item 
+\mbox{\Hypertarget{classText_afb13279632e9ced197cfa7795c9cd698}\label{classText_afb13279632e9ced197cfa7795c9cd698}} 
+\mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (\mbox{\hyperlink{classEMPTY}{EMPTY}} \&obj, OPERATIONS Action) override
+\item 
+\mbox{\Hypertarget{classText_af701d3cff7ff61718cae4dac5fc03909}\label{classText_af701d3cff7ff61718cae4dac5fc03909}} 
+std\+::string {\bfseries to\+String} () const override
+\item 
+\mbox{\Hypertarget{classText_af41fa2b5a940e7411957d65d03e7d1f9}\label{classText_af41fa2b5a940e7411957d65d03e7d1f9}} 
+nlohmann\+::json {\bfseries to\+JSON} () const override
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classText_a5df837a328fe1bf95bc337e6d044945f}\label{classText_a5df837a328fe1bf95bc337e6d044945f}} 
+\index{Text@{Text}!collide@{collide}}
+\index{collide@{collide}!Text@{Text}}
+\doxysubsubsection{\texorpdfstring{collide()}{collide()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classObject}{Object}} $\ast$ Text\+::collide (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classObject}{Object}} \&}]{obj,  }\item[{OPERATIONS}]{Action }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Collide function for all objects in cell. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & \\
+\hline
+{\em Action} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Object$\ast$ 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classObject_aa1dc806aff980529039869a24ae8581c}{Object}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/text.\+h\item 
+src/text.\+cpp\end{DoxyCompactItemize}

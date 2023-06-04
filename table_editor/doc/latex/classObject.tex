@@ -1,0 +1,89 @@
+\hypertarget{classObject}{}\doxysection{Object Class Reference}
+\label{classObject}\index{Object@{Object}}
+
+
+Inheritance diagram for Object\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=260pt]{classObject__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classObject_a756aa602f0ac0c5dd37e0b495c95931f}\label{classObject_a756aa602f0ac0c5dd37e0b495c95931f}} 
+enum class {\bfseries OPERATIONS} \{ {\bfseries SUM}
+, {\bfseries MUL}
+, {\bfseries DIV}
+, {\bfseries SUB}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classObject_a41664486f9ee2aa1be97367a296d1d3b}\label{classObject_a41664486f9ee2aa1be97367a296d1d3b}} 
+{\bfseries Object} (const \mbox{\hyperlink{classObject}{Object}} \&obj)=default
+\item 
+\mbox{\Hypertarget{classObject_a58f02cc1bc3bf01fd3d8078d4b8038b2}\label{classObject_a58f02cc1bc3bf01fd3d8078d4b8038b2}} 
+virtual std\+::ostream \& {\bfseries print} (std\+::ostream \&os) const =0
+\item 
+\mbox{\Hypertarget{classObject_a5b5b1678ab03f812010cd325e97ec4ea}\label{classObject_a5b5b1678ab03f812010cd325e97ec4ea}} 
+virtual \mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries clone} () const =0
+\item 
+virtual \mbox{\hyperlink{classObject}{Object}} $\ast$ \mbox{\hyperlink{classObject_aa1dc806aff980529039869a24ae8581c}{collide}} (\mbox{\hyperlink{classObject}{Object}} \&obj, OPERATIONS Action)=0
+\begin{DoxyCompactList}\small\item\em Collide function for all objects in cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObject_aaf526ab84f54ab36d6078f5750d7fc39}\label{classObject_aaf526ab84f54ab36d6078f5750d7fc39}} 
+virtual \mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (class \mbox{\hyperlink{classText}{Text}} \&obj, OPERATIONS Action)=0
+\item 
+\mbox{\Hypertarget{classObject_a5b17fb0107cbadaa05d7db0600a3c809}\label{classObject_a5b17fb0107cbadaa05d7db0600a3c809}} 
+virtual \mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (class \mbox{\hyperlink{classNumber}{Number}} \&obj, OPERATIONS Action)=0
+\item 
+\mbox{\Hypertarget{classObject_a5cb5ce94906b5bad962d6e048be62db9}\label{classObject_a5cb5ce94906b5bad962d6e048be62db9}} 
+virtual \mbox{\hyperlink{classObject}{Object}} $\ast$ {\bfseries collide} (class \mbox{\hyperlink{classEMPTY}{EMPTY}} \&obj, OPERATIONS Action)=0
+\item 
+\mbox{\Hypertarget{classObject_a39a4ed9a0099c27d968b1b6c3c7bf613}\label{classObject_a39a4ed9a0099c27d968b1b6c3c7bf613}} 
+virtual nlohmann\+::json {\bfseries to\+JSON} () const =0
+\item 
+\mbox{\Hypertarget{classObject_a89fee2453b0e7b4737afac15cf8ed039}\label{classObject_a89fee2453b0e7b4737afac15cf8ed039}} 
+virtual std\+::string {\bfseries to\+String} () const =0
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classObject_ae18246100173c7798abeac960fa2c439}\label{classObject_ae18246100173c7798abeac960fa2c439}} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{classObject}{Object}} \&obj)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classObject_aa1dc806aff980529039869a24ae8581c}\label{classObject_aa1dc806aff980529039869a24ae8581c}} 
+\index{Object@{Object}!collide@{collide}}
+\index{collide@{collide}!Object@{Object}}
+\doxysubsubsection{\texorpdfstring{collide()}{collide()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{classObject}{Object}}$\ast$ Object\+::collide (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classObject}{Object}} \&}]{obj,  }\item[{OPERATIONS}]{Action }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Collide function for all objects in cell. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & \\
+\hline
+{\em Action} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Object$\ast$ 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classText_a5df837a328fe1bf95bc337e6d044945f}{Text}}, \mbox{\hyperlink{classNumber_ac6712d3dd68fd54957f8ed49b0905d3c}{Number}}, and \mbox{\hyperlink{classEMPTY_ae180c6d2f0f173cdfd4e69bb4690c880}{EMPTY}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/object.\+h\end{DoxyCompactItemize}

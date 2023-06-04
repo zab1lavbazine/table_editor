@@ -3,6 +3,8 @@
 #include <stack>
 #include <string>
 
+#pragma once
+
 #include "../include/Formula.h"
 #include "../include/Node.h"
 

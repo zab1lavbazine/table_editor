@@ -1,7 +1,5 @@
 #include "empty.h"
 
-#include <iostream>
-
 // double  dispatch
 Object* EMPTY::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);

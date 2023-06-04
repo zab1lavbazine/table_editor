@@ -1,11 +1,6 @@
 
 #include "../include/client_message.h"
 
-#include <fstream>
-#include <iostream>
-#include <regex>
-#include <sstream>
-
 // output for all commands for info command
 std::string COMMAND::CommandToString(const COMMAND_TYPE& command) const {
   switch (command) {
@@ -140,7 +135,10 @@ void ClientMessage::getCommand() {
     std::string command;
     std::getline(std::cin, command);
 
-    if (std::cin.eof()) break;
+    if (std::cin.eof()) {
+      automaticSave(saved);
+      return;
+    }
 
     TODO todo = checkWithRegex(command);
 
@@ -170,6 +168,7 @@ void ClientMessage::getCommand() {
         showCell(todo.formula);
         break;
       case COMMAND_TYPE::EXIT:
+        checkIfSaved(saved);
         return;
       case COMMAND_TYPE::EMP:
         std::cout << "empty command" << std::endl;
@@ -219,8 +218,13 @@ void ClientMessage::setValue(const std::string& todo) {
   // remove spaces from string for correct position and formula
   removeSpaces(position);
 
-  if (checkIfPosition(position)) {        // check if position is valid
-    m_table.setValue(position, formula);  // set value
+  if (checkIfPosition(position)) {  // check if position is valid
+
+    try {
+      m_table.setValue(position, formula);
+    } catch (const std::exception& e) {
+      std::cout << "error: " << e.what() << std::endl;
+    }
   } else {
     std::cout << "wrong position" << std::endl;
   }
@@ -340,4 +344,17 @@ int ClientMessage::fromJSON(const std::string& fileName) {
   }
 
   return 0;
+}
+
+void ClientMessage::automaticSave(bool& saved) const {
+  if (!saved) {
+    std::string fileName = "untitled";
+    std::string file = fileName + ".json";
+    int check = parseToJSON(fileName);
+    if (check == 0) {
+      saved = true;
+    } else {
+      std::cout << "error: save" << std::endl;
+    }
+  }
 }
