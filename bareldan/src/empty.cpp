@@ -5,8 +5,6 @@ Object* EMPTY::collide(Object& obj, OPERATIONS Action) {
   return obj.collide(*this, Action);
 }
 
-// testing 
-
 // collide with Empty Object
 Object* EMPTY::collide([[maybe_unused]] EMPTY& obj,
                        [[maybe_unused]] OPERATIONS Action) {
