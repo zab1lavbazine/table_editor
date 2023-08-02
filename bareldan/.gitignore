@@ -1,0 +1,14 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled executables
+*.exe
+*.out
+
+# Dependency directories
+bin/
+build/
+objs/
+obj/
+
