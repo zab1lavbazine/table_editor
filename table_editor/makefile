@@ -9,6 +9,7 @@ BIN_DIR = bin
 SRC_DIR = src
 INC_DIR = include
 OBJ_DIR = objs
+USERNAME = bareldan
 
 #List of all source files
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
@@ -17,7 +18,7 @@ DEPS := $(wildcard $(INC_DIR)/*.h)
 #List of object files
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 #Name of the executable
-PROGRAM = $(BIN_DIR)/tabulkovy_editor
+PROGRAM = $(BIN_DIR)/$(USERNAME)
 
 
 doc:

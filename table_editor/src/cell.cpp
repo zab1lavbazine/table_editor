@@ -1,5 +1,7 @@
 #include "../include/cell.h"
 
+
+
 // copy constructor
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {
   this->m_formula = cell.m_formula.clone();
