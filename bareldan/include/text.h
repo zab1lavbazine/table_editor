@@ -5,6 +5,7 @@
 
 #include "../include/number.h"
 #include "../include/object.h"
+#include "Visitor.h"
 
 class Text : public Object {
  public:

@@ -6,9 +6,11 @@ CC=g++
 CXXFLAGS=-std=c++17 -pedantic -Wall -Wextra -g -Wno-long-long -ggdb -fsanitize=address
 
 BIN_DIR = bin
+DOC_DIR = doc
 SRC_DIR = src
 INC_DIR = include
 OBJ_DIR = objs
+USERNAME = bareldan
 
 #List of all source files
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
@@ -17,7 +19,11 @@ DEPS := $(wildcard $(INC_DIR)/*.h)
 #List of object files
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 #Name of the executable
-PROGRAM = $(BIN_DIR)/tabulkovy_editor
+PROGRAM = $(BIN_DIR)/$(USERNAME)
+
+
+#create 'doc' directory 
+$(shell mkdir -p $(DOC_DIR))
 
 
 doc:
@@ -25,7 +31,7 @@ doc:
 
 
 compile: $(OBJS)
-	$(CC) $(CXXFLAGS) $^ -o bareldan
+	$(CC) $(CXXFLAGS) $^ -o $(USERNAME)
 
 
 
@@ -43,4 +49,4 @@ run : $(PROGRAM)
 
 
 clean: 
-	rm -rf $(OBJ_DIR)/*.o $(PROGRAM) bareldan doc
+	rm -rf $(OBJ_DIR)/*.o $(PROGRAM) $(DOC_DIR)

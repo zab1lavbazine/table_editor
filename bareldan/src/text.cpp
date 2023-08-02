@@ -25,17 +25,7 @@ Object* Text::collide(Object& obj, OPERATIONS Action) {
 Object* Text::collide(Text& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
-      if (this->m_text.length() == 0 && obj.m_text.length() == 0) {
-        Object* result = new Text("");
-        return result;
-      } else if (this->m_text.length() == 0) {
-        Object* result = new Text(obj.m_text);
-        return result;
-      } else if (obj.m_text.length() == 0) {
-        Object* result = new Text(this->m_text);
-        return result;
-      }
-      Object* result = new Text(obj.m_text + this->m_text);
+      Object* result = Visitor::addition(obj, *(this));
       return result;
       break;
     }
@@ -65,26 +55,14 @@ Object* Text::collide(Text& obj, OPERATIONS Action) {
 
 Object* Text::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
   switch (Action) {
-    case OPERATIONS::SUM: {
-      Object* result = new Text(this->m_text);
-      return result;
-      break;
-    }
-    case OPERATIONS::SUB: {
-      Object* result = new Text(this->m_text);
-      return result;
-      break;
-    }
-    case OPERATIONS::MUL: {
-      Object* result = new Text(this->m_text);
-      return result;
-      break;
-    }
+    case OPERATIONS::SUM:
+    case OPERATIONS::SUB:
+    case OPERATIONS::MUL:
     case OPERATIONS::DIV: {
-      Object* result = new Text(this->m_text);
-      return result;
+      return new Text(this->m_text);
       break;
     }
+
     case OPERATIONS::SIN: {
       throw std::invalid_argument("cannot use sin on text");
       break;
@@ -100,36 +78,8 @@ Object* Text::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
 Object* Text::collide(Number& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
-      if (this->m_text.length() == 0 &&
-          std::to_string(obj.getNumber()).length() == 0) {
-        Object* result = new Text("");
-        return result;
-      } else if (this->m_text.length() == 0) {
-        if (obj.getNumber() == int(obj.getNumber())) {
-          Object* result = new Text(std::to_string(int(obj.getNumber())));
-          return result;
-        } else {
-          if (std::to_string(obj.getNumber()).length() == 0) {
-            Object* result = new Text("");
-            return result;
-          }
-          Object* result = new Text(std::to_string(obj.getNumber()));
-          return result;
-        }
-      } else if (std::to_string(obj.getNumber()).length() == 0) {
-        Object* result = new Text(this->m_text);
-        return result;
-      }
-
-      if (obj.getNumber() == int(obj.getNumber())) {
-        Object* result =
-            new Text(std::to_string(int(obj.getNumber())) + this->m_text);
-        return result;
-      } else {
-        Object* result =
-            new Text(std::to_string(obj.getNumber()) + this->m_text);
-        return result;
-      }
+      Object* result = Visitor::addition(obj, (*this), false);
+      return result;
       break;
     }
     case OPERATIONS::SUB: {

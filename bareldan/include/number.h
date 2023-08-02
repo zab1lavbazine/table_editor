@@ -6,6 +6,7 @@
 #include "../include/object.h"
 #include "../include/text.h"
 #include "../libs/json.hpp"
+#include "Visitor.h"
 
 class Number : public Object {
  public:

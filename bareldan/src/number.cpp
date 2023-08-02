@@ -1,5 +1,11 @@
 #include "../include/number.h"
 
+#include <stdbool.h>
+
+// help functions
+
+//
+
 Number::Number() {}
 Number::Number(const double& number) : m_number(number) {}
 Number::~Number() {}
@@ -33,84 +39,17 @@ Object* Number::collide(Object& obj, OPERATIONS Action) {
 }
 
 // collide with Empty Object
-Object* Number::collide([[maybe_unused]] EMPTY& obj, OPERATIONS Action) {
-  switch (Action) {
-    case OPERATIONS::SUM: {
-      Object* result = new Number(this->m_number);
-      return result;
-      break;
-    }
-    case OPERATIONS::SUB: {
-      Object* result = new Number(this->m_number * (-1));
-      return result;
-      break;
-    }
-    case OPERATIONS::MUL: {
-      Object* result = new Number(this->m_number);
-      return result;
-      break;
-    }
-    case OPERATIONS::DIV: {
-      Object* result = new Number(this->m_number);
-      return result;
-      break;
-    }
-    case OPERATIONS::SIN: {
-      Object* result = new Number(std::sin(this->m_number));
-      return result;
-      break;
-    }
-    case OPERATIONS::COS: {
-      Object* result = new Number(std::cos(this->m_number));
-      return result;
-      break;
-    }
-  }
-  return nullptr;
+Object* Number::collide([[maybe_unused]] EMPTY& obj,
+                        [[maybe_unused]] OPERATIONS Action) {
+  return new Number(this->m_number);
 }
 
 // collide with Text Object
 Object* Number::collide(Text& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
-      // text + number / number can be like int or double / check if number is
-      if (obj.getText().length() == 0 &&
-          std::to_string(this->m_number).length() == 0) {
-        Object* result = new Text("");
-        return result;
-      } else if (obj.getText().length() == 0) {
-        if (this->m_number == int(this->m_number)) {
-          Object* result = new Text(std::to_string(int(this->m_number)));
-          return result;
-        } else {
-          Object* result = new Text(std::to_string(this->m_number));
-          return result;
-        }
-      } else if (std::to_string(this->m_number).length() == 0) {
-        Object* result = new Text(obj.getText());
-        return result;
-      }
-      if (this->m_number == int(this->m_number)) {
-        if (obj.getText().length() == 0) {
-          Object* result =
-              new Text(obj.getText() + std::to_string(int(this->m_number)));
-          return result;
-        } else {
-          Object* result =
-              new Text(obj.getText() + std::to_string(int(this->m_number)));
-          return result;
-        }
-      } else {
-        if (obj.getText().length() == 0) {
-          Object* result =
-              new Text(obj.getText() + std::to_string(this->m_number));
-          return result;
-        } else {
-          Object* result =
-              new Text(obj.getText() + std::to_string(this->m_number));
-          return result;
-        }
-      }
+      Object* result = Visitor::addition(*(this), obj, true);
+      return result;
       break;
     }
     case OPERATIONS::SUB: {
@@ -151,17 +90,17 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
 Object* Number::collide(Number& obj, OPERATIONS Action) {
   switch (Action) {
     case OPERATIONS::SUM: {
-      Object* result = new Number(obj.getNumber() + this->m_number);
+      Object* result = Visitor::addition(obj, *(this));
       return result;
       break;
     }
     case OPERATIONS::SUB: {
-      Object* result = new Number(obj.getNumber() - this->m_number);
+      Object* result = Visitor::subtraction(obj, *(this));
       return result;
       break;
     }
     case OPERATIONS::MUL: {
-      Object* result = new Number(obj.getNumber() * this->m_number);
+      Object* result = Visitor::multiplication(obj, *(this));
       return result;
       break;
     }
@@ -169,7 +108,7 @@ Object* Number::collide(Number& obj, OPERATIONS Action) {
       if (this->m_number == 0) {
         throw std::invalid_argument("Division by zero");
       }
-      Object* result = new Number(obj.getNumber() / this->m_number);
+      Object* result = Visitor::division(obj, (*this), false);
       return result;
       break;
     }

@@ -2,6 +2,7 @@
 #include <iostream>
 #pragma once
 #include "../libs/json.hpp"
+#include "Visitor.h"
 #include "number.h"
 #include "object.h"
 #include "text.h"
