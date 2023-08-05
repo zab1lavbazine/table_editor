@@ -260,16 +260,12 @@ Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
       return Cell(Number(std::stod(token)));
     } else if (token[0] == '\"' && token[token.length() - 1] ==
                                        '\"') {  // check if the last is text
+
       return Cell(Text(token.substr(1, token.length() - 2)));
     } else if (token == "sin") {
-      // Handle sin function
-      Cell expression = evaluate(node->left, toPut);
-      std::cout << "sin expression: " << expression.toString() << std::endl;
-      return expression.sinus();
+      throw std::invalid_argument("sin error");
     } else if (token == "cos") {
-      // Handle cos function
-      Cell expression = evaluate(node->left, toPut);
-      return expression.cosinus();
+      throw std::invalid_argument("cos error");
     } else {
       bool minus = false;
       if (token[0] == '-') {
@@ -296,7 +292,14 @@ Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
 
   // check for null pointers
 
-  if (op == "sin" || op == "cos") return Cell(Text(op)) * left;
+  // if (op == "sin" || op == "cos") return Cell(Text(op)) * left;
+
+  if (op == "sin")
+    return left.getObject()->collide(*(left.getObject()),
+                                     Object::OPERATIONS::SIN);
+  if (op == "cos")
+    return left.getObject()->collide(*(left.getObject()),
+                                     Object::OPERATIONS::COS);
 
   if (op == "-" && right.getObject() != nullptr && left.getObject() == nullptr)
     return right * Cell(Number(-1));
@@ -323,9 +326,18 @@ std::shared_ptr<Cell> TABLE::HandleOperands(
   std::shared_ptr<Node> root =
       m_handler.buildParseTree(expression);  // build parse tree
   // m_handler.printParseTree(root);
+  Cell new_cell;
+  try {
+    new_cell = evaluate(root, toPut);  // evaluate expression
+  } catch (const std::invalid_argument& e) {
+    std::cout << "error: " << e.what() << std::endl;
+  }
 
-  Cell new_cell = evaluate(root, toPut);  // evaluate expression
-  new_cell.setFormula(root);              // set formula to cell
+  if (new_cell.getObject() == nullptr) {
+    throw std::invalid_argument("error");
+  }
+
+  new_cell.setFormula(root);  // set formula to cell
 
   std::shared_ptr<Cell> cell =
       std::make_shared<Cell>(new_cell);  // make cell and pointer to it

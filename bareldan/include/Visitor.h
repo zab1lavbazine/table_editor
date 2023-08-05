@@ -18,21 +18,14 @@ class Visitor {
 
   // functions for subtraction
   static Object *subtraction(const Number &number, const Number &number2);
-  static Object *subtraction(const Number &number, const Text &text,
-                             bool order);
-  static Object *subtraction(const Text &text, const Text &text2);
-
   // functions for multiplication
   static Object *multiplication(const Number &number, const Number &number2);
-  static Object *multiplication(const Number &number, const Text &text,
-                                bool order);
-  static Object *multiplication(const Text &text, const Text &text2);
-
 
   // functions for division
 
   static Object *division(const Number &number, const Number &number2,
                           bool order);
-  static Object *division(const Number &number, const Text &text, bool order);
-  static Object *division(const Text &text, const Text &text2);
+
+  static Object *sinus(const Number &number);
+  static Object *cosinus(const Number &number);
 };

@@ -106,16 +106,3 @@ Cell Cell::operator=(const Cell& cell) {
 nlohmann::json Cell::toJSON() const {
   return nlohmann::json{{"formula", this->m_formula.toString()}};
 }
-
-Cell Cell::sinus() {
-  Cell new_cell;
-
-  return new_cell.m_object = this->m_object->collide(*new_cell.m_object,
-                                                     Object::OPERATIONS::SIN);
-}
-
-Cell Cell::cosinus() {
-  Cell new_cell;
-  return new_cell.m_object = this->m_object->collide(*new_cell.m_object,
-                                                     Object::OPERATIONS::COS);
-}

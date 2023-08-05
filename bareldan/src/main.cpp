@@ -15,6 +15,5 @@
 int main(void) {
   ClientMessage message;
   message.getCommand();
-
   return 0;
 }

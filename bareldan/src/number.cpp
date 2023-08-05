@@ -113,11 +113,13 @@ Object* Number::collide(Number& obj, OPERATIONS Action) {
       break;
     }
     case OPERATIONS::SIN: {
-      throw std::invalid_argument("Number cannot be used with sin");
+      Object* result = Visitor::sinus(*(this));
+      return result;
       break;
     }
     case OPERATIONS::COS: {
-      throw std::invalid_argument("Number cannot be used with cos");
+      Object* result = Visitor::cosinus(*(this));
+      return result;
       break;
     }
   }

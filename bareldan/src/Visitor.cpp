@@ -43,14 +43,9 @@ Object* Visitor::subtraction(const Number& number, const Number& number2) {
   return new Number(result);
 }
 
-Object* Visitor::subtraction(const Number& number, const Text& text,
-                             bool order) {
-  throw std::invalid_argument("cant subtract number and text");
-}
 
-Object* Visitor::subtraction(const Text& text, const Text& text2) {
-  throw std::invalid_argument("cant subtract text and text");
-}
+
+
 
 // functions for multiplication
 Object* Visitor::multiplication(const Number& number, const Number& number2) {
@@ -58,14 +53,9 @@ Object* Visitor::multiplication(const Number& number, const Number& number2) {
   return new Number(result);
 }
 
-Object* Visitor::multiplication(const Number& number, const Text& text,
-                                bool order) {
-  throw std::invalid_argument("cant multiply number and text");
-}
 
-Object* Visitor::multiplication(const Text& text, const Text& text2) {
-  throw std::invalid_argument("cant multiply text and text");
-}
+
+
 
 // functions for division
 Object* Visitor::division(const Number& number, const Number& number2,
@@ -85,10 +75,16 @@ Object* Visitor::division(const Number& number, const Number& number2,
   return new Number(result);
 }
 
-Object* Visitor::division(const Number& number, const Text& text, bool order) {
-  throw std::invalid_argument("cant divide number and text");
+
+
+
+
+Object* Visitor::sinus(const Number& number) {
+  double result = std::sin(number.getNumber());
+  return new Number(result);
 }
 
-Object* Visitor::division(const Text& text, const Text& text2) {
-  throw std::invalid_argument("cant divide text and text");
+Object* Visitor::cosinus(const Number& number) {
+  double result = std::cos(number.getNumber());
+  return new Number(result);
 }
