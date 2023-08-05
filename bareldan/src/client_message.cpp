@@ -334,6 +334,12 @@ int ClientMessage::fromJSON(const std::string& fileName) {
   in >> j;
   in.close();
 
+  // check if closed correctly
+  if (!in.good()) {
+    std::cout << "error: import" << std::endl;
+    return 1;
+  }
+
   if (m_table.isEmpty())
     m_table.importFromJSON(j);
   else {

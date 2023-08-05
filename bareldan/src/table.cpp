@@ -326,13 +326,8 @@ std::shared_ptr<Cell> TABLE::HandleOperands(
   std::shared_ptr<Node> root =
       m_handler.buildParseTree(expression);  // build parse tree
   // m_handler.printParseTree(root);
-  Cell new_cell;
-  try {
-    new_cell = evaluate(root, toPut);  // evaluate expression
-  } catch (const std::invalid_argument& e) {
-    std::cout << "error: " << e.what() << std::endl;
-  }
 
+  Cell new_cell = evaluate(root, toPut);  // evaluate expression
   if (new_cell.getObject() == nullptr) {
     throw std::invalid_argument("error");
   }
