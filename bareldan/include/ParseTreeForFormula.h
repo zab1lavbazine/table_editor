@@ -5,23 +5,22 @@
 
 #pragma once
 
-#include "../include/Formula.h"
-#include "../include/Node.h"
+#include "Node.h"
+#include "cell.h"
 
-class MessHandler {
+class ParseTreeForFormula {
  public:
   // function for parsing formula in tree
+
+  ParseTreeForFormula(const std::string& formula) : formula(formula) {}
 
   /// @brief function for parsing formula in tree
   /// @param formula
   /// @return std::shared_ptr<Node>
-  std::shared_ptr<Node> buildParseTree(const std::string& formula);
-  std::shared_ptr<Node> parseExpression(const std::string& formula,
-                                        size_t& index, size_t length);
-  std::shared_ptr<Node> parseTerm(const std::string& formula, size_t& index,
-                                  size_t length);
-  std::shared_ptr<Node> parseFactor(const std::string& formula, size_t& index,
-                                    size_t length);
+  std::shared_ptr<Node> buildParseTree();
+  std::shared_ptr<Node> parseExpression(size_t& index, size_t length);
+  std::shared_ptr<Node> parseTerm(size_t& index, size_t length);
+  std::shared_ptr<Node> parseFactor(size_t& index, size_t length);
 
   int countFormulas(const std::shared_ptr<Node>& node);
 
@@ -37,4 +36,7 @@ class MessHandler {
  private:
   bool isOperator(const char& ch);
   std::string getIndentation(int depth);
+
+  std::string formula;
+  std::shared_ptr<Node> root;
 };

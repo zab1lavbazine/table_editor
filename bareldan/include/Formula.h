@@ -15,7 +15,6 @@ class Formula {
   Formula() = default;
 
   // manipulations with formula
-  std::shared_ptr<Node> getFormula() const { return this->m_formula; }
   void setFormula(const std::shared_ptr<Node>& formula) {
     this->m_formula = formula;
   }
@@ -30,7 +29,7 @@ class Formula {
   Formula clone() const;
 
   // get formula
-  std::shared_ptr<Node> get() const { return this->m_formula; }
+  std::shared_ptr<Node> getFormula() const { return this->m_formula; }
 
  private:
   std::shared_ptr<Node> cloneTree(std::shared_ptr<Node> node) const;

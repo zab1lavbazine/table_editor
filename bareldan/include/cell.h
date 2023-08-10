@@ -45,7 +45,7 @@ class Cell {
   std::string toString() const;
 
   // formula functions to string
-  std::shared_ptr<Node> getFormula() const { return this->m_formula.get(); }
+  std::shared_ptr<Node> getFormula() const { return this->m_formula.getFormula(); }
   std::string toStringFormula() const { return this->m_formula.toString(); }
 
   // for all manipulations with cell like +, -, *, /, =

@@ -4,8 +4,8 @@
 #include <vector>
 
 #pragma once
+#include "../include/ParseTreeForFormula.h"
 #include "../include/graph_cell_relations.h"
-#include "../include/operand_handler.h"
 #include "../libs/json.hpp"
 #include "../libs/tabulate.hpp"
 
@@ -20,7 +20,6 @@ class TABLE {
   long int m_rows;
   long int m_columns;
   Graph m_graph;
-  MessHandler m_handler;
 
  public:
   TABLE();
@@ -58,6 +57,16 @@ class TABLE {
       const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut);
   Cell evaluate(const std::shared_ptr<Node>& node,
                 std::vector<std::shared_ptr<Cell>>& toPut) const;
+
+  Cell evaluateLeafNode(const std::string& token,
+                        std::vector<std::shared_ptr<Cell>>& toPut) const;
+
+  Cell evaluateOperation(const std::string& op, Cell& left, Cell& right) const;
+
+  Cell evaluateFunction(const std::string& functionName) const;
+
+  Cell evaluateNegativeNumber(const std::string& token,
+                              std::vector<std::shared_ptr<Cell>>& toPut) const;
 
   // check if table is empty
   bool isEmpty() const;

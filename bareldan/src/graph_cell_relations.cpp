@@ -142,7 +142,7 @@ void Graph::removeFromAll(std::shared_ptr<Cell> cell) {
 }
 
 // remove all edges from childrens
-void Graph::removeChildrens(std::shared_ptr<Cell> parent) {
+void Graph::removeChildrensFromParent(std::shared_ptr<Cell> parent) {
   for (const auto& child : m_graph_childs[parent]) {
     removeParent(child, parent);
   }
@@ -150,7 +150,7 @@ void Graph::removeChildrens(std::shared_ptr<Cell> parent) {
 }
 
 // remove all edges from parents
-void Graph::removeParents(std::shared_ptr<Cell> child) {
+void Graph::removeParentsFromChildren(std::shared_ptr<Cell> child) {
   for (const auto& parent : m_graph_parents[child]) {
     removeChild(parent, child);
   }

@@ -1,5 +1,4 @@
-#include "operand_handler.h"
-
+#include "ParseTreeForFormula.h"
 
 // helper function for removing spaces from formula
 std::string removeSpaces(const std::string& formula) {
@@ -17,7 +16,7 @@ std::string removeSpaces(const std::string& formula) {
 }
 
 // helper function for counting formulas in formula
-int MessHandler::countFormulas(const std::shared_ptr<Node>& node) {
+int ParseTreeForFormula::countFormulas(const std::shared_ptr<Node>& node) {
   if (node == nullptr) {
     return 0;
   }
@@ -34,11 +33,11 @@ int MessHandler::countFormulas(const std::shared_ptr<Node>& node) {
 }
 
 // helper function for checking if operator is valid
-bool MessHandler::isOperator(const char& ch) {
+bool ParseTreeForFormula::isOperator(const char& ch) {
   return ch == '+' || ch == '-' || ch == '*' || ch == '/';
 }
 
-std::string MessHandler::getIndentation(int depth) {
+std::string ParseTreeForFormula::getIndentation(int depth) {
   std::string indentation;
   for (int i = 0; i < depth; ++i) {
     indentation += "  ";
@@ -47,27 +46,26 @@ std::string MessHandler::getIndentation(int depth) {
 }
 
 // main function for parsing formula to tree
-std::shared_ptr<Node> MessHandler::buildParseTree(
-    const std::string& new_formula) {
-  std::string formula = removeSpaces(new_formula);
+std::shared_ptr<Node> ParseTreeForFormula::buildParseTree() {
+  formula = removeSpaces(formula);
 
   size_t length = formula.length();
   size_t index = 0;
-
-  std::shared_ptr<Node> root = parseExpression(formula, index, length);
+  std::shared_ptr<Node> root = parseExpression(index, length);
+  // print formula
+  // printParseTree(root);
   return root;
 }
 
 // helper function for parsing formula to tree with recursion +/-
-std::shared_ptr<Node> MessHandler::parseExpression(const std::string& formula,
-                                                   size_t& index,
-                                                   size_t length) {
-  std::shared_ptr<Node> left = parseTerm(formula, index, length);
+std::shared_ptr<Node> ParseTreeForFormula::parseExpression(size_t& index,
+                                                           size_t length) {
+  std::shared_ptr<Node> left = parseTerm(index, length);
 
   while (index < length && (formula[index] == '+' || formula[index] == '-')) {
     char op = formula[index];
     ++index;
-    std::shared_ptr<Node> right = parseTerm(formula, index, length);
+    std::shared_ptr<Node> right = parseTerm(index, length);
 
     std::shared_ptr<Node> newNode = std::make_shared<Node>(std::string(1, op));
     newNode->left = left;
@@ -79,14 +77,14 @@ std::shared_ptr<Node> MessHandler::parseExpression(const std::string& formula,
 }
 
 // helper function for parsing formula to tree with recursion */ /
-std::shared_ptr<Node> MessHandler::parseTerm(const std::string& formula,
-                                             size_t& index, size_t length) {
-  std::shared_ptr<Node> left = parseFactor(formula, index, length);
+std::shared_ptr<Node> ParseTreeForFormula::parseTerm(size_t& index,
+                                                     size_t length) {
+  std::shared_ptr<Node> left = parseFactor(index, length);
 
   while (index < length && (formula[index] == '*' || formula[index] == '/')) {
     char op = formula[index];
     ++index;
-    std::shared_ptr<Node> right = parseFactor(formula, index, length);
+    std::shared_ptr<Node> right = parseFactor(index, length);
 
     std::shared_ptr<Node> newNode = std::make_shared<Node>(std::string(1, op));
     newNode->left = left;
@@ -98,8 +96,8 @@ std::shared_ptr<Node> MessHandler::parseTerm(const std::string& formula,
 }
 
 // helper function for parsing formula to tree with recursion
-std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
-                                               size_t& index, size_t length) {
+std::shared_ptr<Node> ParseTreeForFormula::parseFactor(size_t& index,
+                                                       size_t length) {
   std::shared_ptr<Node> node = nullptr;
 
   if (index < length) {
@@ -125,8 +123,7 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
       if (token == "sin") {                             // sin
         if (index < length && formula[index] == '(') {  // check for (
           ++index;
-          std::shared_ptr<Node> expression =
-              parseExpression(formula, index, length);
+          std::shared_ptr<Node> expression = parseExpression(index, length);
           if (index < length && formula[index] == ')') {
             ++index;
             node = std::make_shared<Node>("sin");
@@ -140,8 +137,7 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
       } else if (token == "cos") {                      // cos
         if (index < length && formula[index] == '(') {  // check for
           ++index;
-          std::shared_ptr<Node> expression =
-              parseExpression(formula, index, length);
+          std::shared_ptr<Node> expression = parseExpression(index, length);
           if (index < length && formula[index] == ')') {
             ++index;
             node = std::make_shared<Node>("cos");
@@ -179,7 +175,7 @@ std::shared_ptr<Node> MessHandler::parseFactor(const std::string& formula,
     } else if (ch == '(') {
       // Parsing a subexpression enclosed in parentheses
       ++index;
-      node = parseExpression(formula, index, length);
+      node = parseExpression(index, length);
       if (index < length && formula[index] == ')') {
         ++index;
       } else {

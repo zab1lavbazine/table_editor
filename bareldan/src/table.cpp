@@ -61,6 +61,20 @@ POS TABLE::get_position(const std::string& position) const {
   return pos;
 }
 
+// help functions for evaluations
+
+bool is_text_token(const std::string& token) {
+  return token.size() >= 2 && token.front() == '\"' && token.back() == '\"';
+}
+
+bool is_function(const std::string& token) {
+  return token == "sin" || token == "cos";
+}
+
+bool is_negative_number(const std::string& token) {
+  return token.size() > 1 && token[0] == '-';
+}
+
 // -----------------------------
 
 TABLE::TABLE() {
@@ -145,7 +159,8 @@ void TABLE::setValue(const std::string& position, const std::string& formula) {
       return;
     }  // if there is a loop return and dont put inside
   } else {
-    m_graph.removeParents(current_cell);  // delete parents if there are no
+    m_graph.removeParentsFromChildren(
+        current_cell);  // delete parents if there are no
   }
 
   current_cell.get()->setObject(
@@ -247,67 +262,42 @@ bool check_if_number(std::string number) {
   return true;
 }
 
+///
 Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
                      std::vector<std::shared_ptr<Cell>>& toPut) const {
-  if (node == nullptr) {  // check for null pointers
+  if (node == nullptr) {
     return Cell();
   }
 
   if (node->left == nullptr && node->right == nullptr) {
-    // Leaf node
-    std::string token = node->value;
-    if (check_if_number(token)) {  // check if the last is number
-      return Cell(Number(std::stod(token)));
-    } else if (token[0] == '\"' && token[token.length() - 1] ==
-                                       '\"') {  // check if the last is text
-
-      return Cell(Text(token.substr(1, token.length() - 2)));
-    } else if (token == "sin") {
-      throw std::invalid_argument("sin error");
-    } else if (token == "cos") {
-      throw std::invalid_argument("cos error");
-    } else {
-      bool minus = false;
-      if (token[0] == '-') {
-        minus = true;
-        token = token.substr(1, token.length() - 1);
-      }
-
-      std::shared_ptr<Cell> cell = getCell(token);
-      if (minus == true) {
-        std::cout << "cell with -1" << std::endl;
-        Cell new_cell = *cell * Cell(Number(-1));
-        return new_cell;
-      }
-
-      toPut.push_back(cell);
-      return *cell;
-    }
+    return evaluateLeafNode(node->value, toPut);
   }
 
   Cell left = evaluate(node->left, toPut);
   Cell right = evaluate(node->right, toPut);
 
-  std::string op = node->value;
+  return evaluateOperation(node->value, left, right);
+}
 
-  // check for null pointers
-
-  // if (op == "sin" || op == "cos") return Cell(Text(op)) * left;
-
-  if (op == "sin")
-    return left.getObject()->collide(*(left.getObject()),
-                                     Object::OPERATIONS::SIN);
-  if (op == "cos")
-    return left.getObject()->collide(*(left.getObject()),
-                                     Object::OPERATIONS::COS);
-
-  if (op == "-" && right.getObject() != nullptr && left.getObject() == nullptr)
-    return right * Cell(Number(-1));
-
-  if (left.getObject() == nullptr || right.getObject() == nullptr) {
-    return Cell();
+Cell TABLE::evaluateLeafNode(const std::string& token,
+                             std::vector<std::shared_ptr<Cell>>& toPut) const {
+  if (check_if_number(token)) {
+    return Cell(Number(std::stod(token)));
+  } else if (is_text_token(token)) {
+    return Cell(Text(token.substr(1, token.length() - 2)));
+  } else if (is_function(token)) {
+    return evaluateFunction(token);
+  } else if (is_negative_number(token)) {
+    return evaluateNegativeNumber(token, toPut);
+  } else {
+    std::shared_ptr<Cell> cell = getCell(token);
+    toPut.push_back(cell);
+    return *cell;
   }
+}
 
+Cell TABLE::evaluateOperation(const std::string& op, Cell& left,
+                              Cell& right) const {
   if (op == "+") {
     return left + right;
   } else if (op == "-") {
@@ -316,20 +306,124 @@ Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
     return left * right;
   } else if (op == "/") {
     return left / right;
+  } else if (op == "sin") {
+    return left.getObject()->collide(*left.getObject(),
+                                     Object::OPERATIONS::SIN);
+  } else if (op == "cos") {
+    return left.getObject()->collide(*left.getObject(),
+                                     Object::OPERATIONS::COS);
+  } else {
+    return Cell();
   }
+}
 
+Cell TABLE::evaluateFunction(const std::string& functionName) const {
+  if (functionName == "sin" || functionName == "cos") {
+    throw std::invalid_argument(functionName + " error");
+  }
+  // Additional function evaluations if needed
   return Cell();
 }
 
+Cell TABLE::evaluateNegativeNumber(
+    const std::string& token, std::vector<std::shared_ptr<Cell>>& toPut) const {
+  std::shared_ptr<Cell> cell = getCell(token.substr(1));
+  Cell newCell = *cell * Cell(Number(-1));
+  toPut.push_back(cell);
+  return newCell;
+}
+
+///
+
+// Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
+//                      std::vector<std::shared_ptr<Cell>>& toPut) const {
+//   if (node == nullptr) {  // check for null pointers
+//     return Cell();
+//   }
+
+//   if (node->left == nullptr && node->right == nullptr) {
+//     // Leaf node
+//     std::string token = node->value;
+
+//     if (check_if_number(token)) {  // check if the last is number
+//       return Cell(Number(std::stod(token)));
+//     } else if (token[0] == '\"' && token[token.length() - 1] ==
+//                                        '\"') {  // check if the last is text
+
+//       return Cell(Text(token.substr(1, token.length() - 2)));
+//     } else if (token == "sin") {
+//       throw std::invalid_argument("sin error");
+//     } else if (token == "cos") {
+//       throw std::invalid_argument("cos error");
+//     } else {
+//       bool minus = false;
+//       if (token[0] == '-') {
+//         minus = true;
+//         token = token.substr(1, token.length() - 1);
+//       }
+
+//       std::shared_ptr<Cell> cell = getCell(token);
+//       if (minus == true) {
+//         std::cout << "cell with -1" << std::endl;
+//         Cell new_cell = *cell * Cell(Number(-1));
+//         return new_cell;
+//       }
+
+//       toPut.push_back(cell);
+//       return *cell;
+//     }
+//   }
+
+//   Cell left = evaluate(node->left, toPut);
+//   Cell right = evaluate(node->right, toPut);
+
+//   std::string op = node->value;
+
+//   // check for null pointers
+
+//   // if (op == "sin" || op == "cos") return Cell(Text(op)) * left;
+
+//   if (op == "sin")
+//     return left.getObject()->collide(*(left.getObject()),
+//                                      Object::OPERATIONS::SIN);
+//   if (op == "cos")
+//     return left.getObject()->collide(*(left.getObject()),
+//                                      Object::OPERATIONS::COS);
+
+//   if (op == "-" && right.getObject() != nullptr && left.getObject() ==
+//   nullptr)
+//     return right * Cell(Number(-1));
+
+//   if (left.getObject() == nullptr || right.getObject() == nullptr) {
+//     return Cell();
+//   }
+
+//   if (op == "+") {
+//     return left + right;
+//   } else if (op == "-") {
+//     return left - right;
+//   } else if (op == "*") {
+//     return left * right;
+//   } else if (op == "/") {
+//     return left / right;
+//   }
+
+//   return Cell();
+// }
+
 std::shared_ptr<Cell> TABLE::HandleOperands(
     const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut) {
-  std::shared_ptr<Node> root =
-      m_handler.buildParseTree(expression);  // build parse tree
-  // m_handler.printParseTree(root);
+  // creating parse tree and building it with the formula
+  ParseTreeForFormula parseTree(expression);
+
+  std::shared_ptr<Node> root = parseTree.buildParseTree();  // build parse tree
+  if (root == nullptr) {
+    throw std::invalid_argument("root for formula is null");
+  }
 
   Cell new_cell = evaluate(root, toPut);  // evaluate expression
   if (new_cell.getObject() == nullptr) {
-    throw std::invalid_argument("error");
+    throw std::invalid_argument("new cell is null");
   }
 
   new_cell.setFormula(root);  // set formula to cell
@@ -344,8 +438,8 @@ void TABLE::eraseCell(const std::string& position) {
   POS pos = get_position(position);
   // delete from all connections
 
-  m_graph.removeChildrens(this->m_table[pos.row - 1][pos.column - 1]);
-  m_graph.removeParents(this->m_table[pos.row - 1][pos.column - 1]);
+  m_graph.removeChildrensFromParent(this->m_table[pos.row - 1][pos.column - 1]);
+  m_graph.removeParentsFromChildren(this->m_table[pos.row - 1][pos.column - 1]);
 
   // delete from table
   std::shared_ptr<Cell> new_cell(new Cell(EMPTY()));
@@ -358,8 +452,8 @@ void TABLE::eraseCell(const int& x, const int& y) {
   }
 
   // delete from all connections
-  m_graph.removeChildrens(this->m_table[y - 1][x - 1]);
-  m_graph.removeParents(this->m_table[y - 1][x - 1]);
+  m_graph.removeChildrensFromParent(this->m_table[y - 1][x - 1]);
+  m_graph.removeParentsFromChildren(this->m_table[y - 1][x - 1]);
 
   // delete from table
   std::shared_ptr<Cell> new_cell(new Cell(EMPTY()));
