@@ -1,8 +1,6 @@
 
 #include "../include/graph_cell_relations.h"
 
-
-
 #include "graph_cell_relations.h"
 
 // detect loop in graph
@@ -10,7 +8,6 @@ bool Graph::detectLoop(std::shared_ptr<Cell> currentCell,
                        std::unordered_set<std::shared_ptr<Cell>>& visited,
                        std::unordered_set<std::shared_ptr<Cell>>& memorized) {
   if (memorized.count(currentCell) > 0) {
-    std::cout << "Loop detected" << std::endl;
     return true;  // loop detected
   }
   visited.insert(currentCell);
@@ -20,7 +17,6 @@ bool Graph::detectLoop(std::shared_ptr<Cell> currentCell,
     if (visited.count(child) > 0 || detectLoop(child, visited, memorized)) {
       visited.erase(currentCell);
       memorized.insert(child);
-      std::cout << "Loop detected" << std::endl;
       return true;
     }
   }

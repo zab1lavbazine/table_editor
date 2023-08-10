@@ -57,15 +57,6 @@ Object* Number::collide(Text& obj, OPERATIONS Action) {
       break;
     }
     case OPERATIONS::MUL: {
-      if (obj.getText() == "sin" || obj.getText() == "cos") {
-        if (obj.getText() == "sin") {
-          Object* result = new Number(std::sin(this->m_number));
-          return result;
-        } else if (obj.getText() == "cos") {
-          Object* result = new Number(std::cos(this->m_number));
-          return result;
-        }
-      }
       throw std::invalid_argument("Text cannot be multiplied");
       break;
     }

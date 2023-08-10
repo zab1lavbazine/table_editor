@@ -22,6 +22,14 @@ class ParseTreeForFormula {
   std::shared_ptr<Node> parseTerm(size_t& index, size_t length);
   std::shared_ptr<Node> parseFactor(size_t& index, size_t length);
 
+  std::shared_ptr<Node> parseAlphaToken(size_t& index, size_t length);
+  std::shared_ptr<Node> parseFunction(const std::string& token, size_t& index,
+                                      size_t length);
+  std::shared_ptr<Node> parseStringToken(size_t& index, size_t length);
+  std::shared_ptr<Node> parseNumberToken(size_t& index, size_t length);
+
+  std::shared_ptr<Node> parseSubexpression(size_t& index, size_t length);
+
   int countFormulas(const std::shared_ptr<Node>& node);
 
   // print function for tree

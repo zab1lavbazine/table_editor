@@ -95,7 +95,173 @@ std::shared_ptr<Node> ParseTreeForFormula::parseTerm(size_t& index,
   return left;
 }
 
+std::shared_ptr<Node> ParseTreeForFormula::parseAlphaToken(size_t& index,
+                                                           size_t length) {
+  size_t StartIndex = index;
+  // char ch = formula[index];
+
+  while (index < length && std::isalnum(formula[index])) {
+    ++index;
+  }
+
+  std::string token = formula.substr(StartIndex, index - StartIndex);
+
+  if (token == "sin" || token == "cos") {
+    return parseFunction(token, index, length);
+  } else {
+    return std::make_shared<Node>(token);
+  }
+}
+
+std::shared_ptr<Node> ParseTreeForFormula::parseFunction(
+    const std::string& token, size_t& index, size_t length) {
+  if (index < length && formula[index] == '(') {
+    ++index;
+    std::shared_ptr<Node> expression = parseExpression(index, length);
+    if (index < length && formula[index] == ')') {
+      ++index;
+      std::shared_ptr<Node> node = std::make_shared<Node>(token);
+      node->left = expression;
+      return node;
+    } else {
+      throw std::invalid_argument("Unbalanced parentheses! ) after sin");
+    }
+  } else {
+    throw std::invalid_argument("Expected '(' after sin!");
+  }
+}
+
+std::shared_ptr<Node> ParseTreeForFormula::parseStringToken(size_t& index,
+                                                            size_t length) {
+  size_t StartIndex = index + 1;
+  while (index < length && formula[index] != '"') {
+    ++index;
+  }
+  std::string token = formula.substr(StartIndex, index - StartIndex);
+  ++index;
+  return std::make_shared<Node>(token);
+}
+
+std::shared_ptr<Node> ParseTreeForFormula::parseNumberToken(size_t& index,
+                                                            size_t length) {
+  size_t startIndex = index;
+
+  while (index < length &&
+         (std::isdigit(formula[index]) || formula[index] == '.')) {
+    ++index;
+  }
+
+  std::string token = formula.substr(startIndex, index - startIndex);
+  return std::make_shared<Node>(token);
+}
+
+std::shared_ptr<Node> ParseTreeForFormula::parseSubexpression(size_t& index,
+                                                              size_t length) {
+  ++index;
+  std::shared_ptr<Node> expression = parseExpression(index, length);
+
+  if (index < length && formula[index] == ')') {
+    ++index;
+  } else {
+    std::cerr << "Error: Unbalanced parentheses!" << std::endl;
+  }
+
+  return expression;
+}
+
 // helper function for parsing formula to tree with recursion
+// std::shared_ptr<Node> ParseTreeForFormula::parseFactor(size_t& index,
+//                                                        size_t length) {
+//   std::shared_ptr<Node> node = nullptr;
+
+//   if (index < length) {
+//     char ch = formula[index];
+
+//     if (std::isalpha(ch)) {
+//       // Parsing a cell or a string or sin or cos
+
+//       size_t startIndex = index;
+//       if (ch == 's' || ch == 'c') {  // checking for sin or cos
+//         ++index;
+//         while (index < length && std::isalpha(formula[index])) {
+//           ++index;
+//         }
+//       } else {
+//         while (index < length && std::isalnum(formula[index])) {
+//           ++index;
+//         }
+//       }
+
+//       std::string token = formula.substr(startIndex, index - startIndex);
+
+//       if (token == "sin") {                             // sin
+//         if (index < length && formula[index] == '(') {  // check for (
+//           ++index;
+//           std::shared_ptr<Node> expression = parseExpression(index, length);
+//           if (index < length && formula[index] == ')') {
+//             ++index;
+//             node = std::make_shared<Node>("sin");
+//             node->left = expression;
+//           } else {
+//             throw std::invalid_argument("Unbalanced parentheses! ) after
+//             sin");
+//           }
+//         } else {
+//           throw std::invalid_argument("Expected '(' after sin!");
+//         }
+//       } else if (token == "cos") {                      // cos
+//         if (index < length && formula[index] == '(') {  // check for
+//           ++index;
+//           std::shared_ptr<Node> expression = parseExpression(index, length);
+//           if (index < length && formula[index] == ')') {
+//             ++index;
+//             node = std::make_shared<Node>("cos");
+//             node->left = expression;
+//           } else {
+//             std::cerr << "Error: Unbalanced parentheses!" << std::endl;
+//           }
+//         } else {
+//           std::cerr << "Error: Expected '(' after cos!" << std::endl;
+//         }
+//       } else  // Cell token or string
+//         node = std::make_shared<Node>(token);
+
+//     } else if (ch == '"') {
+//       // Parsing a string enclosed in double quotes
+//       size_t startIndex = index;
+//       ++index;
+//       while (index < length && formula[index] != '"') {
+//         ++index;
+//       }
+//       std::string token = formula.substr(startIndex, index - startIndex + 1);
+//       node = std::make_shared<Node>(token);
+//       ++index;
+//     } else if (std::isdigit(ch) || ch == '.') {
+//       // Parsing a number or number with a negative sign
+
+//       size_t startIndex = index;
+//       // if (ch == '-') ++index;
+//       while (index < length &&
+//              (std::isdigit(formula[index]) || formula[index] == '.')) {
+//         ++index;
+//       }
+//       std::string token = formula.substr(startIndex, index - startIndex);
+//       node = std::make_shared<Node>(token);
+//     } else if (ch == '(') {
+//       // Parsing a subexpression enclosed in parentheses
+//       ++index;
+//       node = parseExpression(index, length);
+//       if (index < length && formula[index] == ')') {
+//         ++index;
+//       } else {
+//         std::cerr << "Error: Unbalanced parentheses!" << std::endl;
+//       }
+//     }
+//   }
+
+//   return node;
+// }
+
 std::shared_ptr<Node> ParseTreeForFormula::parseFactor(size_t& index,
                                                        size_t length) {
   std::shared_ptr<Node> node = nullptr;
@@ -104,85 +270,14 @@ std::shared_ptr<Node> ParseTreeForFormula::parseFactor(size_t& index,
     char ch = formula[index];
 
     if (std::isalpha(ch)) {
-      // Parsing a cell or a string or sin or cos
-
-      size_t startIndex = index;
-      if (ch == 's' || ch == 'c') {  // checking for sin or cos
-        ++index;
-        while (index < length && std::isalpha(formula[index])) {
-          ++index;
-        }
-      } else {
-        while (index < length && std::isalnum(formula[index])) {
-          ++index;
-        }
-      }
-
-      std::string token = formula.substr(startIndex, index - startIndex);
-
-      if (token == "sin") {                             // sin
-        if (index < length && formula[index] == '(') {  // check for (
-          ++index;
-          std::shared_ptr<Node> expression = parseExpression(index, length);
-          if (index < length && formula[index] == ')') {
-            ++index;
-            node = std::make_shared<Node>("sin");
-            node->left = expression;
-          } else {
-            throw std::invalid_argument("Unbalanced parentheses! ) after sin");
-          }
-        } else {
-          throw std::invalid_argument("Expected '(' after sin!");
-        }
-      } else if (token == "cos") {                      // cos
-        if (index < length && formula[index] == '(') {  // check for
-          ++index;
-          std::shared_ptr<Node> expression = parseExpression(index, length);
-          if (index < length && formula[index] == ')') {
-            ++index;
-            node = std::make_shared<Node>("cos");
-            node->left = expression;
-          } else {
-            std::cerr << "Error: Unbalanced parentheses!" << std::endl;
-          }
-        } else {
-          std::cerr << "Error: Expected '(' after cos!" << std::endl;
-        }
-      } else  // Cell token or string
-        node = std::make_shared<Node>(token);
-
+      node = parseAlphaToken(index, length);
     } else if (ch == '"') {
-      // Parsing a string enclosed in double quotes
-      size_t startIndex = index;
-      ++index;
-      while (index < length && formula[index] != '"') {
-        ++index;
-      }
-      std::string token = formula.substr(startIndex, index - startIndex + 1);
-      node = std::make_shared<Node>(token);
-      ++index;
+      node = parseStringToken(index, length);
     } else if (std::isdigit(ch) || ch == '.') {
-      // Parsing a number or number with a negative sign
-
-      size_t startIndex = index;
-      // if (ch == '-') ++index;
-      while (index < length &&
-             (std::isdigit(formula[index]) || formula[index] == '.')) {
-        ++index;
-      }
-      std::string token = formula.substr(startIndex, index - startIndex);
-      node = std::make_shared<Node>(token);
+      node = parseNumberToken(index, length);
     } else if (ch == '(') {
-      // Parsing a subexpression enclosed in parentheses
-      ++index;
-      node = parseExpression(index, length);
-      if (index < length && formula[index] == ')') {
-        ++index;
-      } else {
-        std::cerr << "Error: Unbalanced parentheses!" << std::endl;
-      }
+      node = parseSubexpression(index, length);
     }
   }
-
   return node;
 }
