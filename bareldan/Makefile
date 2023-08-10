@@ -23,7 +23,7 @@ PROGRAM = $(BIN_DIR)/$(USERNAME)
 
 
 #create 'doc' directory 
-$(shell mkdir -p $(DOC_DIR))
+$(shell mkdir -p $(DOC_DIR) $(OBJ_DIR) $(BIN_DIR))
 
 
 doc:
