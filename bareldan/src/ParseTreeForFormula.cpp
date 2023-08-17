@@ -133,11 +133,13 @@ std::shared_ptr<Node> ParseTreeForFormula::parseFunction(
 
 std::shared_ptr<Node> ParseTreeForFormula::parseStringToken(size_t& index,
                                                             size_t length) {
-  size_t StartIndex = index + 1;
+  size_t StartIndex = index;
+  index++;
+  std::cout << "formula index : " << formula[index] << std::endl;
   while (index < length && formula[index] != '"') {
     ++index;
   }
-  std::string token = formula.substr(StartIndex, index - StartIndex);
+  std::string token = formula.substr(StartIndex, index - StartIndex + 1);
   ++index;
   return std::make_shared<Node>(token);
 }

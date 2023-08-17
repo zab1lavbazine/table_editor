@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../include/number.h"
-#include "../include/object.h"
-#include "Visitor.h"
+#include "Number.h"
+#include "ObjectInsideCell.h"
+#include "OperationsBetweenObj.h"
 
 class Text : public Object {
  public:

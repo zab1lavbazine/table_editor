@@ -1,5 +1,5 @@
 
-#include "../include/client_message.h"
+#include "../include/ClientMessage.h"
 
 // output for all commands for info command
 std::string COMMAND::CommandToString(const COMMAND_TYPE& command) const {

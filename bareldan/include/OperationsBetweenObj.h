@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "../include/empty.h"
-#include "../include/number.h"
-#include "../include/text.h"
+#include "Empty.h"
+#include "Number.h"
+#include "Text.h"
 
 class Visitor {
  public:

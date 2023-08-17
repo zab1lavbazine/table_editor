@@ -1,4 +1,4 @@
-#include "../include/text.h"
+#include "../include/Text.h"
 
 Text::Text() {}
 Text::Text(const std::string& text) : m_text(text) {}

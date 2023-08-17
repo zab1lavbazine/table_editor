@@ -5,8 +5,8 @@
 
 #pragma once
 #include "../libs/json.hpp"
-#include "COMMAND_TYPE.h"
-#include "table.h"
+#include "CommandType.h"
+#include "Table.h"
 
 // struct for TODO
 

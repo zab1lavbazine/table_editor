@@ -6,11 +6,11 @@
 #pragma once
 #include "../include/Formula.h"
 #include "../include/Node.h"
-#include "../include/empty.h"
-#include "../include/number.h"
-#include "../include/object.h"
-#include "../include/text.h"
 #include "../libs/json.hpp"
+#include "Empty.h"
+#include "Number.h"
+#include "ObjectInsideCell.h"
+#include "Text.h"
 
 class Cell {
  public:
@@ -45,7 +45,9 @@ class Cell {
   std::string toString() const;
 
   // formula functions to string
-  std::shared_ptr<Node> getFormula() const { return this->m_formula.getFormula(); }
+  std::shared_ptr<Node> getFormula() const {
+    return this->m_formula.getFormula();
+  }
   std::string toStringFormula() const { return this->m_formula.toString(); }
 
   // for all manipulations with cell like +, -, *, /, =
@@ -58,8 +60,6 @@ class Cell {
   Cell operator*(const Cell& cell);
   Cell operator/(const Cell& cell);
   Cell operator=(const Cell& cell);
-
- 
 
   Cell clone() const;
 

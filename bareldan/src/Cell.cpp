@@ -1,4 +1,4 @@
-#include "../include/cell.h"
+#include "../include/Cell.h"
 
 // copy constructor
 Cell::Cell(const Cell& cell) : m_object(cell.m_object->clone()) {

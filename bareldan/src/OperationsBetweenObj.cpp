@@ -1,6 +1,6 @@
 
 
-#include "../include/Visitor.h"
+#include "../include/OperationsBetweenObj.h"
 
 // help functions
 bool checkInt(const double& number) {
@@ -43,19 +43,11 @@ Object* Visitor::subtraction(const Number& number, const Number& number2) {
   return new Number(result);
 }
 
-
-
-
-
 // functions for multiplication
 Object* Visitor::multiplication(const Number& number, const Number& number2) {
   double result = number.getNumber() * number2.getNumber();
   return new Number(result);
 }
-
-
-
-
 
 // functions for division
 Object* Visitor::division(const Number& number, const Number& number2,
@@ -74,10 +66,6 @@ Object* Visitor::division(const Number& number, const Number& number2,
   double result = number.getNumber() / number2.getNumber();
   return new Number(result);
 }
-
-
-
-
 
 Object* Visitor::sinus(const Number& number) {
   double result = std::sin(number.getNumber());

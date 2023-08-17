@@ -1,4 +1,4 @@
-#include "../include/number.h"
+#include "../include/Number.h"
 
 #include <stdbool.h>
 

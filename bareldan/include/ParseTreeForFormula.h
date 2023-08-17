@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include "Cell.h"
 #include "Node.h"
-#include "cell.h"
 
 class ParseTreeForFormula {
  public:

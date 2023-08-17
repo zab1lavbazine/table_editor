@@ -5,11 +5,11 @@
 #include <vector>
 
 #pragma once
-#include "cell.h"
-#include "empty.h"
-#include "number.h"
-#include "object.h"
-#include "text.h"
+#include "Cell.h"
+#include "Empty.h"
+#include "Number.h"
+#include "ObjectInsideCell.h"
+#include "Text.h"
 
 class Graph {
  private:

@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "../include/client_message.h"
-#include "../include/number.h"
-#include "../include/table.h"
-#include "../include/text.h"
+#include "../include/ClientMessage.h"
+#include "../include/Number.h"
+#include "../include/Table.h"
+#include "../include/Text.h"
 #include "../libs/json.hpp"
 #include "../libs/tabulate.hpp"
 

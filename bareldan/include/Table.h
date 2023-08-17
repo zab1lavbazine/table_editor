@@ -4,10 +4,10 @@
 #include <vector>
 
 #pragma once
-#include "../include/ParseTreeForFormula.h"
-#include "../include/graph_cell_relations.h"
 #include "../libs/json.hpp"
 #include "../libs/tabulate.hpp"
+#include "GraphForCellRelations.h"
+#include "ParseTreeForFormula.h"
 
 struct POS {
   int row;

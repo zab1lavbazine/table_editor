@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "../include/object.h"
-#include "../include/text.h"
 #include "../libs/json.hpp"
-#include "Visitor.h"
+#include "ObjectInsideCell.h"
+#include "OperationsBetweenObj.h"
+#include "Text.h"
 
 class Number : public Object {
  public:

@@ -1,7 +1,6 @@
 
-#include "../include/graph_cell_relations.h"
+#include "../include/GraphForCellRelations.h"
 
-#include "graph_cell_relations.h"
 
 // detect loop in graph
 bool Graph::detectLoop(std::shared_ptr<Cell> currentCell,

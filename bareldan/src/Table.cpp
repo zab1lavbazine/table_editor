@@ -1,4 +1,4 @@
-#include "../include/table.h"
+#include "../include/Table.h"
 
 // support functions
 
@@ -44,6 +44,7 @@ std::string outLetters(std::string line, int& shift) {
 
 POS TABLE::get_position(const std::string& position) const {
   int shift = 0;
+  // std::cout << "Get position : " << position << std::endl;
   std::string letters = outLetters(position, shift);
 
   int column = get_column_index(letters);
@@ -420,6 +421,8 @@ std::shared_ptr<Cell> TABLE::HandleOperands(
   if (root == nullptr) {
     throw std::invalid_argument("root for formula is null");
   }
+
+  // parseTree.printParseTree(root);
 
   Cell new_cell = evaluate(root, toPut);  // evaluate expression
   if (new_cell.getObject() == nullptr) {
