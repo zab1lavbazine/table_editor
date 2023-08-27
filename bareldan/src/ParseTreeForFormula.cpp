@@ -135,7 +135,7 @@ std::shared_ptr<Node> ParseTreeForFormula::parseStringToken(size_t& index,
                                                             size_t length) {
   size_t StartIndex = index;
   index++;
-  std::cout << "formula index : " << formula[index] << std::endl;
+  // std::cout << "formula index : " << formula[index] << std::endl;
   while (index < length && formula[index] != '"') {
     ++index;
   }
