@@ -40,9 +40,9 @@ class ClientMessage {
 
   // operator for output
   friend void operator<<(std::ostream& out, const ClientMessage& c) {
-    c.print(out);
+    c.printAllCommands(out);
   }
-  void print(std::ostream& out) const;
+  void printAllCommands(std::ostream& out) const;
 
   // parser for json
   int parseToJSON(const std::string& fileName) const;
@@ -55,9 +55,12 @@ class ClientMessage {
   // all fucntions for saving and loading
   /// @brief function for saving table into json file
   int fromJSON(const std::string& fileName);
-  void importFromFile();
-  void saveIntoFile(bool& saved) const;
-  void checkIfSaved(bool& saved) const;
+  void importFromFile(std::string& filename);
+  void saveIntoFile(bool& saved, bool& importFromFile,
+                    std::string& filename) const;
+  int fromJsonToTable(const nlohmann::json& j);
+  void checkIfSaved(bool& saved, bool& importedFromFile,
+                    std::string& filename) const;
   void automaticSave(bool& saved) const;
   //------------------------
  private:

@@ -7,25 +7,24 @@ std::string COMMAND::CommandToString(const COMMAND_TYPE& command) const {
     case COMMAND_TYPE::EXIT:
       return "exit";
     case COMMAND_TYPE::SH_TAB:
-      return "show table | sh tb";
+      return "show table";
     case COMMAND_TYPE::SH_CELL:
       return "show cell \"...\" | sh ce \"...\"";
     case COMMAND_TYPE::SET:
-      return "set";
+      return "set value into cell";
     case COMMAND_TYPE::SETSIZE:
-      return "set size (int) (int)";
+      return "set table size (int) (int)";
     case COMMAND_TYPE::DEL:
       return "delete (cell) \"...\"";
     case COMMAND_TYPE::INFO:
-      return "info";
-    case COMMAND_TYPE::EMP:
-      return "empty";
-    case COMMAND_TYPE::UNKNOWN:
-      return "unknown";
+      return "get info about all commands";
     case COMMAND_TYPE::SAVE:
-      return "save";
+      return "save current table into file";
     case COMMAND_TYPE::IMPORT:
-      return "import";
+      return "import table from file";
+    case COMMAND_TYPE::EMP:
+    case COMMAND_TYPE::UNKNOWN:
+      return "unknown command";
   }
   return "";
 }
@@ -90,24 +89,44 @@ bool checkIfPosition(const std::string& position) {
 }
 
 // check if table is saved after all operations after exit command
-void ClientMessage::checkIfSaved(bool& saved) const {
+void ClientMessage::checkIfSaved(bool& saved, bool& importFromFile,
+                                 std::string& filename) const {
   if (!saved) {
     std::cout << "Do you want to save changes? (y/n)" << std::endl;
     std::string answer;
     std::cin >> answer;
     if (answer == "y") {
-      saveIntoFile(saved);
+      saveIntoFile(saved, importFromFile, filename);
     }
   }
 }
 
 // save function for table
-void ClientMessage::saveIntoFile(bool& saved) const {
-  std::cout << "Enter file name: ";
-  std::string fileName;
-  std::cin >> fileName;
-  std::string file = fileName + ".json";
-  int check = parseToJSON(fileName);
+void ClientMessage::saveIntoFile(bool& saved, bool& importFromFile,
+                                 std::string& filename) const {
+  if (importFromFile) {
+    std::string answer;
+    while (true) {
+      std::cout << "Save in file \"" << filename << "\"? (y/n)" << std::endl;
+      std::cin >> answer;
+      std::transform(answer.begin(), answer.end(), answer.begin(),
+                     [](unsigned char c) { return std::tolower(c); });
+      if (answer == "y" || answer == "n") break;
+    }
+    if (answer == "n") {
+      std::cout << "Enter file name: ";
+      std::cin >> filename;
+      std::string file = filename + ".json";
+    }
+  }
+
+  // std::cout << "Enter file name: ";
+
+  // std::string fileName;
+  // std::cin >> fileName;
+  // std::string file = fileName + ".json";
+
+  int check = parseToJSON(filename);
   if (check == 0) {
     saved = true;
   } else {
@@ -115,11 +134,10 @@ void ClientMessage::saveIntoFile(bool& saved) const {
   }
 }
 
-void ClientMessage::importFromFile() {
+void ClientMessage::importFromFile(std::string& filename) {
   std::cout << "Enter file name: ";
-  std::string fileName;
-  std::cin >> fileName;
-  int check = fromJSON(fileName);
+  std::cin >> filename;
+  int check = fromJSON(filename);
   if (check == 0) {
     std::cout << "file imported" << std::endl;
   } else {
@@ -129,6 +147,8 @@ void ClientMessage::importFromFile() {
 
 void ClientMessage::getCommand() {
   bool saved = true;
+  bool importedFromFile = false;
+  std::string filename;
   std::cout << "-----Welcome to table editor-----" << std::endl;
   std::cout << "print \"info\" for commands" << std::endl;
   while (true) {
@@ -146,13 +166,14 @@ void ClientMessage::getCommand() {
 
     switch (todo.command) {
       case COMMAND_TYPE::INFO:
-        print(std::cout);
+        printAllCommands(std::cout);
         break;
       case COMMAND_TYPE::SAVE:
-        saveIntoFile(saved);
+        saveIntoFile(saved, importedFromFile, filename);
         break;
       case COMMAND_TYPE::IMPORT:
-        importFromFile();
+        importFromFile(filename);
+        importedFromFile = true;
         break;
       case COMMAND_TYPE::SETSIZE:
         setTableSize(todo.formula);
@@ -160,6 +181,7 @@ void ClientMessage::getCommand() {
         break;
       case COMMAND_TYPE::SET:
         setValue(todo.formula);
+        saved = false;
         break;
       case COMMAND_TYPE::SH_TAB:
         std::cout << m_table << std::endl;
@@ -168,7 +190,7 @@ void ClientMessage::getCommand() {
         showCell(todo.formula);
         break;
       case COMMAND_TYPE::EXIT:
-        checkIfSaved(saved);
+        checkIfSaved(saved, importedFromFile, filename);
         return;
       case COMMAND_TYPE::EMP:
         std::cout << "empty command" << std::endl;
@@ -281,7 +303,7 @@ void ClientMessage::setTableSize(const std::string& formula) {
 }
 
 // print function for all commands
-void ClientMessage::print(std::ostream& out) const {
+void ClientMessage::printAllCommands(std::ostream& out) const {
   // load in ostream all commands
   out << "Commands: " << std::endl;
   tabulate::Table table;
@@ -309,6 +331,18 @@ int ClientMessage::parseToJSON(const std::string& fileName) const {
   out.close();
   std::cout << "file saved" << std::endl;
 
+  return 0;
+}
+
+int ClientMessage::fromJsonToTable(const nlohmann::json& j) {
+  if (m_table.isEmpty())
+    m_table.importFromJSON(j);
+  else {
+    // if table is not empty, create new table and import from json
+    TABLE new_table;
+    new_table.importFromJSON(j);
+    m_table = new_table;
+  }
   return 0;
 }
 
@@ -340,16 +374,9 @@ int ClientMessage::fromJSON(const std::string& fileName) {
     return 1;
   }
 
-  if (m_table.isEmpty())
-    m_table.importFromJSON(j);
-  else {
-    // if table is not empty, create new table and import from json
-    TABLE new_table;
-    new_table.importFromJSON(j);
-    m_table = new_table;
-  }
+  int inTable = fromJsonToTable(j);
 
-  return 0;
+  return inTable;
 }
 
 void ClientMessage::automaticSave(bool& saved) const {

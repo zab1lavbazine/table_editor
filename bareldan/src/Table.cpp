@@ -516,14 +516,14 @@ void TABLE::importFromJSON(const nlohmann::json& j) {
   bool first = true;
   for (auto& element : j) {
     if (first) {
-      int rows = element.at("rows");
       int columns = element.at("columns");
+      int rows = element.at("rows");
       setSize(rows, columns);
       first = false;
       continue;
     }
-    std::string position = element.at("position");
     std::string formula = element.at("Cell").at("formula");
+    std::string position = element.at("position");
     setValue(position, formula);
   }
 }
