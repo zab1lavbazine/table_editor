@@ -12,3 +12,6 @@ build/
 objs/
 obj/
 .vscode/
+
+#Created *.json files
+*.json
