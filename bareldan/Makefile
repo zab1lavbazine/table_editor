@@ -30,8 +30,9 @@ doc:
 	doxygen Doxyfile
 
 
-compile: $(OBJS)
-	$(CC) $(CXXFLAGS) $^ -o $(USERNAME)
+compile: $(PROGRAM)
+# $(OBJS)
+#	$(CC) $(CXXFLAGS) $^ -o $(USERNAME)
 
 
 

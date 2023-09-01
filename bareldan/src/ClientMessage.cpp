@@ -138,11 +138,7 @@ void ClientMessage::importFromFile(std::string& filename) {
   std::cout << "Enter file name: ";
   std::cin >> filename;
   int check = fromJSON(filename);
-  if (check == 0) {
-    std::cout << "file imported" << std::endl;
-  } else {
-    std::cout << "error: import" << std::endl;
-  }
+  if (check == 0) std::cout << "file imported" << std::endl;
 }
 
 void ClientMessage::getCommand() {
@@ -365,12 +361,20 @@ int ClientMessage::fromJSON(const std::string& fileName) {
   }
 
   nlohmann::json j;
-  in >> j;
-  in.close();
 
+  try {
+    j = nlohmann::json::parse(in);
+  } catch (const std::exception& e) {
+    // bad file format, return error
+    std::cout << "error: import" << std::endl;
+    in.close();
+    return 1;
+  }
+  // closing file
+  in.close();
   // check if closed correctly
   if (!in.good()) {
-    std::cout << "error: import" << std::endl;
+    std::cout << "error: closing file" << std::endl;
     return 1;
   }
 
