@@ -10,7 +10,7 @@
 
 // struct for TODO
 
-struct TODO {
+struct CommandTask {
   COMMAND_TYPE command;
   std::string formula;
 };
@@ -31,7 +31,7 @@ class ClientMessage {
   ~ClientMessage() = default;
   void getCommand();
   // checking for match commands
-  TODO checkWithRegex(const std::string& comm);
+  CommandTask checkWithRegex(const std::string& comm);
 
   // commands for table
   // set size

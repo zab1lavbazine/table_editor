@@ -135,7 +135,7 @@ TABLE& TABLE::operator=(const TABLE& table) {
 }
 
 void TABLE::setValue(const std::string& position, const std::string& formula) {
-  std::vector<std::shared_ptr<Cell>> toPut;
+  std::vector<std::shared_ptr<Cell>> parentsChildrens;
   POS pos;
   try {
     pos = get_position(position);
@@ -145,16 +145,16 @@ void TABLE::setValue(const std::string& position, const std::string& formula) {
   }
 
   // creating new cell with formula
-  std::shared_ptr<Cell> new_cell = HandleOperands(formula, toPut);
+  std::shared_ptr<Cell> new_cell = HandleOperands(formula, parentsChildrens);
 
   // getting current cell from table if it is empty
   std::shared_ptr<Cell> current_cell =
       this->m_table[pos.row - 1][pos.column - 1];
 
   // insert new cell to graph (parents and childrens)
-  if (toPut.size() > 0) {
+  if (parentsChildrens.size() > 0) {
     // insert new cell to graph (parents and childrens)
-    bool putted = putChild(current_cell, toPut);
+    bool putted = putChild(current_cell, parentsChildrens);
 
     if (!putted) {
       return;
@@ -264,24 +264,26 @@ bool check_if_number(std::string number) {
 }
 
 ///
-Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
-                     std::vector<std::shared_ptr<Cell>>& toPut) const {
+Cell TABLE::evaluate(
+    const std::shared_ptr<Node>& node,
+    std::vector<std::shared_ptr<Cell>>& parentsChildrens) const {
   if (node == nullptr) {
     return Cell();
   }
 
   if (node->left == nullptr && node->right == nullptr) {
-    return evaluateLeafNode(node->value, toPut);
+    return evaluateLeafNode(node->value, parentsChildrens);
   }
 
-  Cell left = evaluate(node->left, toPut);
-  Cell right = evaluate(node->right, toPut);
+  Cell left = evaluate(node->left, parentsChildrens);
+  Cell right = evaluate(node->right, parentsChildrens);
 
   return evaluateOperation(node->value, left, right);
 }
 
-Cell TABLE::evaluateLeafNode(const std::string& token,
-                             std::vector<std::shared_ptr<Cell>>& toPut) const {
+Cell TABLE::evaluateLeafNode(
+    const std::string& token,
+    std::vector<std::shared_ptr<Cell>>& parentsChildrens) const {
   if (check_if_number(token)) {
     return Cell(Number(std::stod(token)));
   } else if (is_text_token(token)) {
@@ -289,10 +291,10 @@ Cell TABLE::evaluateLeafNode(const std::string& token,
   } else if (is_function(token)) {
     return evaluateFunction(token);
   } else if (is_negative_number(token)) {
-    return evaluateNegativeNumber(token, toPut);
+    return evaluateNegativeNumber(token, parentsChildrens);
   } else {
     std::shared_ptr<Cell> cell = getCell(token);
-    toPut.push_back(cell);
+    parentsChildrens.push_back(cell);
     return *cell;
   }
 }
@@ -327,93 +329,18 @@ Cell TABLE::evaluateFunction(const std::string& functionName) const {
 }
 
 Cell TABLE::evaluateNegativeNumber(
-    const std::string& token, std::vector<std::shared_ptr<Cell>>& toPut) const {
+    const std::string& token,
+    std::vector<std::shared_ptr<Cell>>& parentsChildrens) const {
   std::shared_ptr<Cell> cell = getCell(token.substr(1));
   Cell newCell = *cell * Cell(Number(-1));
-  toPut.push_back(cell);
+  parentsChildrens.push_back(cell);
   return newCell;
 }
 
-///
-
-// Cell TABLE::evaluate(const std::shared_ptr<Node>& node,
-//                      std::vector<std::shared_ptr<Cell>>& toPut) const {
-//   if (node == nullptr) {  // check for null pointers
-//     return Cell();
-//   }
-
-//   if (node->left == nullptr && node->right == nullptr) {
-//     // Leaf node
-//     std::string token = node->value;
-
-//     if (check_if_number(token)) {  // check if the last is number
-//       return Cell(Number(std::stod(token)));
-//     } else if (token[0] == '\"' && token[token.length() - 1] ==
-//                                        '\"') {  // check if the last is text
-
-//       return Cell(Text(token.substr(1, token.length() - 2)));
-//     } else if (token == "sin") {
-//       throw std::invalid_argument("sin error");
-//     } else if (token == "cos") {
-//       throw std::invalid_argument("cos error");
-//     } else {
-//       bool minus = false;
-//       if (token[0] == '-') {
-//         minus = true;
-//         token = token.substr(1, token.length() - 1);
-//       }
-
-//       std::shared_ptr<Cell> cell = getCell(token);
-//       if (minus == true) {
-//         std::cout << "cell with -1" << std::endl;
-//         Cell new_cell = *cell * Cell(Number(-1));
-//         return new_cell;
-//       }
-
-//       toPut.push_back(cell);
-//       return *cell;
-//     }
-//   }
-
-//   Cell left = evaluate(node->left, toPut);
-//   Cell right = evaluate(node->right, toPut);
-
-//   std::string op = node->value;
-
-//   // check for null pointers
-
-//   // if (op == "sin" || op == "cos") return Cell(Text(op)) * left;
-
-//   if (op == "sin")
-//     return left.getObject()->collide(*(left.getObject()),
-//                                      Object::OPERATIONS::SIN);
-//   if (op == "cos")
-//     return left.getObject()->collide(*(left.getObject()),
-//                                      Object::OPERATIONS::COS);
-
-//   if (op == "-" && right.getObject() != nullptr && left.getObject() ==
-//   nullptr)
-//     return right * Cell(Number(-1));
-
-//   if (left.getObject() == nullptr || right.getObject() == nullptr) {
-//     return Cell();
-//   }
-
-//   if (op == "+") {
-//     return left + right;
-//   } else if (op == "-") {
-//     return left - right;
-//   } else if (op == "*") {
-//     return left * right;
-//   } else if (op == "/") {
-//     return left / right;
-//   }
-
-//   return Cell();
-// }
 
 std::shared_ptr<Cell> TABLE::HandleOperands(
-    const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut) {
+    const std::string& expression,
+    std::vector<std::shared_ptr<Cell>>& parentsChildrens) const {
   // creating parse tree and building it with the formula
   ParseTreeForFormula parseTree(expression);
 
@@ -424,7 +351,7 @@ std::shared_ptr<Cell> TABLE::HandleOperands(
 
   // parseTree.printParseTree(root);
 
-  Cell new_cell = evaluate(root, toPut);  // evaluate expression
+  Cell new_cell = evaluate(root, parentsChildrens);  // evaluate expression
   if (new_cell.getObject() == nullptr) {
     throw std::invalid_argument("new cell is null");
   }
@@ -465,9 +392,9 @@ void TABLE::eraseCell(const int& x, const int& y) {
 
 // change childrens of cell
 void TABLE::changeChildrens(std::shared_ptr<Cell> cell) {
-  std::vector<std::shared_ptr<Cell>> toPut;
+  std::vector<std::shared_ptr<Cell>> parentsChildrens;
   for (auto& child : m_graph.getChildrens(cell)) {
-    Cell new_cell = evaluate(child->getFormula(), toPut);
+    Cell new_cell = evaluate(child->getFormula(), parentsChildrens);
     child.get()->changeObject(new_cell.getObject()->clone());
     changeChildrens(child);
   }
@@ -475,12 +402,12 @@ void TABLE::changeChildrens(std::shared_ptr<Cell> cell) {
 
 // add new edge to graph
 bool TABLE::putChild(std::shared_ptr<Cell> new_cell,
-                     std::vector<std::shared_ptr<Cell>>& toPut) {
-  for (std::shared_ptr<Cell> master : toPut) {
+                     std::vector<std::shared_ptr<Cell>>& parentsChildrens) {
+  for (std::shared_ptr<Cell> master : parentsChildrens) {
     bool putted = m_graph.addEdge(master, new_cell);
     if (!putted) return false;
   }
-  toPut.clear();
+  parentsChildrens.clear();
   return true;
 }
 

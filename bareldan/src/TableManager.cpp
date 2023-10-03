@@ -1,5 +1,5 @@
 
-#include "../include/ClientMessage.h"
+#include "../include/TableManager.h"
 
 // output for all commands for info command
 std::string COMMAND::CommandToString(const COMMAND_TYPE& command) const {
@@ -120,12 +120,6 @@ void ClientMessage::saveIntoFile(bool& saved, bool& importFromFile,
     }
   }
 
-  // std::cout << "Enter file name: ";
-
-  // std::string fileName;
-  // std::cin >> fileName;
-  // std::string file = fileName + ".json";
-
   int check = parseToJSON(filename);
   if (check == 0) {
     saved = true;
@@ -156,7 +150,7 @@ void ClientMessage::getCommand() {
       return;
     }
 
-    TODO todo = checkWithRegex(command);
+    CommandTask todo = checkWithRegex(command);
 
     // switch for all commands
 
@@ -249,11 +243,11 @@ void ClientMessage::setValue(const std::string& todo) {
 }
 
 // check if command is valid and is known
-TODO ClientMessage::checkWithRegex(const std::string& comm) {
+CommandTask ClientMessage::checkWithRegex(const std::string& comm) {
   for (auto& command : commands) {
     std::smatch match;
     if (std::regex_match(comm, match, command.pattern)) {
-      TODO todo;
+      CommandTask todo;
       todo.command = command.command;
       todo.formula = comm;
       return todo;
@@ -342,16 +336,21 @@ int ClientMessage::fromJsonToTable(const nlohmann::json& j) {
   return 0;
 }
 
-// import table from json
-int ClientMessage::fromJSON(const std::string& fileName) {
-  std::string file = fileName;
-
+void checkTheFileFormat(std::string& file) {
   // add .json to file if it is not there
   if (file.find(".json") == std::string::npos) {
     file += ".json";
   }
   // remove spaces from string for correct file name
   removeSpaces(file);
+}
+
+// import table from json
+int ClientMessage::fromJSON(const std::string& fileName) {
+  std::string file = fileName;
+
+  // check if there is *.json in file name and remove spaces
+  checkTheFileFormat(file);
 
   std::fstream in{file, std::ios::in | in.binary};
   // check for file opening
@@ -366,15 +365,15 @@ int ClientMessage::fromJSON(const std::string& fileName) {
     j = nlohmann::json::parse(in);
   } catch (const std::exception& e) {
     // bad file format, return error
-    std::cout << "error: import" << std::endl;
+    std::cout << "error: import " << e.what() << std::endl;
     in.close();
     return 1;
   }
   // closing file
   in.close();
   // check if closed correctly
-  if (!in.good()) {
-    std::cout << "error: closing file" << std::endl;
+  if (in.is_open()) {
+    std::cout << "error: import" << std::endl;
     return 1;
   }
 

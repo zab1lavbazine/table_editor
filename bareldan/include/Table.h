@@ -51,29 +51,32 @@ class TABLE {
 
   /// @brief function for processing formula and evaluating it
   /// @param expression
-  /// @param toPut
+  /// @param parentsChildrens
   /// @return std::shared_ptr<Cell> to new cell with value
   std::shared_ptr<Cell> HandleOperands(
-      const std::string& expression, std::vector<std::shared_ptr<Cell>>& toPut);
+      const std::string& expression,
+      std::vector<std::shared_ptr<Cell>>& parentsChildrens) const;
   Cell evaluate(const std::shared_ptr<Node>& node,
-                std::vector<std::shared_ptr<Cell>>& toPut) const;
+                std::vector<std::shared_ptr<Cell>>& parentsChildrens) const;
 
-  Cell evaluateLeafNode(const std::string& token,
-                        std::vector<std::shared_ptr<Cell>>& toPut) const;
+  Cell evaluateLeafNode(
+      const std::string& token,
+      std::vector<std::shared_ptr<Cell>>& parentsChildrens) const;
 
   Cell evaluateOperation(const std::string& op, Cell& left, Cell& right) const;
 
   Cell evaluateFunction(const std::string& functionName) const;
 
-  Cell evaluateNegativeNumber(const std::string& token,
-                              std::vector<std::shared_ptr<Cell>>& toPut) const;
+  Cell evaluateNegativeNumber(
+      const std::string& token,
+      std::vector<std::shared_ptr<Cell>>& parentsChildrens) const;
 
   // check if table is empty
   bool isEmpty() const;
 
   // add new edge to graph
   bool putChild(std::shared_ptr<Cell> new_cell,
-                std::vector<std::shared_ptr<Cell>>& toPut);
+                std::vector<std::shared_ptr<Cell>>& parentsChildrens);
 
   /// @brief function for changing childrens of cell in graph
   /// @param new_cell
