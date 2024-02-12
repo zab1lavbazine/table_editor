@@ -31,8 +31,7 @@ doc:
 
 
 compile: $(PROGRAM)
-# $(OBJS)
-#	$(CC) $(CXXFLAGS) $^ -o $(USERNAME)
+
 
 
 

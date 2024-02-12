@@ -1,0 +1,7 @@
+
+
+# directory to ignore
+/doc
+/examples
+/objs
+/bin
