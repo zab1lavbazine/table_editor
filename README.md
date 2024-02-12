@@ -17,21 +17,21 @@ To get started with the Advanced Terminal-Based Table Editor, follow these steps
 
 1. **Clone the Repository**: Clone this repository to your local machine using the following command:
    
-git clone https://github.com/zab1lavbazine/table_editor.git
+$ git clone https://github.com/zab1lavbazine/table_editor.git
 
 
 2. **Navigate to the Project Directory**: Enter the project directory:
 
-cd table_editor
+$ cd table_editor
 
 3. **Compile the Source Code**: Compile the source code using a makefile (e.g., g++):
 
-make all
+$ make all
 
 
 4. **Run the Executable**: Execute the compiled program:
 
-make run
+$ make run
 
 
 ## Usage
