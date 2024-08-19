@@ -6,6 +6,7 @@
 #pragma once
 #include "../libs/json.hpp"
 #include "../libs/tabulate.hpp"
+#include "Cell.h"
 #include "GraphForCellRelations.h"
 #include "ParseTreeForFormula.h"
 
