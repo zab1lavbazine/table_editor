@@ -6,8 +6,8 @@
 
 //
 
-Number::Number() {}
-Number::Number(const double& number) : m_number(number) {}
+Number::Number() : Object(Type::NUMBER) {}
+Number::Number(const double& number) : Object(Type::NUMBER), m_number(number) {}
 Number::~Number() {}
 
 double Number::getNumber() const { return this->m_number; }

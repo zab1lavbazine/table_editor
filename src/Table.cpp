@@ -337,7 +337,6 @@ Cell TABLE::evaluateNegativeNumber(
   return newCell;
 }
 
-
 std::shared_ptr<Cell> TABLE::HandleOperands(
     const std::string& expression,
     std::vector<std::shared_ptr<Cell>>& parentsChildrens) const {
@@ -426,7 +425,7 @@ nlohmann::json TABLE::toJSON() const {
   for (int i = 0; i < m_rows; i++) {
     for (int j = 0; j < m_columns; j++) {
       // check if cell is empty
-      if (m_table[i][j]->getObject()->toString() == "")
+      if (m_table[i][j]->getObject()->getType() == Object::Type::EMPTY)
         continue;
       else {
         // save the position of the cells
