@@ -1,7 +1,7 @@
 #include "../include/Text.h"
 
-Text::Text() {}
-Text::Text(const std::string& text) : m_text(text) {}
+Text::Text() : Object(Type::TEXT) {}
+Text::Text(const std::string& text) : Object(Type::TEXT), m_text(text) {}
 Text::~Text() {}
 
 std::string Text::getText() const { return this->m_text; }
