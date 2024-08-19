@@ -5,3 +5,7 @@
 /examples
 /objs
 /bin
+
+
+##ignore all generated files from idea or visual studio code
+.vscode
