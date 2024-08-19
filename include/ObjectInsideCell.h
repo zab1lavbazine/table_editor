@@ -8,8 +8,10 @@
 class Object {
  public:
   enum class OPERATIONS { SUM, MUL, DIV, SUB, SIN, COS };
+  enum class Type { NUMBER, TEXT, EMPTY };
+
   virtual ~Object() {}
-  Object() = default;
+  Object(Type type) : m_type(type) {}
 
   Object(const Object& obj) = default;
 
@@ -34,4 +36,9 @@ class Object {
 
   // toString for printing
   virtual std::string toString() const = 0;
+
+  Type getType() const { return m_type; }
+
+ protected:
+  Type m_type;  // obect type
 };

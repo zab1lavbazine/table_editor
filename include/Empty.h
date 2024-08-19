@@ -9,9 +9,9 @@
 
 class EMPTY : public Object {
  public:
-  EMPTY(){};
-  ~EMPTY(){};
-  EMPTY(const EMPTY& obj) = default;
+  EMPTY() : Object(Type::EMPTY) {};
+  ~EMPTY() {};
+  EMPTY(const EMPTY& obj) : Object(obj) { this->m_type = obj.m_type; }
 
   // print object
   virtual std::ostream& print(std::ostream& os) const override {
